@@ -25,3 +25,9 @@ jobs:
 
       - name: Run Stryker.NET
         run: dotnet stryker
+
+      - name: Upload Stryker Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: stryker-report.html
+          path: StrykerOutput/**/mutation-report.html
