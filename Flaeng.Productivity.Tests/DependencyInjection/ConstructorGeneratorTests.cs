@@ -37,27 +37,29 @@ namespace Flaeng.Productivity.DependencyInjection
 
     [Theory]
     // readonly field
-    [InlineData("private readonly ILogger _logger;")]
-    [InlineData("protected readonly ILogger _logger;")]
-    [InlineData("internal readonly ILogger _logger;")]
-    [InlineData("public readonly ILogger _logger;")]
-    [InlineData("readonly ILogger _logger;")]
+    [InlineData("private readonly IList _logger;")]
+    [InlineData("protected readonly IList _logger;")]
+    [InlineData("internal readonly IList _logger;")]
+    [InlineData("public readonly IList _logger;")]
+    [InlineData("readonly IList _logger;")]
     // field
-    [InlineData("private ILogger _logger;")]
-    [InlineData("protected ILogger _logger;")]
-    [InlineData("internal ILogger _logger;")]
-    [InlineData("public ILogger _logger;")]
-    [InlineData("ILogger _logger;")]
+    [InlineData("private IList _logger;")]
+    [InlineData("protected IList _logger;")]
+    [InlineData("internal IList _logger;")]
+    [InlineData("public IList _logger;")]
+    [InlineData("IList _logger;")]
     // properties
-    [InlineData("private ILogger _logger { get; }")]
-    [InlineData("protected ILogger _logger { get; }")]
-    [InlineData("internal ILogger _logger { get; }")]
-    [InlineData("public ILogger _logger { get; }")]
-    [InlineData("ILogger _logger { get; }")]
+    [InlineData("private IList _logger { get; }")]
+    [InlineData("protected IList _logger { get; }")]
+    [InlineData("internal IList _logger { get; }")]
+    [InlineData("public IList _logger { get; }")]
+    [InlineData("IList _logger { get; }")]
     public void can_parse_members_with_no_generic_parameter(string memberText)
     {
         // Arrange
-        string source = @$"namespace TestNamespace
+        string source = @$"using System.Collections;
+
+namespace TestNamespace
 {{
     public partial class Dummy
     {{
@@ -67,7 +69,7 @@ namespace Flaeng.Productivity.DependencyInjection
 
         // Act
         var output = GetGeneratedOutput<ConstructorGenerator>(
-            new SourceFile("dummy.cs", source)
+            new SourceFile("Dummy.cs", source)
         );
 
         // Assert
@@ -81,7 +83,7 @@ namespace TestNamespace
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
         public Dummy(
-            ILogger _logger
+            global::System.Collections.IList _logger
             )
         {
             this._logger = _logger;
@@ -92,7 +94,7 @@ namespace TestNamespace
         Assert.Empty(output.Diagnostic);
 
         var dummyGenerated = output.GeneratedFiles
-            .SingleOrDefault(x => x.Filename.EndsWith("dummy.g.cs"));
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 
@@ -100,11 +102,13 @@ namespace TestNamespace
     public void wont_generate_source_when_no_attribute_is_provided()
     {
         // Arrange
-        string source = @$"namespace TestNamespace
+        string source = @$"usig System.Collections;
+
+namespace TestNamespace
 {{
     public partial class Dummy
     {{
-        public ILogger _logger {{ get; }}
+        public IList _logger {{ get; }}
     }}
 }}";
 
@@ -116,33 +120,35 @@ namespace TestNamespace
         // Assert
         Assert.Empty(output.Diagnostic);
         var dummyGenerated = output.GeneratedFiles
-            .SingleOrDefault(x => x.Filename.EndsWith("dummy.g.cs"));
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
         Assert.Null(dummyGenerated);
     }
 
     [Theory]
     // readonly field
-    [InlineData("private readonly ILogger<WeatherForecastController> _logger;")]
-    [InlineData("protected readonly ILogger<WeatherForecastController> _logger;")]
-    [InlineData("internal readonly ILogger<WeatherForecastController> _logger;")]
-    [InlineData("public readonly ILogger<WeatherForecastController> _logger;")]
-    [InlineData("readonly ILogger<WeatherForecastController> _logger;")]
+    [InlineData("private readonly List<string> _logger;")]
+    [InlineData("protected readonly List<string> _logger;")]
+    [InlineData("internal readonly List<string> _logger;")]
+    [InlineData("public readonly List<string> _logger;")]
+    [InlineData("readonly List<string> _logger;")]
     // field
-    [InlineData("private ILogger<WeatherForecastController> _logger;")]
-    [InlineData("protected ILogger<WeatherForecastController> _logger;")]
-    [InlineData("internal ILogger<WeatherForecastController> _logger;")]
-    [InlineData("public ILogger<WeatherForecastController> _logger;")]
-    [InlineData("ILogger<WeatherForecastController> _logger;")]
+    [InlineData("private List<string> _logger;")]
+    [InlineData("protected List<string> _logger;")]
+    [InlineData("internal List<string> _logger;")]
+    [InlineData("public List<string> _logger;")]
+    [InlineData("List<string> _logger;")]
     // properties
-    [InlineData("private ILogger<WeatherForecastController> _logger { get; }")]
-    [InlineData("protected ILogger<WeatherForecastController> _logger { get; }")]
-    [InlineData("internal ILogger<WeatherForecastController> _logger { get; }")]
-    [InlineData("public ILogger<WeatherForecastController> _logger { get; }")]
-    [InlineData("ILogger<WeatherForecastController> _logger { get; }")]
+    [InlineData("private List<string> _logger { get; }")]
+    [InlineData("protected List<string> _logger { get; }")]
+    [InlineData("internal List<string> _logger { get; }")]
+    [InlineData("public List<string> _logger { get; }")]
+    [InlineData("List<string> _logger { get; }")]
     public void can_parse_members_with_one_generic_parameter(string memberText)
     {
         // Arrange
-        string source = @$"namespace TestNamespace
+        string source = @$"using System.Collections.Generic;
+        
+namespace TestNamespace
 {{
     public partial class Dummy
     {{
@@ -166,7 +172,7 @@ namespace TestNamespace
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
         public Dummy(
-            ILogger<WeatherForecastController> _logger
+            global::System.Collections.Generic.List<global::System.String> _logger
             )
         {
             this._logger = _logger;
@@ -177,7 +183,7 @@ namespace TestNamespace
         Assert.Empty(output.Diagnostic);
 
         var dummyGenerated = output.GeneratedFiles
-            .SingleOrDefault(x => x.Filename.EndsWith("dummy.g.cs"));
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 
@@ -190,7 +196,7 @@ namespace TestNamespace
     public partial class Dummy
     {{
         [Flaeng.Productivity.DependencyInjection.Inject] 
-        global::Microsoft.Extensions.Logging.ILogger<Providers.ISummaryProvider> _logger;
+        global::Microsoft.Extensions.Logging.ILogger<System.String> _logger;
     }}
 }}";
 
@@ -210,7 +216,7 @@ namespace TestNamespace.Controllers
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
         public Dummy(
-            global::Microsoft.Extensions.Logging.ILogger<Providers.ISummaryProvider> _logger
+            global::Microsoft.Extensions.Logging.ILogger<global::System.String> _logger
             )
         {
             this._logger = _logger;
@@ -221,7 +227,7 @@ namespace TestNamespace.Controllers
         Assert.Empty(output.Diagnostic);
 
         var dummyGenerated = output.GeneratedFiles
-            .SingleOrDefault(x => x.Filename.EndsWith("dummy.g.cs"));
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 
@@ -247,7 +253,9 @@ namespace TestNamespace.Controllers
     public void can_parse_members_with_multiple_generic_parameter(string memberText)
     {
         // Arrange
-        string source = @$"using Flaeng.Productivity.DependencyInjection;
+        string source = @$"using System
+using System.Collections.Generic;
+using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace
 {{
@@ -265,8 +273,6 @@ namespace TestNamespace
         // Assert
         string expected_output = @"// <auto-generated/>
 
-using Flaeng.Productivity.DependencyInjection;
-
 #nullable enable
 
 namespace TestNamespace
@@ -275,7 +281,7 @@ namespace TestNamespace
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
         public Dummy(
-            IDictionary<string, object> _logger
+            global::System.Collections.Generic.IDictionary<global::System.String, global::System.Object> _logger
             )
         {
             this._logger = _logger;
@@ -286,7 +292,7 @@ namespace TestNamespace
         Assert.Empty(output.Diagnostic);
 
         var dummyGenerated = output.GeneratedFiles
-            .SingleOrDefault(x => x.Filename.EndsWith("dummy.g.cs"));
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 

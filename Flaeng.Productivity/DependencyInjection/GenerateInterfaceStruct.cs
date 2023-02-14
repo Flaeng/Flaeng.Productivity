@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
+using Microsoft.CodeAnalysis;
+
 namespace Flaeng.Productivity;
 
 internal record struct GenerateInterfaceStruct
 (
-    ClassDeclarationSyntax? Class,
-    ImmutableArray<MemberDeclarationSyntax> Members,
-    ImmutableArray<MethodDeclarationSyntax> Methods
+    INamedTypeSymbol? Class,
+    ImmutableArray<ISymbol> Members,
+    ImmutableArray<IMethodSymbol> Methods
 );
 
 internal class GenerateInterfaceEqualityComparer : IEqualityComparer<GenerateInterfaceStruct>

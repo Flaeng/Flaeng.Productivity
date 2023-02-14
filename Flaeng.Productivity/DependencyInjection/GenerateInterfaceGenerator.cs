@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -26,26 +25,37 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
                 static (ctx, ct) =>
                 {
                     var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
+                    var classSymbol = ctx.SemanticModel.GetDeclaredSymbol(cds, ct);
+
                     if (cds.AttributeLists
                         .SelectMany(x => x.Attributes)
                         .Where(HasGenerateAttribute(ctx, ct))
                         .Any() == false)
-                        return new GenerateInterfaceStruct(
-                            null,
-                            new ImmutableArray<MemberDeclarationSyntax>(),
-                            new ImmutableArray<MethodDeclarationSyntax>());
 
-                    List<MemberDeclarationSyntax> members = new();
-                    List<MethodDeclarationSyntax> methods = new();
+                        return new GenerateInterfaceStruct(
+                            classSymbol,
+                            new ImmutableArray<ISymbol>(),
+                            new ImmutableArray<IMethodSymbol>());
+
+                    List<ISymbol> members = new();
+                    List<IMethodSymbol> methods = new();
                     foreach (var child in cds.DescendantNodes())
                     {
-                        if (child is MemberDeclarationSyntax member)
-                            members.Add(member);
-                        else if (child is MethodDeclarationSyntax method)
-                            methods.Add(method);
+                        if (child is MethodDeclarationSyntax method)
+                        {
+                            var symbol = ctx.SemanticModel.GetDeclaredSymbol(method, ct);
+                            if (symbol != null)
+                                methods.Add(symbol);
+                        }
+                        else if (child is MemberDeclarationSyntax member)
+                        {
+                            var symbol = ctx.SemanticModel.GetDeclaredSymbol(member, ct);
+                            if (symbol != null)
+                                members.Add(symbol);
+                        }
                     }
                     return new GenerateInterfaceStruct(
-                        cds,
+                        classSymbol,
                         members.ToImmutableArray(),
                         methods.ToImmutableArray());
                 })
@@ -57,15 +67,12 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
-        return cls =>
+        return attr =>
         {
-            var si = ctx.SemanticModel.GetSymbolInfo(cls, ct);
-            if (si.Symbol == null)
+            var si = ctx.SemanticModel.GetSymbolInfo(attr, ct);
+            if (si.Symbol is null)
                 return false;
-            // if (si.Symbol is not IMethodSymbol ms)
-            //     return false;
-
-            // return ms.ContainingType
+            
             return si.Symbol.ContainingType
                 .ToDisplayString()
                 .Equals($"{ATTRIBUTE_NAMESPACE}.{ATTRIBUTE_NAME}", StringComparison.Ordinal);
@@ -80,64 +87,53 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         SourceBuilder sourceBuilder = new();
 
-        var childNodes = cls.SyntaxTree
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<UsingDirectiveSyntax>();
+        var isInNamespace = cls.ContainingNamespace != null;
+        if (isInNamespace)
+            sourceBuilder.StartNamespace(cls.ContainingNamespace!.ToDisplayString());
 
-        sourceBuilder.AddUsingStatement(childNodes.Select(x => x.Name.ToString()));
-
-        var namespaceNode = cls.Parent?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
-        var isInNamespace = namespaceNode != null;
-        if (namespaceNode != null)
-            sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
-
-        var interfaceName = "I" + cls.GetClassName();
+        var interfaceName = $"I{cls.Name}";
         sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
-        var publicMethods = cls.DescendantNodes()
-            .OfType<MethodDeclarationSyntax>();
+        var publicMethods = data.Methods.Where(x => x.DeclaredAccessibility == Accessibility.Public);
 
         foreach (var method in publicMethods)
             writeMethod(sourceBuilder, method);
 
         sourceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), partial: true, interfaces: new[] { interfaceName });
+        sourceBuilder.StartClass(TypeVisiblity.Public, cls.Name, partial: true, interfaces: new[] { interfaceName });
 
         sourceBuilder.EndClass();
 
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
-        var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
-        context.AddSource($"I{filename}.g.cs", sourceBuilder.ToString());
+        string qualifiedName = cls.ContainingNamespace is null 
+            ? $"I{cls.Name}" : 
+            $"{cls.ContainingNamespace}.I{cls.Name}";
+        context.AddSource($"{qualifiedName}.g.cs", sourceBuilder.ToString());
     }
 
-    private void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
+    private void writeMethod(SourceBuilder sourceBuilder, IMethodSymbol method)
     {
-        var name = method.ChildTokens()
-            .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
-            .FirstOrDefault();
+        var parameterText = method.Parameters
+            .Select(x => {
+                var result = $"global::{x.Type.ContainingNamespace}.{x.Type.Name} {x.Name}";
+                return x.RefKind == RefKind.Out ? $"out {result}"
+                    : x.RefKind == RefKind.Ref ? $"ref {result}"
+                    : result;
+            });
 
-        var isPublic = method.ChildTokens()
-            .Where(x => x.IsKind(SyntaxKind.PublicKeyword))
-            .Any();
+        var isVoid = method.ReturnType.ToString() == "void";
 
-        if (isPublic == false)
-            return;
-
-        var parameterList = method.DescendantNodes()
-            .OfType<ParameterListSyntax>()
-            .First();
-
-        var parameters = parameterList.DescendantNodes()
-            .Where(x => x.IsKind(SyntaxKind.Parameter));
-
-        var parameterText = parameters.Select(x => x.ToFullString());
-
-        sourceBuilder.DeclareMethod(method.ReturnType.ToString(), name.Text, parameterText);
+        sourceBuilder.DeclareMethod(
+            isVoid
+                ? "void"
+                : $"global::{method.ReturnType.ContainingNamespace}.{method.ReturnType.Name}", 
+            method.Name, 
+            parameterText);
     }
+
     private void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)
     {
         context.AddSource($"{ATTRIBUTE_NAME}.g.cs", @$"// <auto-generated/>

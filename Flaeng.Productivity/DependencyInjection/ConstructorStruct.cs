@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
+using Microsoft.CodeAnalysis;
+
 namespace Flaeng.Productivity.DependencyInjection;
 
 internal record struct ConstructorStruct
 (
-    ClassDeclarationSyntax? Class,
-    ImmutableArray<MemberDeclarationSyntax> Members
+    INamedTypeSymbol? Class,
+    ImmutableArray<IFieldSymbol> Members
 );
 
 internal class ConstructorEqualityComparer : IEqualityComparer<ConstructorStruct>
