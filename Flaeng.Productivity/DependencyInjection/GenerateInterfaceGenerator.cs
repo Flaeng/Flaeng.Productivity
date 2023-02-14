@@ -85,15 +85,15 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             .DescendantNodes()
             .OfType<UsingDirectiveSyntax>();
 
-        sourceBuilder.AddUsingStatement(childNodes);
+        sourceBuilder.AddUsingStatement(childNodes.Select(x => x.Name.ToString()));
 
         var namespaceNode = cls.Parent?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
         var isInNamespace = namespaceNode != null;
         if (namespaceNode != null)
-            sourceBuilder.StartNamespace(namespaceNode);
+            sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
 
         var interfaceName = "I" + cls.GetClassName();
-        sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName);
+        sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
         var publicMethods = cls.DescendantNodes()
             .OfType<MethodDeclarationSyntax>();
@@ -103,7 +103,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         sourceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), interfaces: new[] { interfaceName });
+        sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), partial: true, interfaces: new[] { interfaceName });
 
         sourceBuilder.EndClass();
 

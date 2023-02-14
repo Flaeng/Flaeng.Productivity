@@ -2,7 +2,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace Flaeng.Productivity.Sample.Providers;
 
-[GenerateInterface]// /*, Register*/]
+[GenerateInterface]
+// [GenerateInterface, Register(ServiceLifetime.Scoped)]
 public partial class SummaryProvider
 {
     public string[] GetSummaries()

@@ -29,5 +29,5 @@ jobs:
       - name: Upload Stryker Report
         uses: actions/upload-artifact@v3
         with:
-          name: stryker-report.html
+          name: stryker-report
           path: StrykerOutput/**/mutation-report.html

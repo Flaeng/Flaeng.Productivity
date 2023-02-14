@@ -6,5 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 public static class ClassDeclarationSyntaxExtensions
 {
     public static string GetClassName(this ClassDeclarationSyntax node)
-        => node.ChildTokens().Where(x => x.IsKind(SyntaxKind.IdentifierToken)).First().ToString();
+        => node.ChildTokens()
+            .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
+            .First()
+            .ToString();
 }

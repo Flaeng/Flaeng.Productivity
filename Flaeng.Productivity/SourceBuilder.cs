@@ -7,34 +7,30 @@ namespace Flaeng.Productivity;
 
 internal enum TypeVisiblity { Public, Internal, Private }
 internal enum MemberVisiblity { Public, Internal, Protected, Private }
-internal enum GetterSetterVisiblity { Inherited, Public, Internal, Protected, Private }
+internal enum GetterSetterVisiblity { Inherited, Public, Internal, Protected, Private, None }
 internal enum TabStyle { Tabs, Spaces }
 internal class SourceBuilder
 {
     private readonly List<string> usings = new();
-    private readonly StringBuilder builder = new StringBuilder();
+    private readonly StringBuilder builder = new();
+    public bool NullableEnable { get; set; } = true;
     private int tabIndex = 0;
     public TabStyle TabStyle = TabStyle.Spaces;
     public int TabLength = 4;
-    public string? Namespace = null;
 
-    public void AddUsingStatement(UsingDirectiveSyntax node)
-        => usings.Add(node.ToString());
+    public void AddUsingStatement(string @namespace)
+        => usings.Add($"using {@namespace};");
 
-    public void AddUsingStatement(IEnumerable<UsingDirectiveSyntax> nodes)
-        => usings.AddRange(nodes.Select(x => x.ToString()));
-
-    public void AddUsingStatement(BaseNamespaceDeclarationSyntax node)
-        => usings.Add($"using {node.Name};");
-
-    public void AddUsingStatement(IEnumerable<BaseNamespaceDeclarationSyntax> nodes)
-        => usings.AddRange(nodes.Select(x => $"using {x.Name};"));
-
-    public void StartNamespace(BaseNamespaceDeclarationSyntax node)
+    public void AddUsingStatement(IEnumerable<string> namespaces)
     {
-        builder.Append("namespace ");
-        builder.AppendLine(node.Name.ToString());
-        builder.AppendLine("{");
+        foreach (var item in namespaces)
+            AddUsingStatement(item);
+    }
+
+    public void StartNamespace(string name)
+    {
+        AddLineOfCode($"namespace {name}");
+        AddLineOfCode("{");
         tabIndex++;
     }
 
@@ -42,22 +38,24 @@ internal class SourceBuilder
         TypeVisiblity visibility,
         string name,
         bool @static = false,
+        bool partial = false,
         string[]? interfaces = null
         )
-        => StartType(visibility, @static, "class", name, interfaces ?? new string[0]);
+        => StartType(visibility, @static, partial, "class", name, interfaces ?? new string[0]);
 
-    public void StartInterface(TypeVisiblity visibility, string name)
-        => StartType(visibility, false, "interface", name, new string[0]);
+    public void StartInterface(TypeVisiblity visibility, string name, bool partial = false)
+        => StartType(visibility, false, partial, "interface", name, new string[0]);
 
-    public void StartInterface(TypeVisiblity visibility, string name, string[] interfaces)
-        => StartType(visibility, false, "interface", name, interfaces);
+    public void StartInterface(TypeVisiblity visibility, string name, bool partial, string[] interfaces)
+        => StartType(visibility, false, partial, "interface", name, interfaces);
 
-    public void StartStruct(TypeVisiblity visibility, string name)
-        => StartType(visibility, false, "struct", name, new string[0]);
+    public void StartStruct(TypeVisiblity visibility, string name, bool partial = false)
+        => StartType(visibility, false, partial, "struct", name, new string[0]);
 
     public void StartType(
         TypeVisiblity visibility,
-        bool @static,
+        bool @static, 
+        bool partial,
         string typeName,
         string name,
         string[] interfaces
@@ -67,7 +65,9 @@ internal class SourceBuilder
         builder.Append(visibility.ToString().ToLower());
         if (@static)
             builder.Append(" static");
-        builder.Append(" partial ");
+        if (partial)
+            builder.Append(" partial");
+        builder.Append(" ");
         builder.Append(typeName);
         builder.Append(" ");
         builder.Append(name);
@@ -247,9 +247,16 @@ internal class SourceBuilder
                 result.AppendLine(u);
             result.AppendLine();
         }
-        result.AppendLine("#nullable enable");
-        result.AppendLine();
-        result.Append(builder.ToString());
+        
+        result.Append($"#nullable {(NullableEnable ? "enable" : "disable")}");
+        
+        if (builder.Length != 0)
+        {
+            result.AppendLine();
+            result.AppendLine();
+            result.Append(builder.ToString());
+        }
+        
         return result.ToString();
     }
 

@@ -40,7 +40,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         bool isInNamespace = AddNamespace(cls, sourceBuilder);
 
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
-        sourceBuilder.StartClass(TypeVisiblity.Public, className.Text);
+        sourceBuilder.StartClass(TypeVisiblity.Public, className.Text, @static: false, partial: true);
 
         var memberList = cs.Members
             .Select(GetTypeNameAndMemberName)
@@ -125,8 +125,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)
     {
         var childNodes = cls.SyntaxTree.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>();
-        foreach (var directive in childNodes)
-            sourceBuilder.AddUsingStatement(directive);
+        sourceBuilder.AddUsingStatement(childNodes.Select(x => x.Name.ToString()));
     }
 
     private static bool AddNamespace(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)
@@ -134,7 +133,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var namespaceNode = cls.Parent?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
         var isInNamespace = namespaceNode != null;
         if (namespaceNode != null)
-            sourceBuilder.StartNamespace(namespaceNode);
+            sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
         return isInNamespace;
     }
 
