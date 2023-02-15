@@ -4,7 +4,7 @@ namespace Flaeng.Productivity;
 
 public static class Helpers
 {
-    public static string GenerateFilename(ClassDeclarationSyntax cls)
+    public static string GenerateFilename(ClassDeclarationSyntax cls, bool isInterface)
     {
         StringBuilder filename = new();
         if (cls.Parent is NamespaceDeclarationSyntax nds)
@@ -17,7 +17,8 @@ public static class Helpers
             filename.Append(fsnds.Name);
             filename.Append('.');
         }
-        filename.Append('I');
+        if (isInterface)
+            filename.Append('I');
         filename.Append(cls.GetClassName());
         return filename.ToString();
     }

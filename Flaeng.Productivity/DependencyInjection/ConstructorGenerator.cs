@@ -62,7 +62,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
-        var filename = Helpers.GenerateFilename(cls);
+        var filename = Helpers.GenerateFilename(cls, false);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 

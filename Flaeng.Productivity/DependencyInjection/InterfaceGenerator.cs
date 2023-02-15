@@ -96,7 +96,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
-        var filename = Helpers.GenerateFilename(cls);
+        var filename = Helpers.GenerateFilename(cls, true);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
