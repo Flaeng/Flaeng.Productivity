@@ -54,7 +54,7 @@ internal class SourceBuilder
 
     public void StartType(
         TypeVisiblity visibility,
-        bool @static, 
+        bool @static,
         bool partial,
         string typeName,
         string name,
@@ -247,16 +247,16 @@ internal class SourceBuilder
                 result.AppendLine(u);
             result.AppendLine();
         }
-        
+
         result.Append($"#nullable {(NullableEnable ? "enable" : "disable")}");
-        
+
         if (builder.Length != 0)
         {
             result.AppendLine();
             result.AppendLine();
             result.Append(builder.ToString());
         }
-        
+
         return result.ToString();
     }
 

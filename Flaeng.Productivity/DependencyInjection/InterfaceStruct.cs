@@ -7,18 +7,18 @@ using Microsoft.CodeAnalysis;
 
 namespace Flaeng.Productivity;
 
-internal record struct GenerateInterfaceStruct
+internal record struct InterfaceStruct
 (
     INamedTypeSymbol? Class,
     ImmutableArray<ISymbol> Members,
     ImmutableArray<IMethodSymbol> Methods
 );
 
-internal class GenerateInterfaceEqualityComparer : IEqualityComparer<GenerateInterfaceStruct>
+internal class InterfaceStructEqualityComparer : IEqualityComparer<InterfaceStruct>
 {
-    public static GenerateInterfaceEqualityComparer Instance = new();
+    public static InterfaceStructEqualityComparer Instance = new();
 
-    public bool Equals(GenerateInterfaceStruct x, GenerateInterfaceStruct y)
+    public bool Equals(InterfaceStruct x, InterfaceStruct y)
     {
         if (x == null && y == null)
             return true;
@@ -26,12 +26,12 @@ internal class GenerateInterfaceEqualityComparer : IEqualityComparer<GenerateInt
         if (x == null || y == null)
             return false;
 
-        return x.Class == y.Class
+        return SymbolEqualityComparer.Default.Equals(x.Class, y.Class)
             && x.Members.SequenceEqual(y.Members)
             && x.Methods.SequenceEqual(y.Methods);
     }
 
-    public int GetHashCode(GenerateInterfaceStruct obj)
+    public int GetHashCode(InterfaceStruct obj)
     {
         throw new NotImplementedException();
     }

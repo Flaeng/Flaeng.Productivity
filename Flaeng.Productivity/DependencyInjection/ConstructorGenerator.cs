@@ -22,12 +22,12 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider<ConstructorStruct>(HasMembersAndIsPartialAndNotStatic, Transform)
             .Where(static x => x.Class != null)
-            .WithComparer(ConstructorEqualityComparer.Instance);
+            .WithComparer(ConstructorStructEqualityComparer.Instance);
 
         context.RegisterSourceOutput(provider, Execute);
     }
 
-    private void Execute(SourceProductionContext context, ConstructorStruct data)
+    private static void Execute(SourceProductionContext context, ConstructorStruct data)
     {
         if (data.Class is null || data.Members == null || data.Members.Any() == false)
             return;
@@ -69,52 +69,6 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
             ? data.Class.Name :
             $"{data.Class.ContainingNamespace}.{data.Class.Name}";
         context.AddSource($"{qualifiedName}.g.cs", sourceBuilder.ToString());
-    }
-
-    class TypeAndName
-    {
-        public string TypeName { get; private set; } = "";
-        public string Name { get; private set; } = "";
-
-        private TypeAndName() { }
-
-        private static string GetTypeDisplayString(ITypeSymbol symbol)
-        {
-            StringBuilder builder = new();
-
-            if (symbol is INamedTypeSymbol ints && ints.ContainingNamespace.ToString() == "System")
-            {
-                return $"global::System.{symbol.Name}";
-            }
-
-            var parts = symbol.ToDisplayParts(SymbolDisplayFormat.FullyQualifiedFormat);
-            var typeName = String.Join("", parts.TakeWhile(x => x.ToString() != "<"));
-            builder.Append(typeName);
-
-            if (symbol is INamedTypeSymbol nts && nts.TypeArguments.Any())
-            {
-                builder.Append("<");
-                bool isFirst = true;
-                foreach (var arg in nts.TypeArguments)
-                {
-                    if (!isFirst)
-                        builder.Append(", ");
-                    isFirst = false;
-                    builder.Append(GetTypeDisplayString(arg));
-                }
-                builder.Append(">");
-            }
-            return builder.ToString();
-        }
-
-        internal static TypeAndName Parse(IFieldSymbol arg)
-        {
-            return new TypeAndName
-            {
-                TypeName = GetTypeDisplayString(arg.Type),
-                Name = arg.AssociatedSymbol?.Name ?? arg.Name
-            };
-        }
     }
 
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)

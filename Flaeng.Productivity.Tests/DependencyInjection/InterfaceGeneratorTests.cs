@@ -4,7 +4,6 @@ namespace Flaeng.Productivity.Tests.DependencyInjection;
 
 public class InterfaceGeneratorTests : TestBase
 {
-
     [Fact]
     public void Does_generate_attribute()
     {

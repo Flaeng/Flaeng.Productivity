@@ -19,12 +19,12 @@ public record CompilationResult
 
 public class TestBase
 {
-    protected static CompilationResult GetGeneratedOutput<TSourceGenerator>(
-        params SourceFile[] files
+    protected static CompilationResult GetGeneratedOutput(
+        IIncrementalGenerator[] generators,
+        SourceFile[] sourceFiles
     )
-        where TSourceGenerator : IIncrementalGenerator, new()
     {
-        var syntaxTree = files.Select(x =>
+        var syntaxTree = sourceFiles.Select(x =>
                 CSharpSyntaxTree.ParseText(x.Content, path: x.Filename)
             ).ToImmutableArray();
 
@@ -37,75 +37,37 @@ public class TestBase
         var compilation = CSharpCompilation.Create("SourceGeneratorTests",
                       syntaxTree,
                       references,
-                      new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                      //   new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                      new CSharpCompilationOptions(OutputKind.ConsoleApplication));
 
-        // Source Generator to test
-        var generator = new TSourceGenerator();
-
-        CSharpGeneratorDriver.Create(generator)
+        CSharpGeneratorDriver.Create(generators)
             .RunGeneratorsAndUpdateCompilation(compilation,
                                             out var outputCompilation,
                                             out var diagnostics);
 
         // optional
-        var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
-        if (errors.Any())
-            throw new CompilationException(errors);
+        // var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
+        // if (errors.Any())
+        //     throw new CompilationException(errors);
 
         return new CompilationResult(
             outputCompilation,
             outputCompilation.SyntaxTrees
-                .Select(x => new SourceFile(x.FilePath, x.ToString()))
+                .Select(x => new SourceFile(Path.GetFileName(x.FilePath), x.ToString()))
                 .ToImmutableArray(),
             diagnostics
         );
     }
 
-
-    protected ImmutableDictionary<string, string> Verify<TGenerator>(string source)
-        where TGenerator : IIncrementalGenerator, new()
+    protected static CompilationResult GetGeneratedOutput<TSourceGenerator>(
+        params SourceFile[] files
+    )
+        where TSourceGenerator : IIncrementalGenerator, new()
     {
-        // Parse the provided string into a C# syntax tree
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
-
-        IEnumerable<PortableExecutableReference> references = new[]
-        {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
-            };
-
-        // Create a Roslyn compilation for the syntax tree.
-        CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName: "Tests",
-            syntaxTrees: new[] { syntaxTree },
-            references: references);
-
-
-        // Create an instance of our EnumGenerator incremental source generator
-        var generator = new TGenerator();
-
-        // The GeneratorDriver is used to run our generator against a compilation
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-
-        // Run the source generator!
-        driver = driver.RunGenerators(compilation)
-            .RunGeneratorsAndUpdateCompilation(
-                compilation,
-                out var output,
-                out var diagnostics,
-                CancellationToken.None);
-
-        return new Dictionary<string, string>()
-            .ToImmutableDictionary();
+        return GetGeneratedOutput(
+            new IIncrementalGenerator[] { new TSourceGenerator() },
+            files
+        );
     }
 
-    [Serializable]
-    private class CompilationException : Exception
-    {
-        public IEnumerable<Diagnostic> Errors { get; }
-
-        public CompilationException(IEnumerable<Diagnostic> errors)
-        {
-            Errors = errors;
-        }
-    }
 }

@@ -12,9 +12,9 @@ internal record struct ConstructorStruct
     ImmutableArray<IFieldSymbol> Members
 );
 
-internal class ConstructorEqualityComparer : IEqualityComparer<ConstructorStruct>
+internal class ConstructorStructEqualityComparer : IEqualityComparer<ConstructorStruct>
 {
-    public static ConstructorEqualityComparer Instance = new();
+    public static ConstructorStructEqualityComparer Instance = new();
 
     public bool Equals(ConstructorStruct x, ConstructorStruct y)
     {
@@ -24,7 +24,7 @@ internal class ConstructorEqualityComparer : IEqualityComparer<ConstructorStruct
         if (x == null || y == null)
             return false;
 
-        return x.Class == y.Class
+        return SymbolEqualityComparer.Default.Equals(x.Class, y.Class)
             && x.Members.SequenceEqual(y.Members);
     }
 

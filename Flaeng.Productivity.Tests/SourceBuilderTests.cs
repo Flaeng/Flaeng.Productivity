@@ -74,10 +74,10 @@ public class SourceBuilderTests
                      namespace Test
                      {
                      
-                     """ + 
-                     '\t' + "public class TestClass\r\n" + 
-                     '\t' + "{\r\n" + 
-                     '\t' + "}\r\n" + 
+                     """ +
+                     '\t' + "public class TestClass\r\n" +
+                     '\t' + "{\r\n" +
+                     '\t' + "}\r\n" +
                      """
                      }
                      
@@ -170,7 +170,7 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartClass(TypeVisiblity.Public, "Publicy", @static: true, interfaces: new [] { "BaseClass", "Interface1", "Interface2" });
+        sourceBuilder.StartClass(TypeVisiblity.Public, "Publicy", @static: true, interfaces: new[] { "BaseClass", "Interface1", "Interface2" });
         sourceBuilder.StartMethod(MemberVisiblity.Private, "string", "Parse", new string[0], @static: true);
         sourceBuilder.AddLineOfCode("return \"\";");
         sourceBuilder.EndMethod();
@@ -262,7 +262,7 @@ public class SourceBuilderTests
                      
                      """, result);
     }
-    
+
     [Fact]
     public void Can_make_properties()
     {
