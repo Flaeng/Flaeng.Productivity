@@ -75,7 +75,7 @@ public class SourceBuilderTests
                      {
                      
                      """ +
-                     '\t' + "public class TestClass\r\n" +
+                     '\t' + "public class TestClass" + Environment.NewLine +
                      '\t' + "{" + Environment.NewLine +
                      '\t' + "}" + Environment.NewLine +
                      """
