@@ -24,36 +24,38 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider<InterfaceStruct>(
                 static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: 1 },
-                static (ctx, ct) =>
-                {
-                    var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
-                    if (cds.AttributeLists
-                        .SelectMany(x => x.Attributes)
-                        .Where(HasGenerateAttribute(ctx, ct))
-                        .Any() == false)
-                        return new InterfaceStruct(
-                            null,
-                            new ImmutableArray<MemberDeclarationSyntax>(),
-                            new ImmutableArray<MethodDeclarationSyntax>());
-
-                    List<MemberDeclarationSyntax> members = new();
-                    List<MethodDeclarationSyntax> methods = new();
-                    foreach (var child in cds.DescendantNodes())
-                    {
-                        if (child is MethodDeclarationSyntax method)
-                            methods.Add(method);
-                        else if (child is MemberDeclarationSyntax member)
-                            members.Add(member);
-                    }
-                    return new InterfaceStruct(
-                        cds,
-                        members.ToImmutableArray(),
-                        methods.ToImmutableArray());
-                })
+                Transform)
             .Where(static x => x.Class != null)
             .WithComparer(InterfaceStructEqualityComparer.Instance);
 
         context.RegisterSourceOutput<InterfaceStruct>(provider, Execute);
+    }
+
+    private static InterfaceStruct Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
+    {
+        var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
+        if (cds.AttributeLists
+            .SelectMany(x => x.Attributes)
+            .Where(HasGenerateAttribute(ctx, ct))
+            .Any() == false)
+            return new InterfaceStruct(
+                null,
+                new ImmutableArray<MemberDeclarationSyntax>(),
+                new ImmutableArray<MethodDeclarationSyntax>());
+
+        List<MemberDeclarationSyntax> members = new();
+        List<MethodDeclarationSyntax> methods = new();
+        foreach (var child in cds.DescendantNodes())
+        {
+            if (child is MethodDeclarationSyntax method)
+                methods.Add(method);
+            else if (child is MemberDeclarationSyntax member)
+                members.Add(member);
+        }
+        return new InterfaceStruct(
+            cds,
+            members.ToImmutableArray(),
+            methods.ToImmutableArray());
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
@@ -70,7 +72,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         };
     }
 
-    private void Execute(SourceProductionContext context, InterfaceStruct data)
+    private static void Execute(SourceProductionContext context, InterfaceStruct data)
     {
         var cls = data.Class;
         if (cls is null)
@@ -89,6 +91,22 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (namespaceNode != null)
             sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
 
+        createInterfaceAndClass(data, cls, sourceBuilder);
+
+        if (isInNamespace)
+            sourceBuilder.EndNamespace();
+
+        var filename = Helpers.GenerateFilename(cls);
+        context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
+    }
+
+
+    private static void createInterfaceAndClass(
+        InterfaceStruct data,
+        ClassDeclarationSyntax cls,
+        SourceBuilder sourceBuilder
+        )
+    {
         var interfaceName = "I" + cls.GetClassName();
         sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
@@ -102,29 +120,9 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), partial: true, interfaces: new[] { interfaceName });
         sourceBuilder.EndClass();
-
-        if (isInNamespace)
-            sourceBuilder.EndNamespace();
-
-        StringBuilder filename = new();
-        if (cls.Parent is NamespaceDeclarationSyntax nds)
-        {
-            filename.Append(nds.Name);
-            filename.Append('.');
-        }
-        else if (cls.Parent is FileScopedNamespaceDeclarationSyntax fsnds)
-        {
-            filename.Append(fsnds.Name);
-            filename.Append('.');
-        }
-        filename.Append('I');
-        filename.Append(cls.GetClassName());
-
-        // var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
-        context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
-    private void writeMember(SourceBuilder sourceBuilder, MemberDeclarationSyntax member)
+    private static void writeMember(SourceBuilder sourceBuilder, MemberDeclarationSyntax member)
     {
         var name = member.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -166,7 +164,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         }
     }
 
-    private void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
+    private static void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
     {
         var name = method.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -191,7 +189,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         sourceBuilder.DeclareMethod(method.ReturnType.ToString(), name.Text, parameterText);
     }
 
-    private void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)
+    private static void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)
     {
         context.AddSource($"{ATTRIBUTE_NAME}.g.cs", @$"// <auto-generated/>
 

@@ -168,7 +168,7 @@ namespace TestNamespace
 }
 ";
         Assert.Empty(output.Diagnostic);
-        
+
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
@@ -211,7 +211,7 @@ public partial class Dummy
 }
 ";
         Assert.Empty(output.Diagnostic);
-        
+
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("Dummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);

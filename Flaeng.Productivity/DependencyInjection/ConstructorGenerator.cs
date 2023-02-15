@@ -28,9 +28,9 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(provider, Execute);
     }
 
-    private void Execute(SourceProductionContext context, ConstructorStruct cs)
+    private static void Execute(SourceProductionContext context, ConstructorStruct data)
     {
-        var cls = cs.Class;
+        var cls = data.Class;
         if (cls is null)
             return;
 
@@ -42,7 +42,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
         sourceBuilder.StartClass(TypeVisiblity.Public, className.Text, partial: true);
 
-        var memberList = cs.Members
+        var memberList = data.Members
             .Select(GetTypeNameAndMemberName)
             .ToImmutableArray();
 
@@ -62,20 +62,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
-        StringBuilder filename = new();
-        if (cls.Parent is NamespaceDeclarationSyntax nds)
-        {
-            filename.Append(nds.Name);
-            filename.Append('.');
-        }
-        else if (cls.Parent is FileScopedNamespaceDeclarationSyntax fsnds)
-        {
-            filename.Append(fsnds.Name);
-            filename.Append('.');
-        }
-        filename.Append(cls.GetClassName());
-
-        // var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
+        var filename = Helpers.GenerateFilename(cls);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
@@ -137,12 +124,6 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         //     MemberName = memberName2.ToString()
         // };
     }
-
-    // class TypeAndName
-    // {
-    //     public string TypeName = "";
-    //     public string MemberName = "";
-    // }
 
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)
     {

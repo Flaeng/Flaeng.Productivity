@@ -10,7 +10,7 @@ namespace Flaeng.Productivity.Tests.DependencyInjection;
 
 public class ConstructorStructEqualityComparerTests
 {
-    ConstructorStructEqualityComparer Instance = ConstructorStructEqualityComparer.Instance;
+    readonly ConstructorStructEqualityComparer Instance = ConstructorStructEqualityComparer.Instance;
 
     [Fact]
     public void Returns_false_when_compared_with_null()

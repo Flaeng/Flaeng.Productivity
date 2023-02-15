@@ -621,6 +621,6 @@ namespace TestNamespace.Providers
         Assert.Empty(output.Diagnostic);
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Null(dummyGenerated);   
+        Assert.Null(dummyGenerated);
     }
 }

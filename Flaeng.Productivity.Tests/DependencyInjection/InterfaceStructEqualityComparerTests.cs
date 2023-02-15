@@ -10,7 +10,7 @@ namespace Flaeng.Productivity.Tests.DependencyInjection;
 
 public class InterfaceStructEqualityComparerTests
 {
-    InterfaceStructEqualityComparer Instance = InterfaceStructEqualityComparer.Instance;
+    readonly InterfaceStructEqualityComparer Instance = InterfaceStructEqualityComparer.Instance;
 
     [Fact]
     public void Returns_false_when_compared_with_null()
