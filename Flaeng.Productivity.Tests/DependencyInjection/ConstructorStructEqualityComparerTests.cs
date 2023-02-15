@@ -1,5 +1,3 @@
-
-
 using System.Collections.Immutable;
 
 using Flaeng.Productivity.DependencyInjection;
