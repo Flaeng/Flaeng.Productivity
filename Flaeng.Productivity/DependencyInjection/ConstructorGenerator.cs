@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,42 +23,38 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider<ConstructorStruct>(HasMembersAndIsPartialAndNotStatic, Transform)
             .Where(static x => x.Class != null)
-            .WithComparer(ConstructorStructEqualityComparer.Instance);
+            .WithComparer(ConstructorEqualityComparer.Instance);
 
         context.RegisterSourceOutput(provider, Execute);
     }
 
-    private static void Execute(SourceProductionContext context, ConstructorStruct data)
+    private void Execute(SourceProductionContext context, ConstructorStruct cs)
     {
-        if (data.Class is null || data.Members == null || data.Members.Any() == false)
+        var cls = cs.Class;
+        if (cls is null)
             return;
 
         SourceBuilder sourceBuilder = new();
 
-        var isInNamespace = data.Class.ContainingNamespace != null;
-        if (isInNamespace)
-            sourceBuilder.StartNamespace(data.Class.ContainingNamespace!.ToDisplayString());
+        AddUsingStatements(cls, sourceBuilder);
+        bool isInNamespace = AddNamespace(cls, sourceBuilder);
 
-        sourceBuilder.StartClass(
-            visibility: TypeVisiblity.Public,
-            name: data.Class.Name,
-            @static: false,
-            partial: true);
+        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        sourceBuilder.StartClass(TypeVisiblity.Public, className.Text, partial: true);
 
-        var members = data.Members
-            .Select(TypeAndName.Parse)
+        var memberList = cs.Members
+            .Select(GetTypeNameAndMemberName)
             .ToImmutableArray();
 
-        var parameters = members
-            .Select(x => $"{x.TypeName} {x.Name}")
-            .ToImmutableArray();
+        if (memberList.Length == 0)
+            return;
+
+        var parameters = memberList.Select(x => $"{x.TypeName} {x.MemberName}");
 
         sourceBuilder.AddGeneratedCodeAttribute();
-        sourceBuilder.StartConstructor(MemberVisiblity.Public, data.Class.Name, (System.Collections.Generic.IEnumerable<string>)parameters);
-
-        foreach (var member in members)
-            sourceBuilder.AddLineOfCode($"this.{member.Name} = {member.Name};");
-
+        sourceBuilder.StartConstructor(MemberVisiblity.Public, className.Text, parameters);
+        foreach (var member in memberList)
+            sourceBuilder.AddLineOfCode($"this.{member.MemberName} = {member.MemberName};");
         sourceBuilder.EndConstructor();
 
         sourceBuilder.EndClass();
@@ -65,10 +62,77 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
-        string qualifiedName = data.Class.ContainingNamespace is null
-            ? data.Class.Name :
-            $"{data.Class.ContainingNamespace}.{data.Class.Name}";
-        context.AddSource($"{qualifiedName}.g.cs", sourceBuilder.ToString());
+        StringBuilder filename = new();
+        if (cls.Parent is NamespaceDeclarationSyntax nds)
+        {
+            filename.Append(nds.Name);
+            filename.Append('.');
+        }
+        else if (cls.Parent is FileScopedNamespaceDeclarationSyntax fsnds)
+        {
+            filename.Append(fsnds.Name);
+            filename.Append('.');
+        }
+        filename.Append(cls.GetClassName());
+
+        // var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
+        context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
+    }
+
+    private static TypeAndName GetTypeNameAndMemberName(MemberDeclarationSyntax member)
+    {
+        var varDeclaration = member.ChildNodes()
+            .OfType<VariableDeclarationSyntax>()
+            .FirstOrDefault();
+        if (varDeclaration != null)
+        {
+            var tokens = varDeclaration.DescendantTokens().ToArray();
+
+            var typeName = String.Join("", tokens.Take(tokens.Length - 1)
+                .Select(x => x.ToString()))
+                .Replace(",", ", ");
+
+            return new TypeAndName
+            {
+                TypeName = typeName,
+                MemberName = tokens.Last().ToString()
+            };
+        }
+
+        var genericNameSyntax = member.DescendantNodes().OfType<GenericNameSyntax>().FirstOrDefault();
+        if (genericNameSyntax != null)
+        {
+            var memberName = member.DescendantTokens()
+                .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
+                .Where(x => x.Parent is PropertyDeclarationSyntax)
+                .Single().ToString();
+            return new TypeAndName
+            {
+                TypeName = genericNameSyntax.ToString(),
+                MemberName = memberName
+            };
+        }
+
+        var tokens2 = member.DescendantTokens().Reverse();
+        var memberName2 = tokens2
+            .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
+            .First();
+
+        var typeName2 = tokens2
+            .SkipWhile(x => x != memberName2)
+            .Skip(1)
+            .TakeWhile(x => x.IsKind(SyntaxKind.IdentifierToken));
+        return new TypeAndName
+        {
+            TypeName = String.Join("", typeName2.Select(x => x.ToString())),
+            MemberName = memberName2.ToString()
+        };
+    }
+
+    class TypeAndName
+    {
+        public string TypeName = "";
+        public string MemberName = "";
     }
 
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)
@@ -116,31 +180,24 @@ namespace {ATTRIBUTE_NAMESPACE}
     }
 
     private static readonly ConstructorStruct Default =
-        new ConstructorStruct(null, new ImmutableArray<IFieldSymbol>());
+        new ConstructorStruct(null, new ImmutableArray<MemberDeclarationSyntax>());
 
-    private static ConstructorStruct Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
+    private static ConstructorStruct Transform(GeneratorSyntaxContext context, CancellationToken ct)
     {
-        if (ctx.Node is not ClassDeclarationSyntax cds)
+        if (context.Node is not ClassDeclarationSyntax cds)
             return Default;
 
-        if (cds.Members
-            .SelectMany(x => x.AttributeLists)
-            .SelectMany(x => x.Attributes)
-            .Where(HasInjectAttribute(ctx, ct))
-            .Any() == false)
-            return Default;
-
-        var namedType = ctx.SemanticModel.GetDeclaredSymbol(cds, ct);
+        var namedType = context.SemanticModel.GetDeclaredSymbol(cds, ct);
         if (namedType is null)
             return Default;
 
-        var members = namedType
-            .GetMembers()
-            .Where(x => x is IFieldSymbol)
-            .Cast<IFieldSymbol>()
+        var members = cds.Members
+            .Where(x => x.AttributeLists
+                .SelectMany(x => x.Attributes)
+                .Any(HasInjectAttribute(context, ct)))
             .ToImmutableArray();
 
-        return new ConstructorStruct(namedType, members);
+        return new ConstructorStruct(cds, members);
     }
 
     private static Func<AttributeSyntax, bool> HasInjectAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
@@ -148,10 +205,10 @@ namespace {ATTRIBUTE_NAMESPACE}
         return attr =>
         {
             var si = ctx.SemanticModel.GetSymbolInfo(attr, ct);
-            if (si.Symbol is null)
+            if (si.Symbol is not IMethodSymbol ms)
                 return false;
 
-            return si.Symbol.ContainingType
+            return ms.ContainingType
                 .ToDisplayString()
                 .Equals($"{ATTRIBUTE_NAMESPACE}.{ATTRIBUTE_NAME}", StringComparison.Ordinal);
         };

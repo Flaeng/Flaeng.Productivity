@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flaeng.Productivity", "Flae
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flaeng.Productivity.Tests", "Flaeng.Productivity.Tests\Flaeng.Productivity.Tests.csproj", "{87B443F6-8BFE-4EBD-864E-131A701CA7D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flaeng.Productivity.Sample", "Flaeng.Productivity.Sample\Flaeng.Productivity.Sample.csproj", "{FA7343C2-E688-4F0A-A672-4DC81C66B85F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{87B443F6-8BFE-4EBD-864E-131A701CA7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87B443F6-8BFE-4EBD-864E-131A701CA7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87B443F6-8BFE-4EBD-864E-131A701CA7D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA7343C2-E688-4F0A-A672-4DC81C66B85F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA7343C2-E688-4F0A-A672-4DC81C66B85F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA7343C2-E688-4F0A-A672-4DC81C66B85F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA7343C2-E688-4F0A-A672-4DC81C66B85F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

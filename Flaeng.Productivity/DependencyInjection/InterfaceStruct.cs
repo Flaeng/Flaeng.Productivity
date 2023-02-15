@@ -1,24 +1,21 @@
-
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Microsoft.CodeAnalysis;
-
 namespace Flaeng.Productivity;
 
-internal record struct InterfaceStruct
+internal record struct GenerateInterfaceStruct
 (
-    INamedTypeSymbol? Class,
-    ImmutableArray<ISymbol> Members,
-    ImmutableArray<IMethodSymbol> Methods
+    ClassDeclarationSyntax? Class,
+    ImmutableArray<MemberDeclarationSyntax> Members,
+    ImmutableArray<MethodDeclarationSyntax> Methods
 );
 
-internal class InterfaceStructEqualityComparer : IEqualityComparer<InterfaceStruct>
+internal class GenerateInterfaceEqualityComparer : IEqualityComparer<GenerateInterfaceStruct>
 {
-    public static InterfaceStructEqualityComparer Instance = new();
+    public static GenerateInterfaceEqualityComparer Instance = new();
 
-    public bool Equals(InterfaceStruct x, InterfaceStruct y)
+    public bool Equals(GenerateInterfaceStruct x, GenerateInterfaceStruct y)
     {
         if (x == null && y == null)
             return true;
@@ -26,12 +23,12 @@ internal class InterfaceStructEqualityComparer : IEqualityComparer<InterfaceStru
         if (x == null || y == null)
             return false;
 
-        return SymbolEqualityComparer.Default.Equals(x.Class, y.Class)
+        return x.Class == y.Class
             && x.Members.SequenceEqual(y.Members)
             && x.Methods.SequenceEqual(y.Methods);
     }
 
-    public int GetHashCode(InterfaceStruct obj)
+    public int GetHashCode(GenerateInterfaceStruct obj)
     {
         throw new NotImplementedException();
     }

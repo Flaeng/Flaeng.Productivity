@@ -2,19 +2,17 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Microsoft.CodeAnalysis;
-
 namespace Flaeng.Productivity.DependencyInjection;
 
 internal record struct ConstructorStruct
 (
-    INamedTypeSymbol? Class,
-    ImmutableArray<IFieldSymbol> Members
+    ClassDeclarationSyntax? Class,
+    ImmutableArray<MemberDeclarationSyntax> Members
 );
 
-internal class ConstructorStructEqualityComparer : IEqualityComparer<ConstructorStruct>
+internal class ConstructorEqualityComparer : IEqualityComparer<ConstructorStruct>
 {
-    public static ConstructorStructEqualityComparer Instance = new();
+    public static ConstructorEqualityComparer Instance = new();
 
     public bool Equals(ConstructorStruct x, ConstructorStruct y)
     {
@@ -24,7 +22,7 @@ internal class ConstructorStructEqualityComparer : IEqualityComparer<Constructor
         if (x == null || y == null)
             return false;
 
-        return SymbolEqualityComparer.Default.Equals(x.Class, y.Class)
+        return x.Class == y.Class
             && x.Members.SequenceEqual(y.Members);
     }
 

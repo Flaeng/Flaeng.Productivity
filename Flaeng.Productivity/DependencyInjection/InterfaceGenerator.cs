@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Flaeng.Productivity.DependencyInjection;
-
 [Generator(LanguageNames.CSharp)]
+
 public sealed class InterfaceGenerator : IIncrementalGenerator
 {
     const string ATTRIBUTE_NAMESPACE = "Flaeng.Productivity.DependencyInjection";
@@ -17,140 +19,143 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(generateAttribute);
+        context.RegisterPostInitializationOutput(GenerateAttribute);
 
         var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<InterfaceStruct>(
+            .CreateSyntaxProvider<GenerateInterfaceStruct>(
                 static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: 1 },
-                Transform)
+                static (ctx, ct) =>
+                {
+                    var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
+                    if (cds.AttributeLists
+                        .SelectMany(x => x.Attributes)
+                        .Where(HasGenerateAttribute(ctx, ct))
+                        .Any() == false)
+                        return new GenerateInterfaceStruct(
+                            null,
+                            new ImmutableArray<MemberDeclarationSyntax>(),
+                            new ImmutableArray<MethodDeclarationSyntax>());
+
+                    List<MemberDeclarationSyntax> members = new();
+                    List<MethodDeclarationSyntax> methods = new();
+                    foreach (var child in cds.DescendantNodes())
+                    {
+                        if (child is MemberDeclarationSyntax member)
+                            members.Add(member);
+                        else if (child is MethodDeclarationSyntax method)
+                            methods.Add(method);
+                    }
+                    return new GenerateInterfaceStruct(
+                        cds,
+                        members.ToImmutableArray(),
+                        methods.ToImmutableArray());
+                })
             .Where(static x => x.Class != null)
-            .WithComparer(InterfaceStructEqualityComparer.Instance);
+            .WithComparer(GenerateInterfaceEqualityComparer.Instance);
 
-        context.RegisterSourceOutput<InterfaceStruct>(provider, Execute);
-    }
-
-    private static InterfaceStruct Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
-    {
-        var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
-        var classSymbol = ctx.SemanticModel.GetDeclaredSymbol(cds, ct);
-
-        if (cds.AttributeLists
-            .SelectMany(x => x.Attributes)
-            .Where(HasGenerateAttribute(ctx, ct))
-            .Any() == false)
-
-            return new InterfaceStruct(
-                classSymbol,
-                new ImmutableArray<ISymbol>(),
-                new ImmutableArray<IMethodSymbol>());
-
-        List<ISymbol> members = new();
-        List<IMethodSymbol> methods = new();
-        foreach (var child in cds.Members)
-        {
-            if (child is MethodDeclarationSyntax method)
-            {
-                var symbol = ctx.SemanticModel.GetDeclaredSymbol(method, ct);
-                if (symbol != null)
-                    methods.Add(symbol);
-            }
-            else if (child is MemberDeclarationSyntax member)
-            {
-                var symbol = ctx.SemanticModel.GetDeclaredSymbol(member, ct);
-                if (symbol != null)
-                    members.Add(symbol);
-            }
-        }
-        return new InterfaceStruct(
-            classSymbol,
-            members.ToImmutableArray(),
-            methods.ToImmutableArray());
+        context.RegisterSourceOutput<GenerateInterfaceStruct>(provider, Execute);
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
-        return attr =>
+        return cls =>
         {
-            var si = ctx.SemanticModel.GetSymbolInfo(attr, ct);
-            if (si.Symbol is null)
+            var si = ctx.SemanticModel.GetSymbolInfo(cls, ct);
+            if (si.Symbol == null)
                 return false;
+            // if (si.Symbol is not IMethodSymbol ms)
+            //     return false;
 
+            // return ms.ContainingType
             return si.Symbol.ContainingType
                 .ToDisplayString()
                 .Equals($"{ATTRIBUTE_NAMESPACE}.{ATTRIBUTE_NAME}", StringComparison.Ordinal);
         };
     }
 
-    private static void Execute(SourceProductionContext context, InterfaceStruct data)
+    private void Execute(SourceProductionContext context, GenerateInterfaceStruct data)
     {
         var cls = data.Class;
         if (cls is null)
             return;
-
         SourceBuilder sourceBuilder = new();
 
-        var isInNamespace = cls.ContainingNamespace != null;
-        if (isInNamespace)
-            sourceBuilder.StartNamespace(cls.ContainingNamespace!.ToDisplayString());
+        var childNodes = cls.SyntaxTree
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<UsingDirectiveSyntax>();
 
-        makeInterface(data, cls, sourceBuilder);
+        sourceBuilder.AddUsingStatement(childNodes.Select(x => x.Name.ToString()));
 
-        if (isInNamespace)
-            sourceBuilder.EndNamespace();
+        var namespaceNode = cls.Parent?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
+        var isInNamespace = namespaceNode != null;
+        if (namespaceNode != null)
+            sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
 
-        string qualifiedName = cls.ContainingNamespace is null
-            ? $"I{cls.Name}" :
-            $"{cls.ContainingNamespace}.I{cls.Name}";
-        context.AddSource($"{qualifiedName}.g.cs", sourceBuilder.ToString());
-    }
-
-    private static void makeInterface(InterfaceStruct data, INamedTypeSymbol cls, SourceBuilder sourceBuilder)
-    {
-        var interfaceName = $"I{cls.Name}";
+        var interfaceName = "I" + cls.GetClassName();
         sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
-        var publicMethods = data.Methods == null ? new IMethodSymbol[0] : data.Methods
-            .Where(x => x.DeclaredAccessibility == Accessibility.Public);
+        var publicMethods = cls.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>();
 
         foreach (var method in publicMethods)
             writeMethod(sourceBuilder, method);
 
         sourceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(
-            TypeVisiblity.Public,
-            cls.Name,
-            partial: true,
-            interfaces: new[] { interfaceName });
+        sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), partial: true, interfaces: new[] { interfaceName });
         sourceBuilder.EndClass();
 
+        if (isInNamespace)
+            sourceBuilder.EndNamespace();
+
+        StringBuilder filename = new();
+        if (cls.Parent is NamespaceDeclarationSyntax nds)
+        {
+            filename.Append(nds.Name);
+            filename.Append('.');
+        }
+        else if (cls.Parent is FileScopedNamespaceDeclarationSyntax fsnds)
+        {
+            filename.Append(fsnds.Name);
+            filename.Append('.');
+        }
+        filename.Append('I');
+        filename.Append(cls.GetClassName());
+
+        // var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
+        context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
-    private static void writeMethod(SourceBuilder sourceBuilder, IMethodSymbol method)
+    private void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
     {
-        var parameterText = method.Parameters
-            .Select(x =>
-            {
-                // var result = $"global::{x.Type.ContainingNamespace}.{x.Type.Name} {x.Name}";
-                var result = $"{TypeAndName.GetTypeDisplayString(x.Type)} {x.Name}";
-                return x.RefKind == RefKind.Out ? $"out {result}"
-                    : x.RefKind == RefKind.Ref ? $"ref {result}"
-                    : result;
-            });
+        var name = method.ChildTokens()
+            .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+            .FirstOrDefault();
 
-        var isVoid = method.ReturnType.ToString() == "void";
+        var isPublic = method.ChildTokens()
+            .Where(x => x.IsKind(SyntaxKind.PublicKeyword))
+            .Any();
 
-        sourceBuilder.DeclareMethod(
-            isVoid
-                ? "void"
-                : TypeAndName.GetTypeDisplayString(method.ReturnType),
-            method.Name,
-            parameterText);
+        if (isPublic == false)
+            return;
+
+        var parameterList = method.DescendantNodes()
+            .OfType<ParameterListSyntax>()
+            .First();
+
+        var parameters = parameterList.DescendantNodes()
+            .Where(x => x.IsKind(SyntaxKind.Parameter));
+
+        var parameterText = parameters.Select(x => x.ToFullString());
+
+        sourceBuilder.DeclareMethod(method.ReturnType.ToString(), name.Text, parameterText);
     }
 
-    private static void generateAttribute(IncrementalGeneratorPostInitializationContext context)
+    private void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)
     {
         context.AddSource($"{ATTRIBUTE_NAME}.g.cs", @$"// <auto-generated/>
+
 #nullable enable
 
 namespace {ATTRIBUTE_NAMESPACE}
