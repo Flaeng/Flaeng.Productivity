@@ -22,7 +22,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(GenerateAttribute);
 
         var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<GenerateInterfaceStruct>(
+            .CreateSyntaxProvider<InterfaceStruct>(
                 static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: 1 },
                 static (ctx, ct) =>
                 {
@@ -31,7 +31,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
                         .SelectMany(x => x.Attributes)
                         .Where(HasGenerateAttribute(ctx, ct))
                         .Any() == false)
-                        return new GenerateInterfaceStruct(
+                        return new InterfaceStruct(
                             null,
                             new ImmutableArray<MemberDeclarationSyntax>(),
                             new ImmutableArray<MethodDeclarationSyntax>());
@@ -40,20 +40,20 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
                     List<MethodDeclarationSyntax> methods = new();
                     foreach (var child in cds.DescendantNodes())
                     {
-                        if (child is MemberDeclarationSyntax member)
-                            members.Add(member);
-                        else if (child is MethodDeclarationSyntax method)
+                        if (child is MethodDeclarationSyntax method)
                             methods.Add(method);
+                        else if (child is MemberDeclarationSyntax member)
+                            members.Add(member);
                     }
-                    return new GenerateInterfaceStruct(
+                    return new InterfaceStruct(
                         cds,
                         members.ToImmutableArray(),
                         methods.ToImmutableArray());
                 })
             .Where(static x => x.Class != null)
-            .WithComparer(GenerateInterfaceEqualityComparer.Instance);
+            .WithComparer(InterfaceStructEqualityComparer.Instance);
 
-        context.RegisterSourceOutput<GenerateInterfaceStruct>(provider, Execute);
+        context.RegisterSourceOutput<InterfaceStruct>(provider, Execute);
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
@@ -63,17 +63,14 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             var si = ctx.SemanticModel.GetSymbolInfo(cls, ct);
             if (si.Symbol == null)
                 return false;
-            // if (si.Symbol is not IMethodSymbol ms)
-            //     return false;
 
-            // return ms.ContainingType
             return si.Symbol.ContainingType
                 .ToDisplayString()
                 .Equals($"{ATTRIBUTE_NAMESPACE}.{ATTRIBUTE_NAME}", StringComparison.Ordinal);
         };
     }
 
-    private void Execute(SourceProductionContext context, GenerateInterfaceStruct data)
+    private void Execute(SourceProductionContext context, InterfaceStruct data)
     {
         var cls = data.Class;
         if (cls is null)
@@ -95,10 +92,10 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var interfaceName = "I" + cls.GetClassName();
         sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
-        var publicMethods = cls.DescendantNodes()
-            .OfType<MethodDeclarationSyntax>();
+        foreach (var member in data.Members)
+            writeMember(sourceBuilder, member);
 
-        foreach (var method in publicMethods)
+        foreach (var method in data.Methods)
             writeMethod(sourceBuilder, method);
 
         sourceBuilder.EndInterface();
@@ -125,6 +122,48 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         // var filename = Path.GetFileNameWithoutExtension(cls.SyntaxTree.FilePath);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
+    }
+
+    private void writeMember(SourceBuilder sourceBuilder, MemberDeclarationSyntax member)
+    {
+        var name = member.ChildTokens()
+            .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+            .FirstOrDefault();
+
+        if (member is PropertyDeclarationSyntax pds && pds.AccessorList != null)
+        {
+            var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "get");
+            var getterMod = getter.Modifiers.FirstOrDefault();
+            if (String.IsNullOrWhiteSpace(getterMod.Text))
+                getterMod = member.Modifiers.FirstOrDefault();
+
+            var setter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "set");
+            var setterMod = setter.Modifiers.FirstOrDefault();
+            if (String.IsNullOrWhiteSpace(setterMod.Text))
+                setterMod = member.Modifiers.FirstOrDefault();
+
+            bool publicGetter = getterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase),
+                publicSetter = setterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase);
+
+            if (publicGetter == false && publicSetter == false)
+                return;
+
+            sourceBuilder.AddLineOfCode($"{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
+        }
+        else if (member is FieldDeclarationSyntax fds)
+        {
+            var isPublic = member.Modifiers.Any(x => x.Text == "public");
+            if (isPublic == false)
+                return;
+
+            var nodes = fds.Declaration.DescendantNodes();
+            if (nodes.Count() < 2)
+                return;
+
+            var type = nodes.First();
+
+            sourceBuilder.AddLineOfCode($"{type} {fds.Declaration.Variables};");
+        }
     }
 
     private void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)

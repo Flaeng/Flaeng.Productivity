@@ -23,7 +23,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider<ConstructorStruct>(HasMembersAndIsPartialAndNotStatic, Transform)
             .Where(static x => x.Class != null)
-            .WithComparer(ConstructorEqualityComparer.Instance);
+            .WithComparer(ConstructorStructEqualityComparer.Instance);
 
         context.RegisterSourceOutput(provider, Execute);
     }
@@ -121,19 +121,28 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var typeName2 = tokens2
             .SkipWhile(x => x != memberName2)
             .Skip(1)
-            .TakeWhile(x => x.IsKind(SyntaxKind.IdentifierToken));
+            .First();
         return new TypeAndName
         {
-            TypeName = String.Join("", typeName2.Select(x => x.ToString())),
+            TypeName = typeName2.ToString(),
             MemberName = memberName2.ToString()
         };
+        // var typeName2 = tokens2
+        //     .SkipWhile(x => x != memberName2)
+        //     .Skip(1)
+        //     .TakeWhile(x => x.IsKind(SyntaxKind.IdentifierToken));
+        // return new TypeAndName
+        // {
+        //     TypeName = String.Join("", typeName2.Select(x => x.ToString())),
+        //     MemberName = memberName2.ToString()
+        // };
     }
 
-    class TypeAndName
-    {
-        public string TypeName = "";
-        public string MemberName = "";
-    }
+    // class TypeAndName
+    // {
+    //     public string TypeName = "";
+    //     public string MemberName = "";
+    // }
 
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)
     {
