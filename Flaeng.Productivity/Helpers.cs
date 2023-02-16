@@ -1,4 +1,8 @@
+using System.Linq;
 using System.Text;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Flaeng.Productivity;
 
@@ -19,7 +23,9 @@ public static class Helpers
         }
         if (isInterface)
             filename.Append('I');
-        filename.Append(cls.GetClassName());
+
+        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        filename.Append(className);
         return filename.ToString();
     }
 }

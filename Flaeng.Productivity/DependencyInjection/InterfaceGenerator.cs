@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 using Microsoft.CodeAnalysis;
@@ -107,7 +105,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         SourceBuilder sourceBuilder
         )
     {
-        var interfaceName = "I" + cls.GetClassName();
+        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        var interfaceName = $"I{className}";
         sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
 
         foreach (var member in data.Members)
@@ -118,7 +117,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         sourceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(TypeVisiblity.Public, cls.GetClassName(), partial: true, interfaces: new[] { interfaceName });
+        sourceBuilder.StartClass(TypeVisiblity.Public, className.ToString(), partial: true, interfaces: new[] { interfaceName });
         sourceBuilder.EndClass();
     }
 
