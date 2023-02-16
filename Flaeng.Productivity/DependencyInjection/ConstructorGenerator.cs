@@ -72,33 +72,11 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
             .OfType<VariableDeclarationSyntax>()
             .FirstOrDefault();
         if (varDeclaration != null)
-        {
-            var tokens = varDeclaration.DescendantTokens().ToArray();
-
-            var typeName = String.Join("", tokens.Take(tokens.Length - 1)
-                .Select(x => x.ToString()))
-                .Replace(",", ", ");
-
-            return new TypeAndName
-            {
-                TypeName = typeName,
-                MemberName = tokens.Last().ToString()
-            };
-        }
+            return GetTypeNameAndMemberNameFromVarDeclaration(varDeclaration);
 
         var genericNameSyntax = member.DescendantNodes().OfType<GenericNameSyntax>().FirstOrDefault();
         if (genericNameSyntax != null)
-        {
-            var memberName = member.DescendantTokens()
-                .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
-                .Where(x => x.Parent is PropertyDeclarationSyntax)
-                .Single().ToString();
-            return new TypeAndName
-            {
-                TypeName = genericNameSyntax.ToString(),
-                MemberName = memberName
-            };
-        }
+            return GetTypeNameAndMemberNameWithGenericName(member, genericNameSyntax);
 
         var tokens2 = member.DescendantTokens().Reverse();
         var memberName2 = tokens2
@@ -114,15 +92,34 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
             TypeName = typeName2.ToString(),
             MemberName = memberName2.ToString()
         };
-        // var typeName2 = tokens2
-        //     .SkipWhile(x => x != memberName2)
-        //     .Skip(1)
-        //     .TakeWhile(x => x.IsKind(SyntaxKind.IdentifierToken));
-        // return new TypeAndName
-        // {
-        //     TypeName = String.Join("", typeName2.Select(x => x.ToString())),
-        //     MemberName = memberName2.ToString()
-        // };
+    }
+
+    private static TypeAndName GetTypeNameAndMemberNameWithGenericName(MemberDeclarationSyntax member, GenericNameSyntax genericNameSyntax)
+    {
+        var memberName = member.DescendantTokens()
+                        .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
+                        .Where(x => x.Parent is PropertyDeclarationSyntax)
+                        .Single().ToString();
+        return new TypeAndName
+        {
+            TypeName = genericNameSyntax.ToString(),
+            MemberName = memberName
+        };
+    }
+
+    private static TypeAndName GetTypeNameAndMemberNameFromVarDeclaration(VariableDeclarationSyntax varDeclaration)
+    {
+        var tokens = varDeclaration.DescendantTokens().ToArray();
+
+        var typeName = String.Join("", tokens.Take(tokens.Length - 1)
+            .Select(x => x.ToString()))
+            .Replace(",", ", ");
+
+        return new TypeAndName
+        {
+            TypeName = typeName,
+            MemberName = tokens.Last().ToString()
+        };
     }
 
     private static void AddUsingStatements(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder)

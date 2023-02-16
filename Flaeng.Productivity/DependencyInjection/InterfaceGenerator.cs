@@ -124,44 +124,56 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
     private static void writeMember(SourceBuilder sourceBuilder, MemberDeclarationSyntax member)
     {
-        var name = member.ChildTokens()
-            .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
-            .FirstOrDefault();
-
         if (member is PropertyDeclarationSyntax pds && pds.AccessorList != null)
         {
-            var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "get");
-            var getterMod = getter.Modifiers.FirstOrDefault();
-            if (String.IsNullOrWhiteSpace(getterMod.Text))
-                getterMod = member.Modifiers.FirstOrDefault();
-
-            var setter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "set");
-            var setterMod = setter.Modifiers.FirstOrDefault();
-            if (String.IsNullOrWhiteSpace(setterMod.Text))
-                setterMod = member.Modifiers.FirstOrDefault();
-
-            bool publicGetter = getterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase),
-                publicSetter = setterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase);
-
-            if (publicGetter == false && publicSetter == false)
-                return;
-
-            sourceBuilder.AddLineOfCode($"{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
+            writeMemberFromProperty(sourceBuilder, pds);
         }
         else if (member is FieldDeclarationSyntax fds)
         {
-            var isPublic = member.Modifiers.Any(x => x.Text == "public");
-            if (isPublic == false)
-                return;
-
-            var nodes = fds.Declaration.DescendantNodes();
-            if (nodes.Count() < 2)
-                return;
-
-            var type = nodes.First();
-
-            sourceBuilder.AddLineOfCode($"{type} {fds.Declaration.Variables};");
+            writeMemberFromField(sourceBuilder, fds);
         }
+    }
+
+    private static void writeMemberFromField(SourceBuilder sourceBuilder, FieldDeclarationSyntax fds)
+    {
+        var isPublic = fds.Modifiers.Any(x => x.Text == "public");
+        if (isPublic == false)
+            return;
+
+        var nodes = fds.Declaration.DescendantNodes();
+        if (nodes.Count() < 2)
+            return;
+
+        var type = nodes.First();
+
+        sourceBuilder.AddLineOfCode($"{type} {fds.Declaration.Variables};");
+    }
+
+    private static void writeMemberFromProperty(SourceBuilder sourceBuilder, PropertyDeclarationSyntax pds)
+    {
+        if (pds.AccessorList == null)
+            return;
+
+        var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "get");
+        var getterMod = getter.Modifiers.FirstOrDefault();
+        if (String.IsNullOrWhiteSpace(getterMod.Text))
+            getterMod = pds.Modifiers.FirstOrDefault();
+
+        var setter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "set");
+        var setterMod = setter.Modifiers.FirstOrDefault();
+        if (String.IsNullOrWhiteSpace(setterMod.Text))
+            setterMod = pds.Modifiers.FirstOrDefault();
+
+        bool publicGetter = getterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase),
+            publicSetter = setterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase);
+
+        if (publicGetter == false && publicSetter == false)
+            return;
+
+        var name = pds.ChildTokens()
+            .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+            .FirstOrDefault();
+        sourceBuilder.AddLineOfCode($"{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
     }
 
     private static void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
