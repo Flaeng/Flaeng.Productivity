@@ -9,12 +9,6 @@ internal class InterfaceStructEqualityComparer : IEqualityComparer<InterfaceStru
 
     public bool Equals(InterfaceStruct x, InterfaceStruct y)
     {
-        if (x == null && y == null)
-            return true;
-
-        if (x == null || y == null)
-            return false;
-
         return x.Class == y.Class
             && x.Members.SequenceEqual(y.Members)
             && x.Methods.SequenceEqual(y.Methods);

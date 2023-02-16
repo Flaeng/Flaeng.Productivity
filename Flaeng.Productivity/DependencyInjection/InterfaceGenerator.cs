@@ -146,7 +146,9 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var type = nodes.First();
 
-        sourceBuilder.AddLineOfCode($"{type} {fds.Declaration.Variables};");
+        var isStatic = fds.Modifiers.Any(x => x.Text.Equals("static", StringComparison.InvariantCultureIgnoreCase));
+
+        sourceBuilder.AddLineOfCode($"{(isStatic ? "static " : "")}{type} {fds.Declaration.Variables};");
     }
 
     private static void writeMemberFromProperty(SourceBuilder sourceBuilder, PropertyDeclarationSyntax pds)
@@ -170,10 +172,12 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (publicGetter == false && publicSetter == false)
             return;
 
+        var isStatic = pds.Modifiers.Any(x => x.Text.Equals("static", StringComparison.InvariantCultureIgnoreCase));
+
         var name = pds.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
             .FirstOrDefault();
-        sourceBuilder.AddLineOfCode($"{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
+        sourceBuilder.AddLineOfCode($"{(isStatic ? "static " : "")}{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
     }
 
     private static void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
