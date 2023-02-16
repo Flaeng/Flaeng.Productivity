@@ -16,5 +16,4 @@ class ClassBuilder : BaseBuilder
 
     public void StartMethod(MethodOptions options)
         => StartConstructorOrMethod(options, isAbstract: false, isStub: false);
-
 }

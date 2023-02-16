@@ -8,5 +8,4 @@ class InterfaceBuilder : BaseBuilder
 
     public void AddMethodStub(MethodOptions options)
         => StartConstructorOrMethod(options, isAbstract: false, isStub: true);
-
 }

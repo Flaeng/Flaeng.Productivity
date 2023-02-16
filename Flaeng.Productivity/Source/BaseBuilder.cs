@@ -56,25 +56,9 @@ abstract class BaseBuilder
         builder.AppendRaw(options.Name);
         builder.AppendRaw(" { ");
 
-        if (options.Getter != GetterSetterVisiblity.None)
-        {
-            switch (options.Getter)
-            {
-                case GetterSetterVisiblity.Protected: builder.AppendRaw("protected "); break;
-                case GetterSetterVisiblity.Private: builder.AppendRaw("private "); break;
-            }
-            builder.AppendRaw("get; ");
-        }
+        writeGetSetter(options.Getter, "get");
+        writeGetSetter(options.Setter, "set");
 
-        if (options.Setter != GetterSetterVisiblity.None)
-        {
-            switch (options.Setter)
-            {
-                case GetterSetterVisiblity.Protected: builder.AppendRaw("protected "); break;
-                case GetterSetterVisiblity.Private: builder.AppendRaw("private "); break;
-            }
-            builder.AppendRaw("set; ");
-        }
         builder.AppendRaw("}");
 
         if (options.DefaultValue != null)
@@ -84,6 +68,19 @@ abstract class BaseBuilder
             builder.AppendRaw(";");
         }
         builder.AppendLineBreak();
+    }
+
+    private void writeGetSetter(GetterSetterVisiblity visiblity, string text)
+    {
+        if (visiblity == GetterSetterVisiblity.None)
+            return;
+
+        switch (visiblity)
+        {
+            case GetterSetterVisiblity.Protected: builder.AppendRaw("protected "); break;
+            case GetterSetterVisiblity.Private: builder.AppendRaw("private "); break;
+        }
+        builder.AppendRaw($"{text}; ");
     }
 
     protected void StartConstructorOrMethod(FunctionOptions options, bool isAbstract, bool isStub)
