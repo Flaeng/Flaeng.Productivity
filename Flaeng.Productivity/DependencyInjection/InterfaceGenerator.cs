@@ -107,7 +107,11 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
     {
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
         var interfaceName = $"I{className}";
-        sourceBuilder.StartInterface(TypeVisiblity.Public, interfaceName, partial: true);
+        sourceBuilder.StartInterface(new InterfaceOptions(interfaceName)
+        {
+            Visibility = TypeVisiblity.Public,
+            Partial = true
+        });
 
         foreach (var member in data.Members)
             writeMember(sourceBuilder, member);
@@ -117,7 +121,12 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         sourceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(TypeVisiblity.Public, className.ToString(), partial: true, interfaces: new[] { interfaceName });
+        sourceBuilder.StartClass(new ClassOptions(className.ToString())
+        {
+            Visibility = TypeVisiblity.Public,
+            Partial = true,
+            Interfaces = new[] { interfaceName }
+        });
         sourceBuilder.EndClass();
     }
 
@@ -201,7 +210,10 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var parameterText = parameters.Select(x => x.ToFullString());
 
-        sourceBuilder.DeclareMethod(method.ReturnType.ToString(), name.Text, parameterText);
+        sourceBuilder.AddMethodStub(new MethodOptions(method.ReturnType.ToString(), name.Text)
+        {
+            Parameters = new List<string>(parameterText)
+        });
     }
 
     private static void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)

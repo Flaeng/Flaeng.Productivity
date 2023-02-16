@@ -5,9 +5,6 @@ using System.Text;
 
 namespace Flaeng.Productivity;
 
-internal enum TypeVisiblity { Public, Internal, Private }
-internal enum MemberVisiblity { Public, Internal, Protected, Private }
-internal enum GetterSetterVisiblity { Inherited, Public, Internal, Protected, Private, None }
 internal enum TabStyle { Tabs, Spaces }
 internal class SourceBuilder
 {
@@ -34,47 +31,25 @@ internal class SourceBuilder
         tabIndex++;
     }
 
-    public void StartClass(
-        TypeVisiblity visibility,
-        string name,
-        bool @static = false,
-        bool partial = false,
-        string[]? interfaces = null
-        )
-        => StartType(visibility, @static, partial, "class", name, interfaces ?? new string[0]);
-
-    public void StartInterface(TypeVisiblity visibility, string name, bool partial = false)
-        => StartType(visibility, false, partial, "interface", name, new string[0]);
-
-    public void StartInterface(TypeVisiblity visibility, string name, bool partial, string[] interfaces)
-        => StartType(visibility, false, partial, "interface", name, interfaces);
-
-    public void StartStruct(TypeVisiblity visibility, string name, bool partial = false)
-        => StartType(visibility, false, partial, "struct", name, new string[0]);
-
-    public void StartType(
-        TypeVisiblity visibility,
-        bool @static,
-        bool partial,
-        string typeName,
-        string name,
-        string[] interfaces
-        )
+    public void StartClass(ClassOptions options) => StartType(options);
+    public void StartInterface(InterfaceOptions options) => StartType(options);
+    public void StartStruct(StructOptions options) => StartType(options);
+    public void StartType(TypeOptions options)
     {
         builder.Append(Tabs());
-        builder.Append(visibility.ToString().ToLower());
-        if (@static)
+        builder.Append(options.Visibility.ToString().ToLower());
+        if (options.Static)
             builder.Append(" static");
-        if (partial)
+        if (options.Partial)
             builder.Append(" partial");
         builder.Append(" ");
-        builder.Append(typeName);
+        builder.Append(options.TypeName);
         builder.Append(" ");
-        builder.Append(name);
-        for (int i = 0; i < interfaces.Length; i++)
+        builder.Append(options.Name);
+        for (int i = 0; i < options.Interfaces.Length; i++)
         {
             builder.Append(i == 0 ? " : " : ", ");
-            builder.Append(interfaces[i]);
+            builder.Append(options.Interfaces[i]);
         }
         builder.AppendLine();
 
@@ -92,72 +67,61 @@ internal class SourceBuilder
         return String.Join("", Enumerable.Range(0, TabLength * tabIndex).Select(x => tab));
     }
 
-    public void AddProperty(
-        MemberVisiblity visibility,
-        string propertyType,
-        string propertyName,
-        GetterSetterVisiblity getter = GetterSetterVisiblity.Inherited,
-        GetterSetterVisiblity setter = GetterSetterVisiblity.Inherited,
-        string? defaultValue = null
-        )
+    public void AddField(FieldOptions options)
     {
         builder.Append(Tabs());
-        builder.Append(visibility.ToString().ToLower());
+        builder.Append(options.Visibility.ToString().ToLower());
         builder.Append(" ");
-        builder.Append(propertyType);
+        builder.Append(options.Type);
         builder.Append(" ");
-        builder.Append(propertyName);
+        builder.Append(options.Name);
+        if (options.DefaultValue != null)
+        {
+            builder.Append(" = ");
+            builder.Append(options.DefaultValue);
+        }
+        builder.Append(";");
+        builder.AppendLine();
+    }
+
+    public void AddProperty(PropertyOptions options)
+    {
+        builder.Append(Tabs());
+        builder.Append(options.Visibility.ToString().ToLower());
+        builder.Append(" ");
+        builder.Append(options.Type);
+        builder.Append(" ");
+        builder.Append(options.Name);
         builder.Append(" { ");
-        switch (getter)
+        switch (options.Getter)
         {
             case GetterSetterVisiblity.Protected: builder.Append("protected "); break;
             case GetterSetterVisiblity.Private: builder.Append("private "); break;
         }
         builder.Append("get; ");
-        switch (setter)
+        switch (options.Setter)
         {
             case GetterSetterVisiblity.Protected: builder.Append("protected "); break;
             case GetterSetterVisiblity.Private: builder.Append("private "); break;
         }
         builder.Append("set; }");
-        if (defaultValue != null)
+        if (options.DefaultValue != null)
         {
             builder.Append(" = ");
-            builder.Append(defaultValue);
+            builder.Append(options.DefaultValue);
             builder.Append(";");
         }
         builder.AppendLine();
     }
 
-    public void StartConstructor(
-        MemberVisiblity visibility,
-        string name,
-        IEnumerable<string> parameters
-        )
-    {
-        StartConstructorOrMethod(visibility, false, null, name, parameters);
-    }
+    public void AddMethodStub(MethodOptions options)
+        => StartConstructorOrMethod(options, isStub: true);
 
-    public void DeclareMethod(
-        string returnType,
-        string name,
-        IEnumerable<string> parameters,
-        bool @static = false
-        )
-    {
-        StartConstructorOrMethod(null, @static, returnType, name, parameters, autoClose: true);
-    }
+    public void StartConstructor(ConstructorOptions options)
+        => StartConstructorOrMethod(options, isStub: false);
 
-    public void StartMethod(
-        MemberVisiblity visibility,
-        string returnType,
-        string name,
-        IEnumerable<string> parameters,
-        bool @static = false
-        )
-    {
-        StartConstructorOrMethod(visibility, @static, returnType, name, parameters);
-    }
+    public void StartMethod(MethodOptions options)
+        => StartConstructorOrMethod(options, isStub: false);
 
     public void AddLineOfCode(string code)
     {
@@ -166,38 +130,38 @@ internal class SourceBuilder
         builder.AppendLine();
     }
 
-    private void StartConstructorOrMethod(
-        MemberVisiblity? visibility,
-        bool @static,
-        string? returnType,
-        string name,
-        IEnumerable<string> parameters,
-        bool autoClose = false
-        )
+    private void StartConstructorOrMethod(FunctionOptions options, bool isStub)
     {
         builder.Append(Tabs());
-        if (visibility != null)
+
+        if (options.Visibility != MemberVisiblity.None)
         {
-            builder.Append(visibility.ToString().ToLower());
+            builder.Append(options.Visibility.ToString().ToLower());
             builder.Append(" ");
         }
-        if (@static)
-            builder.Append("static ");
-        if (returnType != null)
+
+        if (options is MethodOptions mo)
         {
-            builder.Append(returnType);
-            builder.Append(" ");
+            if (mo.Static)
+                builder.Append("static ");
+
+            if (mo.ReturnType != null)
+            {
+                builder.Append(mo.ReturnType);
+                builder.Append(" ");
+            }
         }
-        builder.Append(name);
-        if (parameters.Any())
+
+        builder.Append(options.Name);
+        if (options.Parameters.Any())
         {
             builder.AppendLine("(");
             tabIndex++;
-            foreach (var param in parameters)
+            foreach (var param in options.Parameters)
             {
                 builder.Append(Tabs());
                 builder.Append(param);
-                if (param != parameters.Last())
+                if (param != options.Parameters.Last())
                     builder.Append(",");
                 builder.AppendLine();
             }
@@ -207,7 +171,7 @@ internal class SourceBuilder
         }
         else builder.Append("()");
 
-        if (autoClose)
+        if (isStub)
         {
             builder.AppendLine(";");
         }

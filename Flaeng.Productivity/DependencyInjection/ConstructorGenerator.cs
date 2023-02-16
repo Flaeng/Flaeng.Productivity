@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -35,12 +36,6 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
 
         SourceBuilder sourceBuilder = new();
 
-        AddUsingStatements(cls, sourceBuilder);
-        bool isInNamespace = AddNamespace(cls, sourceBuilder);
-
-        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
-        sourceBuilder.StartClass(TypeVisiblity.Public, className.Text, partial: true);
-
         var memberList = data.Members
             .Select(GetTypeNameAndMemberName)
             .ToImmutableArray();
@@ -48,21 +43,39 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (memberList.Length == 0)
             return;
 
-        var parameters = memberList.Select(x => $"{x.TypeName} {x.MemberName}");
-
-        sourceBuilder.AddGeneratedCodeAttribute();
-        sourceBuilder.StartConstructor(MemberVisiblity.Public, className.Text, parameters);
-        foreach (var member in memberList)
-            sourceBuilder.AddLineOfCode($"this.{member.MemberName} = {member.MemberName};");
-        sourceBuilder.EndConstructor();
-
-        sourceBuilder.EndClass();
+        AddUsingStatements(cls, sourceBuilder);
+        bool isInNamespace = AddNamespace(cls, sourceBuilder);
+        createClassAndConstructor(cls, sourceBuilder, memberList);
 
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
         var filename = Helpers.GenerateFilename(cls, false);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
+    }
+
+    private static void createClassAndConstructor(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder, ImmutableArray<TypeAndName> memberList)
+    {
+        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        sourceBuilder.StartClass(new ClassOptions(className.Text)
+        {
+            Visibility = TypeVisiblity.Public,
+            Partial = true
+        });
+
+        var parameters = memberList.Select(x => $"{x.TypeName} {x.MemberName}");
+
+        sourceBuilder.AddGeneratedCodeAttribute();
+        sourceBuilder.StartConstructor(new ConstructorOptions(className.Text)
+        {
+            Visibility = MemberVisiblity.Public,
+            Parameters = new List<string>(parameters)
+        });
+        foreach (var member in memberList)
+            sourceBuilder.AddLineOfCode($"this.{member.MemberName} = {member.MemberName};");
+        sourceBuilder.EndConstructor();
+
+        sourceBuilder.EndClass();
     }
 
     private static TypeAndName GetTypeNameAndMemberName(MemberDeclarationSyntax member)
