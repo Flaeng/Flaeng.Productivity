@@ -167,15 +167,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (pds.AccessorList == null)
             return;
 
-        var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "get");
-        var getterMod = getter.Modifiers.FirstOrDefault();
-        if (String.IsNullOrWhiteSpace(getterMod.Text))
-            getterMod = pds.Modifiers.FirstOrDefault();
-
-        var setter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == "set");
-        var setterMod = setter.Modifiers.FirstOrDefault();
-        if (String.IsNullOrWhiteSpace(setterMod.Text))
-            setterMod = pds.Modifiers.FirstOrDefault();
+        SyntaxToken getterMod = getGetterSetter(pds, "get");
+        SyntaxToken setterMod = getGetterSetter(pds, "set");
 
         bool publicGetter = getterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase),
             publicSetter = setterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase);
@@ -195,6 +188,19 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             Getter = publicGetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
             Setter = publicSetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
         });
+    }
+
+    private static SyntaxToken getGetterSetter(PropertyDeclarationSyntax pds, string keyword)
+    {
+        if (pds.AccessorList == null)
+            return pds.Modifiers.FirstOrDefault();
+
+        var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == keyword);
+        var getterMod = getter.Modifiers.FirstOrDefault();
+        if (String.IsNullOrWhiteSpace(getterMod.Text))
+            getterMod = pds.Modifiers.FirstOrDefault();
+
+        return getterMod;
     }
 
     private static void writeMethod(InterfaceBuilder interfaceBuilder, MethodDeclarationSyntax method)

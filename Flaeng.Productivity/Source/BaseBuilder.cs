@@ -109,6 +109,29 @@ abstract class BaseBuilder
         }
 
         builder.AppendRaw(options.Name);
+        writeMethodParameters(options);
+        writeMethodBody(isStub);
+    }
+
+    private void writeMethodBody(bool isStub)
+    {
+        if (isStub)
+        {
+            builder.AppendRaw(";");
+            builder.AppendLineBreak();
+        }
+        else
+        {
+            builder.AppendLineBreak();
+            builder.AppendTabs();
+            builder.AppendRaw("{");
+            builder.AppendLineBreak();
+            builder.IncrementTabIndex();
+        }
+    }
+
+    private void writeMethodParameters(FunctionOptions options)
+    {
         if (options.Parameters.Any())
         {
             builder.AppendRaw("(");
@@ -128,20 +151,6 @@ abstract class BaseBuilder
             builder.DecrementTabIndex();
         }
         else builder.AppendRaw("()");
-
-        if (isStub)
-        {
-            builder.AppendRaw(";");
-            builder.AppendLineBreak();
-        }
-        else
-        {
-            builder.AppendLineBreak();
-            builder.AppendTabs();
-            builder.AppendRaw("{");
-            builder.AppendLineBreak();
-            builder.IncrementTabIndex();
-        }
     }
 
     public override string ToString()
