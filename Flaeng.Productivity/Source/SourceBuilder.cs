@@ -31,9 +31,24 @@ internal class SourceBuilder
         tabIndex++;
     }
 
-    public void StartClass(ClassOptions options) => StartType(options);
-    public void StartInterface(InterfaceOptions options) => StartType(options);
-    public void StartStruct(StructOptions options) => StartType(options);
+    public ClassBuilder StartClass(ClassOptions options)
+    {
+        StartType(options);
+        return new ClassBuilder(this);
+    }
+
+    public InterfaceBuilder StartInterface(InterfaceOptions options)
+    {
+        StartType(options);
+        return new InterfaceBuilder(this);
+    }
+
+    public StructBuilder StartStruct(StructOptions options)
+    {
+        StartType(options);
+        return new StructBuilder(this);
+    }
+
     public void StartType(TypeOptions options)
     {
         builder.Append(Tabs());
@@ -58,6 +73,21 @@ internal class SourceBuilder
         tabIndex++;
     }
 
+    public void AppendRaw(string content)
+        => builder.Append(content);
+
+    public void AppendTabs()
+        => builder.Append(Tabs());
+
+    public void AppendLineBreak()
+        => builder.AppendLine();
+
+    public void IncrementTabIndex()
+        => tabIndex++;
+
+    public void DecrementTabIndex()
+        => tabIndex--;
+
     private string Tabs()
     {
         if (tabIndex == 0)
@@ -67,62 +97,6 @@ internal class SourceBuilder
         return String.Join("", Enumerable.Range(0, TabLength * tabIndex).Select(x => tab));
     }
 
-    public void AddField(FieldOptions options)
-    {
-        builder.Append(Tabs());
-        builder.Append(options.Visibility.ToString().ToLower());
-        builder.Append(" ");
-        builder.Append(options.Type);
-        builder.Append(" ");
-        builder.Append(options.Name);
-        if (options.DefaultValue != null)
-        {
-            builder.Append(" = ");
-            builder.Append(options.DefaultValue);
-        }
-        builder.Append(";");
-        builder.AppendLine();
-    }
-
-    public void AddProperty(PropertyOptions options)
-    {
-        builder.Append(Tabs());
-        builder.Append(options.Visibility.ToString().ToLower());
-        builder.Append(" ");
-        builder.Append(options.Type);
-        builder.Append(" ");
-        builder.Append(options.Name);
-        builder.Append(" { ");
-        switch (options.Getter)
-        {
-            case GetterSetterVisiblity.Protected: builder.Append("protected "); break;
-            case GetterSetterVisiblity.Private: builder.Append("private "); break;
-        }
-        builder.Append("get; ");
-        switch (options.Setter)
-        {
-            case GetterSetterVisiblity.Protected: builder.Append("protected "); break;
-            case GetterSetterVisiblity.Private: builder.Append("private "); break;
-        }
-        builder.Append("set; }");
-        if (options.DefaultValue != null)
-        {
-            builder.Append(" = ");
-            builder.Append(options.DefaultValue);
-            builder.Append(";");
-        }
-        builder.AppendLine();
-    }
-
-    public void AddMethodStub(MethodOptions options)
-        => StartConstructorOrMethod(options, isStub: true);
-
-    public void StartConstructor(ConstructorOptions options)
-        => StartConstructorOrMethod(options, isStub: false);
-
-    public void StartMethod(MethodOptions options)
-        => StartConstructorOrMethod(options, isStub: false);
-
     public void AddLineOfCode(string code)
     {
         builder.Append(Tabs());
@@ -130,66 +104,7 @@ internal class SourceBuilder
         builder.AppendLine();
     }
 
-    private void StartConstructorOrMethod(FunctionOptions options, bool isStub)
-    {
-        builder.Append(Tabs());
-
-        if (options.Visibility != MemberVisiblity.None)
-        {
-            builder.Append(options.Visibility.ToString().ToLower());
-            builder.Append(" ");
-        }
-
-        if (options is MethodOptions mo)
-        {
-            if (mo.Static)
-                builder.Append("static ");
-
-            if (mo.ReturnType != null)
-            {
-                builder.Append(mo.ReturnType);
-                builder.Append(" ");
-            }
-        }
-
-        builder.Append(options.Name);
-        if (options.Parameters.Any())
-        {
-            builder.AppendLine("(");
-            tabIndex++;
-            foreach (var param in options.Parameters)
-            {
-                builder.Append(Tabs());
-                builder.Append(param);
-                if (param != options.Parameters.Last())
-                    builder.Append(",");
-                builder.AppendLine();
-            }
-            builder.Append(Tabs());
-            builder.Append(")");
-            tabIndex--;
-        }
-        else builder.Append("()");
-
-        if (isStub)
-        {
-            builder.AppendLine(";");
-        }
-        else
-        {
-            builder.AppendLine();
-            builder.Append(Tabs());
-            builder.AppendLine("{");
-            tabIndex++;
-        }
-    }
-
     public void EndNamespace() => AppendEndTag();
-    public void EndClass() => AppendEndTag();
-    public void EndInterface() => AppendEndTag();
-    public void EndStruct() => AppendEndTag();
-    public void EndConstructor() => AppendEndTag();
-    public void EndMethod() => AppendEndTag();
     public void AppendEndTag()
     {
         tabIndex--;

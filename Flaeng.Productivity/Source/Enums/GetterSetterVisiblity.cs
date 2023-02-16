@@ -6,5 +6,6 @@ internal enum GetterSetterVisiblity
     Public,
     Internal,
     Protected,
-    Private
+    Private,
+    None
 }

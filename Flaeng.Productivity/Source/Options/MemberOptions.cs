@@ -5,6 +5,7 @@ abstract class MemberOptions
     public string Type { get; set; }
     public string Name { get; set; }
     public string? DefaultValue { get; set; } = null;
+    public bool Static { get; set; } = false;
     public MemberVisiblity Visibility { get; set; } = MemberVisiblity.None;
     public MemberOptions(string type, string name)
     {

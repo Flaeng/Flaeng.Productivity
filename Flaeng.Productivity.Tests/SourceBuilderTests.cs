@@ -29,8 +29,8 @@ public class SourceBuilderTests
         // Act
         sourceBuilder.TabLength = 2;
         sourceBuilder.StartNamespace("Test");
-        sourceBuilder.StartClass(new ClassOptions("TestClass"));
-        sourceBuilder.EndClass();
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("TestClass"));
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -60,8 +60,8 @@ public class SourceBuilderTests
         sourceBuilder.TabLength = 1;
         sourceBuilder.TabStyle = TabStyle.Tabs;
         sourceBuilder.StartNamespace("Test");
-        sourceBuilder.StartClass(new ClassOptions("TestClass"));
-        sourceBuilder.EndClass();
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("TestClass"));
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -134,15 +134,15 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartClass(new ClassOptions("Publicy"));
-        sourceBuilder.StartMethod(new MethodOptions("string", "Parse")
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy"));
+        classBuilder.StartMethod(new MethodOptions("string", "Parse")
         {
             Visibility = MemberVisiblity.Private,
             Static = true
         });
         sourceBuilder.AddLineOfCode("return \"\";");
-        sourceBuilder.EndMethod();
-        sourceBuilder.EndClass();
+        classBuilder.EndMethod();
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -174,20 +174,20 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartClass(new ClassOptions("Publicy")
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
             Visibility = TypeVisiblity.Public,
             Static = true,
             Interfaces = new[] { "BaseClass", "Interface1", "Interface2" }
         });
-        sourceBuilder.StartMethod(new MethodOptions("string", "Parse")
+        classBuilder.StartMethod(new MethodOptions("string", "Parse")
         {
             Visibility = MemberVisiblity.Private,
             Static = true
         });
         sourceBuilder.AddLineOfCode("return \"\";");
-        sourceBuilder.EndMethod();
-        sourceBuilder.EndClass();
+        classBuilder.EndMethod();
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -219,17 +219,17 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartInterface(new InterfaceOptions("Interconnected")
+        var interfaceBuilder = sourceBuilder.StartInterface(new InterfaceOptions("Interconnected")
         {
             Visibility = TypeVisiblity.Internal,
             Partial = true,
             Interfaces = new[] { "BaseInterface" }
         });
-        sourceBuilder.AddMethodStub(new MethodOptions("void", "Invoke")
+        interfaceBuilder.AddMethodStub(new MethodOptions("void", "Invoke")
         {
             Parameters = new List<string>(new[] { "object obj", "string str" })
         });
-        sourceBuilder.EndClass();
+        interfaceBuilder.EndInterface();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -261,16 +261,16 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartStruct(new StructOptions("DataContainer")
+        var structBuilder = sourceBuilder.StartStruct(new StructOptions("DataContainer")
         {
             Visibility = TypeVisiblity.Public,
             Partial = true
         });
-        sourceBuilder.AddProperty(new PropertyOptions("string", "Name")
+        structBuilder.AddProperty(new PropertyOptions("string", "Name")
         {
             Visibility = MemberVisiblity.Protected
         });
-        sourceBuilder.EndClass();
+        structBuilder.EndStruct();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -299,12 +299,12 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartClass(new ClassOptions("Publicy")
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
             Visibility = TypeVisiblity.Public
         });
 
-        sourceBuilder.AddProperty(new PropertyOptions("string", "Text")
+        classBuilder.AddProperty(new PropertyOptions("string", "Text")
         {
             Visibility = MemberVisiblity.Public,
             Getter = GetterSetterVisiblity.Protected,
@@ -312,14 +312,14 @@ public class SourceBuilderTests
             DefaultValue = "\"\""
         });
 
-        sourceBuilder.AddProperty(new PropertyOptions("string", "Text2")
+        classBuilder.AddProperty(new PropertyOptions("string", "Text2")
         {
             Visibility = MemberVisiblity.Public,
             Getter = GetterSetterVisiblity.Private,
             Setter = GetterSetterVisiblity.Protected
         });
 
-        sourceBuilder.EndClass();
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 
@@ -349,23 +349,23 @@ public class SourceBuilderTests
 
         // Act
         sourceBuilder.StartNamespace("SpacyName");
-        sourceBuilder.StartClass(new ClassOptions("Publicy")
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
             Visibility = TypeVisiblity.Public
         });
 
-        sourceBuilder.AddField(new FieldOptions("string", "Text")
+        classBuilder.AddField(new FieldOptions("string", "Text")
         {
             Visibility = MemberVisiblity.Public,
             DefaultValue = "\"\""
         });
 
-        sourceBuilder.AddField(new FieldOptions("string", "Text2")
+        classBuilder.AddField(new FieldOptions("string", "Text2")
         {
             Visibility = MemberVisiblity.Public
         });
 
-        sourceBuilder.EndClass();
+        classBuilder.EndClass();
         sourceBuilder.EndNamespace();
         var result = sourceBuilder.ToString();
 

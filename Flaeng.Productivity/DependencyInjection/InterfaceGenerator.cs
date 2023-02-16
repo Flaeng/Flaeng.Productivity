@@ -107,42 +107,42 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
     {
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
         var interfaceName = $"I{className}";
-        sourceBuilder.StartInterface(new InterfaceOptions(interfaceName)
+        var interfaceBuilder = sourceBuilder.StartInterface(new InterfaceOptions(interfaceName)
         {
             Visibility = TypeVisiblity.Public,
             Partial = true
         });
 
         foreach (var member in data.Members)
-            writeMember(sourceBuilder, member);
+            writeMember(interfaceBuilder, member);
 
         foreach (var method in data.Methods)
-            writeMethod(sourceBuilder, method);
+            writeMethod(interfaceBuilder, method);
 
-        sourceBuilder.EndInterface();
+        interfaceBuilder.EndInterface();
 
-        sourceBuilder.StartClass(new ClassOptions(className.ToString())
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions(className.ToString())
         {
             Visibility = TypeVisiblity.Public,
             Partial = true,
             Interfaces = new[] { interfaceName }
         });
-        sourceBuilder.EndClass();
+        classBuilder.EndClass();
     }
 
-    private static void writeMember(SourceBuilder sourceBuilder, MemberDeclarationSyntax member)
+    private static void writeMember(InterfaceBuilder interfaceBuilder, MemberDeclarationSyntax member)
     {
         if (member is PropertyDeclarationSyntax pds && pds.AccessorList != null)
         {
-            writeMemberFromProperty(sourceBuilder, pds);
+            writeMemberFromProperty(interfaceBuilder, pds);
         }
         else if (member is FieldDeclarationSyntax fds)
         {
-            writeMemberFromField(sourceBuilder, fds);
+            writeMemberFromField(interfaceBuilder, fds);
         }
     }
 
-    private static void writeMemberFromField(SourceBuilder sourceBuilder, FieldDeclarationSyntax fds)
+    private static void writeMemberFromField(InterfaceBuilder interfaceBuilder, FieldDeclarationSyntax fds)
     {
         var isPublic = fds.Modifiers.Any(x => x.Text == "public");
         if (isPublic == false)
@@ -156,10 +156,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var isStatic = fds.Modifiers.Any(x => x.Text.Equals("static", StringComparison.InvariantCultureIgnoreCase));
 
-        sourceBuilder.AddLineOfCode($"{(isStatic ? "static " : "")}{type} {fds.Declaration.Variables};");
+        interfaceBuilder.AddField(new FieldOptions(type.ToString(), fds.Declaration.Variables.ToString())
+        {
+            Static = isStatic
+        });
     }
 
-    private static void writeMemberFromProperty(SourceBuilder sourceBuilder, PropertyDeclarationSyntax pds)
+    private static void writeMemberFromProperty(InterfaceBuilder interfaceBuilder, PropertyDeclarationSyntax pds)
     {
         if (pds.AccessorList == null)
             return;
@@ -185,10 +188,16 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var name = pds.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
             .FirstOrDefault();
-        sourceBuilder.AddLineOfCode($"{(isStatic ? "static " : "")}{pds.Type} {name} {{ {(publicGetter ? "get; " : "")}{(publicSetter ? "set; " : "")}}}");
+
+        interfaceBuilder.AddProperty(new PropertyOptions(pds.Type.ToString(), name.ToString())
+        {
+            Static = isStatic,
+            Getter = publicGetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
+            Setter = publicSetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
+        });
     }
 
-    private static void writeMethod(SourceBuilder sourceBuilder, MethodDeclarationSyntax method)
+    private static void writeMethod(InterfaceBuilder interfaceBuilder, MethodDeclarationSyntax method)
     {
         var name = method.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -210,7 +219,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var parameterText = parameters.Select(x => x.ToFullString());
 
-        sourceBuilder.AddMethodStub(new MethodOptions(method.ReturnType.ToString(), name.Text)
+        interfaceBuilder.AddMethodStub(new MethodOptions(method.ReturnType.ToString(), name.Text)
         {
             Parameters = new List<string>(parameterText)
         });

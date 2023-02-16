@@ -57,7 +57,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
     private static void createClassAndConstructor(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder, ImmutableArray<TypeAndName> memberList)
     {
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
-        sourceBuilder.StartClass(new ClassOptions(className.Text)
+        var classBuilder = sourceBuilder.StartClass(new ClassOptions(className.Text)
         {
             Visibility = TypeVisiblity.Public,
             Partial = true
@@ -66,16 +66,16 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var parameters = memberList.Select(x => $"{x.TypeName} {x.MemberName}");
 
         sourceBuilder.AddGeneratedCodeAttribute();
-        sourceBuilder.StartConstructor(new ConstructorOptions(className.Text)
+        classBuilder.StartConstructor(new ConstructorOptions(className.Text)
         {
             Visibility = MemberVisiblity.Public,
             Parameters = new List<string>(parameters)
         });
         foreach (var member in memberList)
             sourceBuilder.AddLineOfCode($"this.{member.MemberName} = {member.MemberName};");
-        sourceBuilder.EndConstructor();
+        classBuilder.EndConstructor();
 
-        sourceBuilder.EndClass();
+        classBuilder.EndClass();
     }
 
     private static TypeAndName GetTypeNameAndMemberName(MemberDeclarationSyntax member)
