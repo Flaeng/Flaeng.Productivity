@@ -55,6 +55,8 @@ internal class SourceBuilder
         builder.Append(options.Visibility.ToString().ToLower());
         if (options.Static)
             builder.Append(" static");
+        if (options is ClassOptions co && co.Abstract)
+            builder.Append(" abstract");
         if (options.Partial)
             builder.Append(" partial");
         builder.Append(" ");

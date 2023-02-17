@@ -153,8 +153,10 @@ abstract class BaseBuilder
         else builder.AppendRaw("()");
     }
 
-    public override string ToString()
+    public void AddLineOfCode(string code)
     {
-        return builder.ToString();
+        builder.AppendTabs();
+        builder.AppendRaw(code);
+        builder.AppendLineBreak();
     }
 }

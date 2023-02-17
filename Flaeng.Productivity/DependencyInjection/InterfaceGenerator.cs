@@ -167,11 +167,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (pds.AccessorList == null)
             return;
 
-        SyntaxToken getterMod = getGetterSetter(pds, "get");
-        SyntaxToken setterMod = getGetterSetter(pds, "set");
-
-        bool publicGetter = getterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase),
-            publicSetter = setterMod.Text.Equals("public", StringComparison.InvariantCultureIgnoreCase);
+        bool publicGetter = isPublicAccessor(pds, SyntaxKind.GetAccessorDeclaration);
+        bool publicSetter = isPublicAccessor(pds, SyntaxKind.SetAccessorDeclaration);
 
         if (publicGetter == false && publicSetter == false)
             return;
@@ -190,17 +187,20 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         });
     }
 
-    private static SyntaxToken getGetterSetter(PropertyDeclarationSyntax pds, string keyword)
+    private static bool isPublicAccessor(PropertyDeclarationSyntax pds, SyntaxKind kind)
     {
         if (pds.AccessorList == null)
-            return pds.Modifiers.FirstOrDefault();
+            return false;
 
-        var getter = pds.AccessorList.Accessors.FirstOrDefault(x => x.Keyword.Text == keyword);
-        var getterMod = getter.Modifiers.FirstOrDefault();
-        if (String.IsNullOrWhiteSpace(getterMod.Text))
-            getterMod = pds.Modifiers.FirstOrDefault();
+        var accessor = pds.AccessorList.Accessors.FirstOrDefault(x => x.IsKind(kind));
+        if (accessor == null)
+            return false;
 
-        return getterMod;
+        var modifier = accessor.Modifiers.FirstOrDefault();
+        if (String.IsNullOrWhiteSpace(modifier.Text))
+            modifier = pds.Modifiers.FirstOrDefault();
+
+        return modifier.IsKind(SyntaxKind.PublicKeyword);
     }
 
     private static void writeMethod(InterfaceBuilder interfaceBuilder, MethodDeclarationSyntax method)

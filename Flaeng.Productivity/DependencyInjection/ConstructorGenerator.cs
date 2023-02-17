@@ -90,19 +90,19 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (genericNameSyntax != null)
             return GetTypeNameAndMemberNameWithGenericName(member, genericNameSyntax);
 
-        var tokens2 = member.DescendantTokens().Reverse();
-        var memberName2 = tokens2
+        var tokens = member.DescendantTokens().Reverse();
+        var memberName = tokens
             .Where(x => x.IsKind(SyntaxKind.IdentifierToken))
             .First();
 
-        var typeName2 = tokens2
-            .SkipWhile(x => x != memberName2)
+        var typeName = tokens
+            .SkipWhile(x => x != memberName)
             .Skip(1)
             .First();
         return new TypeAndName
         {
-            TypeName = typeName2.ToString(),
-            MemberName = memberName2.ToString()
+            TypeName = typeName.ToString(),
+            MemberName = memberName.ToString()
         };
     }
 
