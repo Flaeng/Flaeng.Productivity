@@ -40,7 +40,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace Flaeng.Productivity.Sample.Providers
 {
-    public partial interface ISummaryProvider
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+    public interface ISummaryProvider
     {
         string[] GetSummaries();
     }
@@ -94,7 +95,8 @@ using Flaeng.Productivity.Sample.Providers;
 
 namespace Flaeng.Productivity.Sample.Services
 {
-    public partial interface IWeatherForecastService
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+    public interface IWeatherForecastService
     {
         IEnumerable<WeatherForecast> GetWeatherForecast();
     }

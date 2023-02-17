@@ -87,7 +87,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
     }
     public partial class Dummy : IDummy
@@ -128,7 +129,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
     }
     public partial class Dummy : IDummy
@@ -166,7 +168,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 #nullable enable
 
-public partial interface IDummy
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+public interface IDummy
 {
 }
 public partial class Dummy : IDummy
@@ -210,7 +213,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         void Simple();
     }
@@ -256,7 +260,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         string Simple { get; set; }
     }
@@ -302,7 +307,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         static string Simple { get; set; }
     }
@@ -348,7 +354,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
     }
     public partial class Dummy : IDummy
@@ -393,7 +400,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         string Simple;
     }
@@ -439,7 +447,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         static string Simple;
     }
@@ -485,7 +494,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
     }
     public partial class Dummy : IDummy
@@ -530,7 +540,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         string Simple { get; }
     }
@@ -576,7 +587,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         string Simple { get; }
     }
@@ -622,7 +634,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         string Simple { set; }
     }
@@ -668,7 +681,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
     }
     public partial class Dummy : IDummy
@@ -714,7 +728,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         void Simple();
         bool Simple(
@@ -762,7 +777,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         bool Simple(
             ref int number
@@ -809,7 +825,8 @@ using Flaeng.Productivity.DependencyInjection;
 
 namespace TestNamespace.Providers
 {
-    public partial interface IDummy
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Flaeng.Productivity"", ""1.0.0.0"")]
+    public interface IDummy
     {
         bool Simple(
             string text,

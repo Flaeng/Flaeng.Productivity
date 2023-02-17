@@ -25,7 +25,8 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Providers
         {
-            public partial interface ISummaryProvider
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+            public interface ISummaryProvider
             {
                 string[] GetSummaries();
             }
@@ -99,7 +100,8 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Services
         {
-            public partial interface IWeatherForecastService
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+            public interface IWeatherForecastService
             {
                 IEnumerable<WeatherForecast> GetWeatherForecast();
             }

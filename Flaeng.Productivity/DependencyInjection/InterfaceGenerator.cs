@@ -107,10 +107,11 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
     {
         var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
         var interfaceName = $"I{className}";
+        sourceBuilder.AddGeneratedCodeAttribute();
         var interfaceBuilder = sourceBuilder.StartInterface(new InterfaceOptions(interfaceName)
         {
             Visibility = TypeVisiblity.Public,
-            Partial = true
+            // Partial = true
         });
 
         foreach (var member in data.Members)
