@@ -29,7 +29,8 @@ public abstract class BaseUseCase : TestBase
                 new ConstructorGenerator(),
                 new InterfaceGenerator(),
             },
-            sourceFiles
+            sourceFiles,
+            this.GetType().Name
         );
     }
 }

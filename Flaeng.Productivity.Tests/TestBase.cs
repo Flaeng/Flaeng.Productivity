@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,6 +11,7 @@ public record SourceFile
     string Filename,
     string Content
 );
+
 public record CompilationResult
 (
     Compilation Output,
@@ -21,9 +23,15 @@ public class TestBase
 {
     protected static CompilationResult GetGeneratedOutput(
         IIncrementalGenerator[] generators,
-        SourceFile[] sourceFiles
+        SourceFile[] sourceFiles,
+        [CallerMemberName] string? callerMemberName = null
     )
     {
+        if (callerMemberName == ".ctor")
+        {
+            throw new ArgumentException(nameof(callerMemberName));
+        }
+
         var syntaxTree = sourceFiles.Select(x =>
                 CSharpSyntaxTree.ParseText(x.Content, path: x.Filename)
             ).ToImmutableArray();
@@ -37,7 +45,6 @@ public class TestBase
         var compilation = CSharpCompilation.Create("SourceGeneratorTests",
                       syntaxTree,
                       references,
-                      //   new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
                       new CSharpCompilationOptions(OutputKind.ConsoleApplication));
 
         CSharpGeneratorDriver.Create(generators)
@@ -45,16 +52,31 @@ public class TestBase
                                             out var outputCompilation,
                                             out var diagnostics);
 
-        // optional
-        // var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
-        // if (errors.Any())
-        //     throw new CompilationException(errors);
+        var outputCompilationFiles = outputCompilation.SyntaxTrees
+                .Select(x => new SourceFile(Path.GetFileName(x.FilePath), x.ToString()))
+                .ToImmutableArray();
+
+        // Future feature: Autogenerate examples of input and generated output
+        // if (callerMemberName != null)
+        // {
+        //     var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+        //     dir = dir.CreateSubdirectory("output");
+
+        //     var subdir = dir.GetDirectories(callerMemberName).SingleOrDefault();
+        //     if (subdir != null)
+        //         subdir.Delete(recursive: true);
+        //     subdir = dir.CreateSubdirectory(callerMemberName);
+
+        //     foreach (var file in outputCompilationFiles)
+        //     {
+        //         var filepath = Path.Combine(subdir.FullName, file.Filename);
+        //         File.WriteAllLines(filepath, file.Content.Split(Environment.NewLine));
+        //     }
+        // }
 
         return new CompilationResult(
             outputCompilation,
-            outputCompilation.SyntaxTrees
-                .Select(x => new SourceFile(Path.GetFileName(x.FilePath), x.ToString()))
-                .ToImmutableArray(),
+            outputCompilationFiles,
             diagnostics
         );
     }
