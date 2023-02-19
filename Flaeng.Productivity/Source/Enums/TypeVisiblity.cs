@@ -1,11 +1,6 @@
-using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace Flaeng.Productivity;
 
-public enum TypeVisiblity
+public enum TypeVisibility
 {
     Default,
     Public,
@@ -14,22 +9,22 @@ public enum TypeVisiblity
 }
 internal static class TypeVisiblityHelper
 {
-    public static TypeVisiblity GetFromTokens(IEnumerable<SyntaxToken> tokens)
+    public static TypeVisibility GetFromTokens(IEnumerable<SyntaxToken> tokens)
     {
         foreach (var item in tokens)
         {
             switch (item.Kind())
             {
                 case SyntaxKind.PublicKeyword:
-                    return TypeVisiblity.Public;
+                    return TypeVisibility.Public;
 
                 case SyntaxKind.InternalKeyword:
-                    return TypeVisiblity.Internal;
+                    return TypeVisibility.Internal;
 
                 case SyntaxKind.PrivateKeyword:
-                    return TypeVisiblity.Private;
+                    return TypeVisibility.Private;
             }
         }
-        return TypeVisiblity.Default;
+        return TypeVisibility.Default;
     }
 }

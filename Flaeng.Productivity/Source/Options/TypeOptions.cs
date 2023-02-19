@@ -2,7 +2,7 @@ namespace Flaeng.Productivity;
 
 abstract class TypeOptions
 {
-    public TypeVisiblity Visibility { get; set; } = TypeVisiblity.Public;
+    public TypeVisibility Visibility { get; set; } = TypeVisibility.Public;
     public bool Static { get; set; } = false;
     public bool Partial { get; set; } = false;
     public abstract string TypeName { get; }

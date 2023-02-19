@@ -1,11 +1,5 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Flaeng.Productivity.DependencyInjection;
 [Generator(LanguageNames.CSharp)]
@@ -20,23 +14,23 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(GenerateAttribute);
 
         var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<InterfaceStruct>(
+            .CreateSyntaxProvider<InterfaceData>(
                 static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: 1 },
                 Transform)
             .Where(static x => x.Class != null)
-            .WithComparer(InterfaceStructEqualityComparer.Instance);
+            .WithComparer(InterfaceDataEqualityComparer.Instance);
 
-        context.RegisterSourceOutput<InterfaceStruct>(provider, Execute);
+        context.RegisterSourceOutput<InterfaceData>(provider, Execute);
     }
 
-    readonly static InterfaceStruct Default = new InterfaceStruct(
+    readonly static InterfaceData Default = new InterfaceData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
             new ImmutableArray<MethodDeclarationSyntax>(),
             new ImmutableArray<string>(),
-            new ImmutableArray<WrapperClassStruct>());
+            new ImmutableArray<WrapperClassData>());
 
-    private static InterfaceStruct Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
+    private static InterfaceData Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
         var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
         if (cds.AttributeLists
@@ -97,22 +91,14 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             }
         }
 
-        Stack<WrapperClassStruct> wrapperClasses = new();
-        var parent = cds.Parent;
-        while (parent is ClassDeclarationSyntax parentCDS)
-        {
-            var name = Helpers.GetClassName(parentCDS);
-            var visiblity = TypeVisiblityHelper.GetFromTokens(parentCDS.ChildTokens());
-            wrapperClasses.Push(new WrapperClassStruct(name, visiblity));
-            parent = parent.Parent;
-        }
+        var wrapperClasses = WrapperClassData.From(cds).ToImmutableArray();
 
-        return new InterfaceStruct(
+        return new InterfaceData(
             cds,
             members.ToImmutableArray(),
             methods.ToImmutableArray(),
             interfaces,
-            wrapperClasses.ToImmutableArray());
+            wrapperClasses);
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
@@ -129,7 +115,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         };
     }
 
-    private static void Execute(SourceProductionContext context, InterfaceStruct data)
+    private static void Execute(SourceProductionContext context, InterfaceData data)
     {
         var cls = data.Class;
         if (cls is null)
@@ -175,7 +161,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
 
     private static void createInterfaceAndClass(
-        InterfaceStruct data,
+        InterfaceData data,
         ClassDeclarationSyntax cls,
         SourceBuilder sourceBuilder
         )
@@ -272,8 +258,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         interfaceBuilder.AddProperty(new PropertyOptions(pds.Type.ToString(), name.ToString())
         {
             Static = isStatic,
-            Getter = publicGetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
-            Setter = publicSetter ? GetterSetterVisiblity.Public : GetterSetterVisiblity.None,
+            Getter = publicGetter ? GetterSetterVisibility.Public : GetterSetterVisibility.None,
+            Setter = publicSetter ? GetterSetterVisibility.Public : GetterSetterVisibility.None,
         });
     }
 

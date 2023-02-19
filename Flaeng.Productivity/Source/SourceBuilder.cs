@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -53,7 +51,7 @@ internal class SourceBuilder
     {
         builder.Append(Tabs());
 
-        if (options.Visibility != TypeVisiblity.Default)
+        if (options.Visibility != TypeVisibility.Default)
         {
             builder.Append(options.Visibility.ToString().ToLower());
             builder.Append(" ");

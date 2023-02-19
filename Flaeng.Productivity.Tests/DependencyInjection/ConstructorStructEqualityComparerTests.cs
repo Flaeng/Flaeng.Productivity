@@ -8,15 +8,15 @@ namespace Flaeng.Productivity.Tests.DependencyInjection;
 
 public class ConstructorStructEqualityComparerTests
 {
-    readonly ConstructorStructEqualityComparer Instance = ConstructorStructEqualityComparer.Instance;
+    readonly ConstructorDataEqualityComparer Instance = ConstructorDataEqualityComparer.Instance;
 
     [Fact]
     public void Returns_false_when_compared_with_null()
     {
-        var item = new ConstructorStruct(
+        var item = new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>()
+            new ImmutableArray<WrapperClassData>()
             );
         Assert.False(item.Equals(null));
     }
@@ -24,10 +24,10 @@ public class ConstructorStructEqualityComparerTests
     [Fact]
     public void Returns_true_when_compared_with_itself()
     {
-        var item = new ConstructorStruct(
+        var item = new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>()
+            new ImmutableArray<WrapperClassData>()
             );
         Assert.True(item.Equals(item));
     }
@@ -35,24 +35,24 @@ public class ConstructorStructEqualityComparerTests
     [Fact]
     public void Returns_true_when_compared_with_copy_of_itself()
     {
-        var item1 = new ConstructorStruct(
+        var item1 = new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>());
-        var item2 = new ConstructorStruct(
+            new ImmutableArray<WrapperClassData>());
+        var item2 = new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>());
+            new ImmutableArray<WrapperClassData>());
         Assert.True(item1.Equals(item2));
     }
 
     [Fact]
     public void Returns_false_when_first_param_is_null()
     {
-        var item = new ConstructorStruct(
+        var item = new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>());
+            new ImmutableArray<WrapperClassData>());
         Assert.Throws<NotImplementedException>(() =>
             Instance.GetHashCode(item)
         );

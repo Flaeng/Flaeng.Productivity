@@ -1,11 +1,6 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Flaeng.Productivity.DependencyInjection;
@@ -22,14 +17,14 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(GenerateDependencies);
 
         var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<ConstructorStruct>(HasMembersAndIsPartialAndNotStatic, Transform)
+            .CreateSyntaxProvider<ConstructorData>(HasMembersAndIsPartialAndNotStatic, Transform)
             .Where(static x => x.Class != null)
-            .WithComparer(ConstructorStructEqualityComparer.Instance);
+            .WithComparer(ConstructorDataEqualityComparer.Instance);
 
         context.RegisterSourceOutput(provider, Execute);
     }
 
-    private void Execute(SourceProductionContext context, ConstructorStruct data)
+    private void Execute(SourceProductionContext context, ConstructorData data)
     {
         var cls = data.Class;
         if (cls is null)
@@ -93,7 +88,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         sourceBuilder.AddGeneratedCodeAttribute();
         classBuilder.StartConstructor(new ConstructorOptions(className.Text)
         {
-            Visibility = MemberVisiblity.Public,
+            Visibility = MemberVisibility.Public,
             Parameters = new List<string>(parameters)
         });
         foreach (var member in memberList)
@@ -203,13 +198,13 @@ namespace {ATTRIBUTE_NAMESPACE}
             cds.Modifiers.Any(SyntaxKind.StaticKeyword) == false;
     }
 
-    private static readonly ConstructorStruct Default =
-        new ConstructorStruct(
+    private static readonly ConstructorData Default =
+        new ConstructorData(
             null,
             new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<WrapperClassStruct>());
+            new ImmutableArray<WrapperClassData>());
 
-    private static ConstructorStruct Transform(GeneratorSyntaxContext context, CancellationToken ct)
+    private static ConstructorData Transform(GeneratorSyntaxContext context, CancellationToken ct)
     {
         if (context.Node is not ClassDeclarationSyntax cds)
             return Default;
@@ -224,18 +219,9 @@ namespace {ATTRIBUTE_NAMESPACE}
                 .Any(HasInjectAttribute(context, ct)))
             .ToImmutableArray();
 
-        Stack<WrapperClassStruct> wrapperClasses = new();
+        var wrapperClasses = WrapperClassData.From(cds).ToImmutableArray();
 
-        var parent = cds.Parent;
-        while (parent is ClassDeclarationSyntax parentCDS)
-        {
-            var name = Helpers.GetClassName(parentCDS);
-            var visiblity = TypeVisiblityHelper.GetFromTokens(parentCDS.ChildTokens());
-            wrapperClasses.Push(new WrapperClassStruct(name, visiblity));
-            parent = parent.Parent;
-        }
-
-        return new ConstructorStruct(cds, members, wrapperClasses.ToImmutableArray());
+        return new ConstructorData(cds, members, wrapperClasses);
     }
 
     private static Func<AttributeSyntax, bool> HasInjectAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)

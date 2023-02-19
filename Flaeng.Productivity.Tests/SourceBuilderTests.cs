@@ -137,7 +137,7 @@ public class SourceBuilderTests
         var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy"));
         classBuilder.StartMethod(new MethodOptions("string", "Parse")
         {
-            Visibility = MemberVisiblity.Private,
+            Visibility = MemberVisibility.Private,
             Static = true
         });
         classBuilder.AddLineOfCode("return \"\";");
@@ -176,13 +176,13 @@ public class SourceBuilderTests
         sourceBuilder.StartNamespace("SpacyName");
         var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
-            Visibility = TypeVisiblity.Public,
+            Visibility = TypeVisibility.Public,
             Static = true,
             Interfaces = new[] { "BaseClass", "Interface1", "Interface2" }
         });
         classBuilder.StartMethod(new MethodOptions("string", "Parse")
         {
-            Visibility = MemberVisiblity.Private,
+            Visibility = MemberVisibility.Private,
             Static = true
         });
         sourceBuilder.AddLineOfCode("return \"\";");
@@ -221,7 +221,7 @@ public class SourceBuilderTests
         sourceBuilder.StartNamespace("SpacyName");
         var interfaceBuilder = sourceBuilder.StartInterface(new InterfaceOptions("Interconnected")
         {
-            Visibility = TypeVisiblity.Internal,
+            Visibility = TypeVisibility.Internal,
             Partial = true,
             Interfaces = new[] { "BaseInterface" }
         });
@@ -263,12 +263,12 @@ public class SourceBuilderTests
         sourceBuilder.StartNamespace("SpacyName");
         var structBuilder = sourceBuilder.StartStruct(new StructOptions("DataContainer")
         {
-            Visibility = TypeVisiblity.Public,
+            Visibility = TypeVisibility.Public,
             Partial = true
         });
         structBuilder.AddProperty(new PropertyOptions("string", "Name")
         {
-            Visibility = MemberVisiblity.Protected
+            Visibility = MemberVisibility.Protected
         });
         structBuilder.EndStruct();
         sourceBuilder.EndNamespace();
@@ -301,22 +301,22 @@ public class SourceBuilderTests
         sourceBuilder.StartNamespace("SpacyName");
         var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
-            Visibility = TypeVisiblity.Public
+            Visibility = TypeVisibility.Public
         });
 
         classBuilder.AddProperty(new PropertyOptions("string", "Text")
         {
-            Visibility = MemberVisiblity.Public,
-            Getter = GetterSetterVisiblity.Protected,
-            Setter = GetterSetterVisiblity.Private,
+            Visibility = MemberVisibility.Public,
+            Getter = GetterSetterVisibility.Protected,
+            Setter = GetterSetterVisibility.Private,
             DefaultValue = "\"\""
         });
 
         classBuilder.AddProperty(new PropertyOptions("string", "Text2")
         {
-            Visibility = MemberVisiblity.Public,
-            Getter = GetterSetterVisiblity.Private,
-            Setter = GetterSetterVisiblity.Protected
+            Visibility = MemberVisibility.Public,
+            Getter = GetterSetterVisibility.Private,
+            Setter = GetterSetterVisibility.Protected
         });
 
         classBuilder.EndClass();
@@ -351,18 +351,18 @@ public class SourceBuilderTests
         sourceBuilder.StartNamespace("SpacyName");
         var classBuilder = sourceBuilder.StartClass(new ClassOptions("Publicy")
         {
-            Visibility = TypeVisiblity.Public
+            Visibility = TypeVisibility.Public
         });
 
         classBuilder.AddField(new FieldOptions("string", "Text")
         {
-            Visibility = MemberVisiblity.Public,
+            Visibility = MemberVisibility.Public,
             DefaultValue = "\"\""
         });
 
         classBuilder.AddField(new FieldOptions("string", "Text2")
         {
-            Visibility = MemberVisiblity.Public
+            Visibility = MemberVisibility.Public
         });
 
         classBuilder.EndClass();
@@ -401,7 +401,7 @@ public class SourceBuilderTests
         });
         classBuilder.AddMethodStub(new MethodOptions("string", "Parse")
         {
-            Visibility = MemberVisiblity.Protected
+            Visibility = MemberVisibility.Protected
         });
         classBuilder.EndClass();
         sourceBuilder.EndNamespace();

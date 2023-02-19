@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Flaeng.Productivity;
 
 abstract class BaseBuilder
@@ -17,7 +15,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.Default)
+        if (options.Visibility != MemberVisibility.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");
@@ -42,7 +40,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.Default)
+        if (options.Visibility != MemberVisibility.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");
@@ -70,15 +68,15 @@ abstract class BaseBuilder
         builder.AppendLineBreak();
     }
 
-    private void writeGetSetter(GetterSetterVisiblity visiblity, string text)
+    private void writeGetSetter(GetterSetterVisibility visiblity, string text)
     {
-        if (visiblity == GetterSetterVisiblity.None)
+        if (visiblity == GetterSetterVisibility.None)
             return;
 
         switch (visiblity)
         {
-            case GetterSetterVisiblity.Protected: builder.AppendRaw("protected "); break;
-            case GetterSetterVisiblity.Private: builder.AppendRaw("private "); break;
+            case GetterSetterVisibility.Protected: builder.AppendRaw("protected "); break;
+            case GetterSetterVisibility.Private: builder.AppendRaw("private "); break;
         }
         builder.AppendRaw($"{text}; ");
     }
@@ -87,7 +85,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.Default)
+        if (options.Visibility != MemberVisibility.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");

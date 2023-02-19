@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity;
 
-internal enum GetterSetterVisiblity
+internal enum GetterSetterVisibility
 {
     Default,
     Public,

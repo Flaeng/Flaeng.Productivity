@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity;
 
-internal enum MemberVisiblity
+internal enum MemberVisibility
 {
     Default,
     Public,

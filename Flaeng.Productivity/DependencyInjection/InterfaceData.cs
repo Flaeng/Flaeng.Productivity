@@ -1,12 +1,10 @@
-using System.Collections.Immutable;
-
 namespace Flaeng.Productivity;
 
-internal record struct InterfaceStruct
+internal record struct InterfaceData
 (
     ClassDeclarationSyntax? Class,
     ImmutableArray<MemberDeclarationSyntax> Members,
     ImmutableArray<MethodDeclarationSyntax> Methods,
     ImmutableArray<string> InterfaceNames,
-    ImmutableArray<WrapperClassStruct> WrapperClasses
+    ImmutableArray<WrapperClassData> WrapperClasses
 );

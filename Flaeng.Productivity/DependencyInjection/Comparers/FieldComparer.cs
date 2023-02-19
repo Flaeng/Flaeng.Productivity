@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
-
 namespace Flaeng.Productivity;
 
 class FieldComparer : IEqualityComparer<IFieldSymbol>
