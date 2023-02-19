@@ -51,6 +51,21 @@ internal class SourceBuilder
     {
         builder.Append(Tabs());
 
+        AppendModifiers(options);
+
+        builder.Append(options.TypeName);
+        builder.Append(" ");
+        builder.Append(options.Name);
+        AppendInterfaces(options);
+        builder.AppendLine();
+
+        builder.Append(Tabs());
+        builder.AppendLine("{");
+        tabIndex++;
+    }
+
+    private void AppendModifiers(TypeOptions options)
+    {
         if (options.Visibility != TypeVisibility.Default)
         {
             builder.Append(options.Visibility.ToString().ToLower());
@@ -62,20 +77,15 @@ internal class SourceBuilder
             builder.Append("abstract ");
         if (options.Partial)
             builder.Append("partial ");
+    }
 
-        builder.Append(options.TypeName);
-        builder.Append(" ");
-        builder.Append(options.Name);
+    private void AppendInterfaces(TypeOptions options)
+    {
         for (int i = 0; i < options.Interfaces.Length; i++)
         {
             builder.Append(i == 0 ? " : " : ", ");
             builder.Append(options.Interfaces[i]);
         }
-        builder.AppendLine();
-
-        builder.Append(Tabs());
-        builder.AppendLine("{");
-        tabIndex++;
     }
 
     public void AppendRaw(string content)

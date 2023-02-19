@@ -47,49 +47,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             .Select(x => x.Name)
             .ToImmutableArray();
 
-        var excludeMembers = symbol.AllInterfaces
-            .SelectMany(x => x.GetMembers())
-            .ToImmutableArray();
-
-        bool shouldBeExcluded(SyntaxNode node)
-        {
-            var methodSymbol = ctx.SemanticModel.GetDeclaredSymbol(node, ct);
-            if (methodSymbol is IMethodSymbol mSymbol)
-            {
-                return excludeMembers
-                    .OfType<IMethodSymbol>()
-                    .Contains(mSymbol, MethodComparer.Instance);
-            }
-            else if (methodSymbol is IPropertySymbol pSymbol)
-            {
-                return excludeMembers
-                    .OfType<IPropertySymbol>()
-                    .Contains(pSymbol, PropertyComparer.Instance);
-            }
-            else if (methodSymbol is IFieldSymbol fSymbol)
-            {
-                return excludeMembers
-                    .OfType<IFieldSymbol>()
-                    .Contains(fSymbol, FieldComparer.Instance);
-            }
-            return false;
-        }
-
-        List<MemberDeclarationSyntax> members = new();
-        List<MethodDeclarationSyntax> methods = new();
-        foreach (var child in cds.DescendantNodes())
-        {
-            if (child is MethodDeclarationSyntax method)
-            {
-                if (shouldBeExcluded(child) == false)
-                    methods.Add(method);
-            }
-            else if (child is MemberDeclarationSyntax member)
-            {
-                if (shouldBeExcluded(child) == false)
-                    members.Add(member);
-            }
-        }
+        GetMemberAndMethods(
+            ctx,
+            cds,
+            symbol,
+            out List<MemberDeclarationSyntax> members,
+            out List<MethodDeclarationSyntax> methods,
+            ct);
 
         var wrapperClasses = WrapperClassData.From(cds).ToImmutableArray();
 
@@ -99,6 +63,65 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             methods.ToImmutableArray(),
             interfaces,
             wrapperClasses);
+    }
+
+    private static void GetMemberAndMethods(
+        GeneratorSyntaxContext ctx,
+        ClassDeclarationSyntax cds,
+        INamedTypeSymbol symbol,
+        out List<MemberDeclarationSyntax> members,
+        out List<MethodDeclarationSyntax> methods,
+        CancellationToken ct)
+    {
+        var excludeMembers = symbol.AllInterfaces
+                    .SelectMany(x => x.GetMembers())
+                    .ToImmutableArray();
+
+        members = new();
+        methods = new();
+        foreach (var child in cds.DescendantNodes())
+        {
+            if (child is MethodDeclarationSyntax method)
+            {
+                if (shouldBeExcluded(ctx, child, excludeMembers, ct) == false)
+                    methods.Add(method);
+            }
+            else if (child is MemberDeclarationSyntax member)
+            {
+                if (shouldBeExcluded(ctx, child, excludeMembers, ct) == false)
+                    members.Add(member);
+            }
+        }
+    }
+
+    private static bool shouldBeExcluded(
+        GeneratorSyntaxContext ctx,
+        SyntaxNode node,
+        ImmutableArray<ISymbol> excludeMembers,
+        CancellationToken ct)
+    {
+        var methodSymbol = ctx.SemanticModel.GetDeclaredSymbol(node, ct);
+        return
+            (
+                methodSymbol is IMethodSymbol mSymbol
+                && excludeMembers
+                    .OfType<IMethodSymbol>()
+                    .Contains(mSymbol, MethodComparer.Instance)
+            )
+            ||
+            (
+                methodSymbol is IPropertySymbol pSymbol
+                && excludeMembers
+                    .OfType<IPropertySymbol>()
+                    .Contains(pSymbol, PropertyComparer.Instance)
+            )
+            ||
+            (
+                methodSymbol is IFieldSymbol fSymbol
+                && excludeMembers
+                    .OfType<IFieldSymbol>()
+                    .Contains(fSymbol, FieldComparer.Instance)
+            );
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
