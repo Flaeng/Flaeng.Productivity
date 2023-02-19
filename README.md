@@ -67,21 +67,13 @@ public partial class WeatherForecastService
     public IEnumerable<WeatherForecast> GetWeatherForecast()
     {
         var Summaries = _summaryProvider.GetSummaries();
-        var now = DateTime.Now;
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            // Date = (DateOnly)now.AddDays(index),
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
         .ToArray();
     }
-
-    protected void Test()
-    {
-    }
-
-    private WeatherForecast Map() => new();
 }
 ```
 ### Example 2: Output
