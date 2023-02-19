@@ -1,10 +1,3 @@
-
-
-using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace Flaeng.Productivity;
 
 public static class SyntaxNodeExtensions

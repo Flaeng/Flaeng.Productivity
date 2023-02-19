@@ -1,8 +1,3 @@
-using System.Linq;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace Flaeng.Productivity;
 
 public static class ClassDeclarationSyntaxExtensions

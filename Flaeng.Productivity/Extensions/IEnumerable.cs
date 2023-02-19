@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Flaeng.Productivity;
 
 public static class IEnumerableExtensions
