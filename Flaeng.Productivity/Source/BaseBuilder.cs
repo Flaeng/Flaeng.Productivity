@@ -17,7 +17,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.None)
+        if (options.Visibility != MemberVisiblity.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");
@@ -42,7 +42,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.None)
+        if (options.Visibility != MemberVisiblity.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");
@@ -87,7 +87,7 @@ abstract class BaseBuilder
     {
         builder.AppendTabs();
 
-        if (options.Visibility != MemberVisiblity.None)
+        if (options.Visibility != MemberVisiblity.Default)
         {
             builder.AppendRaw(options.Visibility.ToString().ToLower());
             builder.AppendRaw(" ");

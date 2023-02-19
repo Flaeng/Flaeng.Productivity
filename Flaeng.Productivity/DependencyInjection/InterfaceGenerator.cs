@@ -29,6 +29,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput<InterfaceStruct>(provider, Execute);
     }
 
+    readonly static InterfaceStruct Default = new InterfaceStruct(
+            null,
+            new ImmutableArray<MemberDeclarationSyntax>(),
+            new ImmutableArray<MethodDeclarationSyntax>(),
+            new ImmutableArray<string>(),
+            new ImmutableArray<WrapperClassStruct>());
+
     private static InterfaceStruct Transform(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
         var cds = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
@@ -36,24 +43,76 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             .SelectMany(x => x.Attributes)
             .Where(HasGenerateAttribute(ctx, ct))
             .Any() == false)
-            return new InterfaceStruct(
-                null,
-                new ImmutableArray<MemberDeclarationSyntax>(),
-                new ImmutableArray<MethodDeclarationSyntax>());
+            return Default;
+
+        var symbol = ctx.SemanticModel.GetDeclaredSymbol(cds, ct);
+        if (symbol == null)
+            return Default;
+
+        var interfaces = symbol.Interfaces
+            .Select(x => x.Name)
+            .ToImmutableArray();
+
+        var excludeMembers = symbol.AllInterfaces
+            .SelectMany(x => x.GetMembers())
+            .ToImmutableArray();
+
+        bool shouldBeExcluded(SyntaxNode node)
+        {
+            var methodSymbol = ctx.SemanticModel.GetDeclaredSymbol(node, ct);
+            if (methodSymbol is IMethodSymbol mSymbol)
+            {
+                return excludeMembers
+                    .OfType<IMethodSymbol>()
+                    .Contains(mSymbol, MethodComparer.Instance);
+            }
+            else if (methodSymbol is IPropertySymbol pSymbol)
+            {
+                return excludeMembers
+                    .OfType<IPropertySymbol>()
+                    .Contains(pSymbol, PropertyComparer.Instance);
+            }
+            else if (methodSymbol is IFieldSymbol fSymbol)
+            {
+                return excludeMembers
+                    .OfType<IFieldSymbol>()
+                    .Contains(fSymbol, FieldComparer.Instance);
+            }
+            return false;
+        }
 
         List<MemberDeclarationSyntax> members = new();
         List<MethodDeclarationSyntax> methods = new();
         foreach (var child in cds.DescendantNodes())
         {
             if (child is MethodDeclarationSyntax method)
-                methods.Add(method);
+            {
+                if (shouldBeExcluded(child) == false)
+                    methods.Add(method);
+            }
             else if (child is MemberDeclarationSyntax member)
-                members.Add(member);
+            {
+                if (shouldBeExcluded(child) == false)
+                    members.Add(member);
+            }
         }
+
+        Stack<WrapperClassStruct> wrapperClasses = new();
+        var parent = cds.Parent;
+        while (parent is ClassDeclarationSyntax parentCDS)
+        {
+            var name = Helpers.GetClassName(parentCDS);
+            var visiblity = TypeVisiblityHelper.GetFromTokens(parentCDS.ChildTokens());
+            wrapperClasses.Push(new WrapperClassStruct(name, visiblity));
+            parent = parent.Parent;
+        }
+
         return new InterfaceStruct(
             cds,
             members.ToImmutableArray(),
-            methods.ToImmutableArray());
+            methods.ToImmutableArray(),
+            interfaces,
+            wrapperClasses.ToImmutableArray());
     }
 
     private static Func<AttributeSyntax, bool> HasGenerateAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)
@@ -82,15 +141,31 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             .DescendantNodes()
             .OfType<UsingDirectiveSyntax>();
 
+        // Add using statements
         sourceBuilder.AddUsingStatement(childNodes.Select(x => x.Name.ToString()));
 
+        // Add namespace
         var namespaceNode = cls.Parent?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
         var isInNamespace = namespaceNode != null;
         if (namespaceNode != null)
             sourceBuilder.StartNamespace(namespaceNode.Name.ToString());
 
+        // Add wrapper-classes
+        foreach (var wrapper in data.WrapperClasses)
+            sourceBuilder.StartClass(new ClassOptions(wrapper.Name)
+            {
+                Visibility = wrapper.Visibility,
+                Partial = true
+            });
+
+        // Write new source code
         createInterfaceAndClass(data, cls, sourceBuilder);
 
+        // End wrapper-classes
+        for (int i = 0; i < data.WrapperClasses.Length; i++)
+            sourceBuilder.AppendEndTag();
+
+        // End namespace
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
@@ -105,12 +180,26 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         SourceBuilder sourceBuilder
         )
     {
-        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        var childTokens = cls.ChildTokens();
+        var className = childTokens.First(x => x.IsKind(SyntaxKind.IdentifierToken));
         var interfaceName = $"I{className}";
+        if (data.InterfaceNames.Contains(interfaceName))
+        {
+            string tmp = interfaceName;
+            for (int i = 2; i < 10; i++)
+            {
+                tmp = $"{interfaceName}{i}";
+                if (data.InterfaceNames.Contains(tmp) == false)
+                    break;
+            }
+            interfaceName = tmp;
+        }
+
         sourceBuilder.AddGeneratedCodeAttribute();
+        var visibility = TypeVisiblityHelper.GetFromTokens(childTokens);
         var interfaceBuilder = sourceBuilder.StartInterface(new InterfaceOptions(interfaceName)
         {
-            Visibility = TypeVisiblity.Public,
+            Visibility = visibility,
             // Partial = true
         });
 
@@ -124,7 +213,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var classBuilder = sourceBuilder.StartClass(new ClassOptions(className.ToString())
         {
-            Visibility = TypeVisiblity.Public,
+            Visibility = visibility,
             Partial = true,
             Interfaces = new[] { interfaceName }
         });

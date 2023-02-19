@@ -11,7 +11,8 @@ internal class InterfaceStructEqualityComparer : IEqualityComparer<InterfaceStru
     {
         return x.Class == y.Class
             && x.Members.SequenceEqual(y.Members)
-            && x.Methods.SequenceEqual(y.Methods);
+            && x.Methods.SequenceEqual(y.Methods)
+            && x.InterfaceNames.SequenceEqual(y.InterfaceNames);
     }
 
     public int GetHashCode(InterfaceStruct obj)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -8,24 +9,31 @@ namespace Flaeng.Productivity;
 
 public static class Helpers
 {
+    public static string GetClassName(ClassDeclarationSyntax cls)
+    {
+        return cls
+            .ChildTokens()
+            .First(x => x.IsKind(SyntaxKind.IdentifierToken)).Text;
+    }
+
     public static string GenerateFilename(ClassDeclarationSyntax cls, bool isInterface)
     {
-        StringBuilder filename = new();
-        if (cls.Parent is NamespaceDeclarationSyntax nds)
-        {
-            filename.Append(nds.Name);
-            filename.Append('.');
-        }
-        else if (cls.Parent is FileScopedNamespaceDeclarationSyntax fsnds)
-        {
-            filename.Append(fsnds.Name);
-            filename.Append('.');
-        }
-        if (isInterface)
-            filename.Append('I');
+        Stack<string> names = new(8);
 
-        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
-        filename.Append(className);
-        return filename.ToString();
+        SyntaxNode? node = cls.Parent;
+        while (node != null)
+        {
+            if (node is BaseNamespaceDeclarationSyntax nNode)
+                names.Push(nNode.Name.ToString());
+            else if (node is ClassDeclarationSyntax cds)
+                names.Push(GetClassName(cds));
+            node = node.Parent;
+        }
+
+        string filename = isInterface
+            ? $"I{GetClassName(cls)}"
+            : GetClassName(cls);
+
+        return $"{String.Join(".", names)}.{filename}";
     }
 }

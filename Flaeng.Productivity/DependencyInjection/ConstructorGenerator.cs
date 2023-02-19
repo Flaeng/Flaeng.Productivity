@@ -15,6 +15,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
 {
     const string ATTRIBUTE_NAMESPACE = "Flaeng.Productivity.DependencyInjection";
     const string ATTRIBUTE_NAME = "InjectAttribute";
+    readonly HashSet<string> files = new();
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -28,7 +29,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(provider, Execute);
     }
 
-    private static void Execute(SourceProductionContext context, ConstructorStruct data)
+    private void Execute(SourceProductionContext context, ConstructorStruct data)
     {
         var cls = data.Class;
         if (cls is null)
@@ -43,23 +44,47 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         if (memberList.Length == 0)
             return;
 
+        // Add using statements
         AddUsingStatements(cls, sourceBuilder);
+
+        // Add namespace
         bool isInNamespace = AddNamespace(cls, sourceBuilder);
+
+        // Add wrapper-classes
+        foreach (var wrapper in data.WrapperClasses)
+            sourceBuilder.StartClass(new ClassOptions(wrapper.Name)
+            {
+                Visibility = wrapper.Visibility,
+                Partial = true
+            });
+
+        // Write new source code
         createClassAndConstructor(cls, sourceBuilder, memberList);
 
+        // End wrapper-classes
+        for (int i = 0; i < data.WrapperClasses.Length; i++)
+            sourceBuilder.AppendEndTag();
+
+        // End namespace
         if (isInNamespace)
             sourceBuilder.EndNamespace();
 
         var filename = Helpers.GenerateFilename(cls, false);
+        if (files.Contains(filename))
+            return;
+
+        files.Add(filename);
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
     private static void createClassAndConstructor(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder, ImmutableArray<TypeAndName> memberList)
     {
-        var className = cls.ChildTokens().First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        var childTokens = cls.ChildTokens();
+        var className = childTokens.First(x => x.IsKind(SyntaxKind.IdentifierToken));
+        var visibility = TypeVisiblityHelper.GetFromTokens(childTokens);
         var classBuilder = sourceBuilder.StartClass(new ClassOptions(className.Text)
         {
-            Visibility = TypeVisiblity.Public,
+            Visibility = visibility,
             Partial = true
         });
 
@@ -179,7 +204,10 @@ namespace {ATTRIBUTE_NAMESPACE}
     }
 
     private static readonly ConstructorStruct Default =
-        new ConstructorStruct(null, new ImmutableArray<MemberDeclarationSyntax>());
+        new ConstructorStruct(
+            null,
+            new ImmutableArray<MemberDeclarationSyntax>(),
+            new ImmutableArray<WrapperClassStruct>());
 
     private static ConstructorStruct Transform(GeneratorSyntaxContext context, CancellationToken ct)
     {
@@ -196,7 +224,18 @@ namespace {ATTRIBUTE_NAMESPACE}
                 .Any(HasInjectAttribute(context, ct)))
             .ToImmutableArray();
 
-        return new ConstructorStruct(cds, members);
+        Stack<WrapperClassStruct> wrapperClasses = new();
+
+        var parent = cds.Parent;
+        while (parent is ClassDeclarationSyntax parentCDS)
+        {
+            var name = Helpers.GetClassName(parentCDS);
+            var visiblity = TypeVisiblityHelper.GetFromTokens(parentCDS.ChildTokens());
+            wrapperClasses.Push(new WrapperClassStruct(name, visiblity));
+            parent = parent.Parent;
+        }
+
+        return new ConstructorStruct(cds, members, wrapperClasses.ToImmutableArray());
     }
 
     private static Func<AttributeSyntax, bool> HasInjectAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)

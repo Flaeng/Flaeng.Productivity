@@ -2,10 +2,10 @@ namespace Flaeng.Productivity;
 
 internal enum GetterSetterVisiblity
 {
-    Inherited,
+    Default,
     Public,
     Internal,
     Protected,
     Private,
-    None
+    None,
 }

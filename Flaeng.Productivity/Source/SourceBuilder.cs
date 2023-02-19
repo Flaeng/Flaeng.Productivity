@@ -52,14 +52,19 @@ internal class SourceBuilder
     public void StartType(TypeOptions options)
     {
         builder.Append(Tabs());
-        builder.Append(options.Visibility.ToString().ToLower());
+
+        if (options.Visibility != TypeVisiblity.Default)
+        {
+            builder.Append(options.Visibility.ToString().ToLower());
+            builder.Append(" ");
+        }
         if (options.Static)
-            builder.Append(" static");
+            builder.Append("static ");
         if (options is ClassOptions co && co.Abstract)
-            builder.Append(" abstract");
+            builder.Append("abstract ");
         if (options.Partial)
-            builder.Append(" partial");
-        builder.Append(" ");
+            builder.Append("partial ");
+
         builder.Append(options.TypeName);
         builder.Append(" ");
         builder.Append(options.Name);

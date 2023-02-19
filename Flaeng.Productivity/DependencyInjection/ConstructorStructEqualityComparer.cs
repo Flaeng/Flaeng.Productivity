@@ -10,7 +10,8 @@ internal class ConstructorStructEqualityComparer : IEqualityComparer<Constructor
     public bool Equals(ConstructorStruct x, ConstructorStruct y)
     {
         return x.Class == y.Class
-            && x.Members.SequenceEqual(y.Members);
+            && x.Members.SequenceEqual(y.Members)
+            && x.WrapperClasses.SequenceEqual(y.WrapperClasses);
     }
 
     public int GetHashCode(ConstructorStruct obj)
