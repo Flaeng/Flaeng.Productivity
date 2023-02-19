@@ -127,9 +127,6 @@ internal class SourceBuilder
         builder.AppendLine("}");
     }
 
-    public Microsoft.CodeAnalysis.Text.SourceText Build()
-        => Microsoft.CodeAnalysis.Text.SourceText.From(this.ToString());
-
     public override string ToString()
     {
         StringBuilder result = new();
