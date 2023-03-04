@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -6,7 +7,7 @@ namespace Flaeng.Productivity.DependencyInjection;
 
 public sealed class InterfaceGenerator : IIncrementalGenerator
 {
-    const string ATTRIBUTE_NAMESPACE = "Flaeng.Productivity.DependencyInjection";
+    const string ATTRIBUTE_NAMESPACE = "Flaeng";
     const string ATTRIBUTE_NAME = "GenerateInterfaceAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -79,7 +80,42 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         members = new();
         methods = new();
-        foreach (var child in cds.DescendantNodes())
+
+        var allMembers = new List<ISymbol>();
+        var sym = symbol;
+        while (sym != null)
+        {
+            allMembers.AddRange(sym.GetMembers());
+            sym = sym.BaseType;
+        }
+
+        var children = allMembers
+            .Select(x =>
+            {
+                var firstRefs = x.DeclaringSyntaxReferences.FirstOrDefault();
+                if (firstRefs == null)
+                    return null;
+                return firstRefs.GetSyntax();
+            })
+            .Select(x =>
+            {
+                var item = x;
+                while (item is not null)
+                {
+                    if (item is MethodDeclarationSyntax)
+                        return item;
+                    if (item is MemberDeclarationSyntax)
+                        return item;
+
+                    item = item.Parent;
+                }
+                return null;
+            })
+            .Where(x => x != null)
+            .Distinct()
+            .ToArray();
+
+        foreach (var child in children)
         {
             if (child is MethodDeclarationSyntax method)
             {
@@ -92,6 +128,15 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
                     members.Add(member);
             }
         }
+
+        Dictionary<int, MethodDeclarationSyntax> methodDic = new();
+        foreach (var item in methods)
+        {
+            var hashcode = MethodDSComparer.Instance.GetHashCode(item);
+            if (methodDic.ContainsKey(hashcode) == false)
+                methodDic.Add(hashcode, item);
+        }
+        methods = methodDic.Values.ToList();
     }
 
     private static bool shouldBeExcluded(
@@ -229,7 +274,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         classBuilder.EndClass();
     }
 
-    private static void writeMember(InterfaceBuilder interfaceBuilder, MemberDeclarationSyntax member)
+    private static void writeMember(InterfaceBuilder interfaceBuilder, CSharpSyntaxNode member)
     {
         if (member is PropertyDeclarationSyntax pds && pds.AccessorList != null)
         {

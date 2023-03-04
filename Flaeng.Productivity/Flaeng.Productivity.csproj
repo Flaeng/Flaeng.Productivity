@@ -5,9 +5,34 @@
     <LangVersion>Latest</LangVersion>
     <nullable>enable</nullable>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- NUGET -->
+    <RepositoryUrl>https://github.com/Flaeng/Flaeng.Productivity</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType> 
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageId>Flaeng.Productivity</PackageId>
+    <Version>0.2.0</Version>
+    <Authors>Flaeng</Authors>
+    <Product>Flaeng.Productivity</Product>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Generates a package at build -->
+    <!-- <GeneratePackageOnBuild>true</GeneratePackageOnBuild>  -->
+    <!-- Do not include the generator as a lib dependency -->
+    <IncludeBuildOutput>false</IncludeBuildOutput> 
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Package the generator in the analyzer directory of the nuget package -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="LICENSE" Pack="true" PackagePath="\"/>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

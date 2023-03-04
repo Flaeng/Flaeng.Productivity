@@ -1,4 +1,3 @@
-using Flaeng.Productivity.DependencyInjection;
 using Flaeng.Productivity.Sample.Services;
 
 using Microsoft.AspNetCore.Mvc;

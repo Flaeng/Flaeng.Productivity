@@ -8,7 +8,7 @@ namespace Flaeng.Productivity.DependencyInjection;
 [Generator(LanguageNames.CSharp)]
 public sealed class ConstructorGenerator : IIncrementalGenerator
 {
-    const string ATTRIBUTE_NAMESPACE = "Flaeng.Productivity.DependencyInjection";
+    const string ATTRIBUTE_NAMESPACE = "Flaeng";
     const string ATTRIBUTE_NAME = "InjectAttribute";
     readonly HashSet<string> files = new();
 

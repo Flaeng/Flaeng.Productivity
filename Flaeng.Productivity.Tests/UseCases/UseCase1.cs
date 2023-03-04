@@ -25,7 +25,7 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
             public interface ISummaryProvider
             {
                 string[] GetSummaries();
@@ -57,7 +57,7 @@ public class UseCase1 : BaseUseCase
         {
             public partial class WeatherForecastController
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
                 public WeatherForecastController(
                     ILogger<WeatherForecastController> _logger1,
                     ILogger<WeatherForecastController> _logger2,
@@ -100,7 +100,7 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Services
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
             public interface IWeatherForecastService
             {
                 IEnumerable<WeatherForecast> GetWeatherForecast();
@@ -131,7 +131,7 @@ public class UseCase1 : BaseUseCase
         {
             public partial class WeatherForecastService
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "1.0.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
                 public WeatherForecastService(
                     ISummaryProvider _summaryProvider
                     )

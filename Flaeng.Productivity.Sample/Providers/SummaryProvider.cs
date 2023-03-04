@@ -1,5 +1,3 @@
-using Flaeng.Productivity.DependencyInjection;
-
 namespace Flaeng.Productivity.Sample.Providers;
 
 [GenerateInterface]

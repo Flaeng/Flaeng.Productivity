@@ -1,5 +1,3 @@
-
-using Flaeng.Productivity.DependencyInjection;
 using Flaeng.Productivity.Sample.Providers;
 
 namespace Flaeng.Productivity.Sample.Services;

@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: dotnet build
+
+      - name: Run tests
+        run: dotnet test
+
+      - name: Zip source code
+        run: zip -r ${{ format('source-v{0}.zip', inputs.version) }} .
+        working-directory: ../
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Flaeng-Productivity-v{0}.zip', inputs.version) }}
+          path: ${{ format('temp/library-v{0}/src/dist', inputs.version) }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          tag_name: ${{ format('{0}.{1}', matrix.ng-version, inputs.ngfds-version) }}
+          release_name: Release ${{ format('{0}.{1}', matrix.ng-version, inputs.ngfds-version) }}
+          draft: true
+          prerelease: true
+
+      - name: Upload Release package
+        id: upload-release-package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ format('temp/library-v{0}/src/dist/ngfds-v{0}.{1}.zip', matrix.ng-version, inputs.ngfds-version) }}
+          asset_name: ${{ format('ngfds-v{0}.{1}.zip', matrix.ng-version, inputs.ngfds-version) }}
+          asset_content_type: application/zip
+
+      - name: Make Nuget package
+        run: dotnet pack ./Flaeng.Productivity/Flaeng.Productivity.csproj -p:PackageVersion=${{ inputs.version }} --include-symbols --include-source --configuration Release
