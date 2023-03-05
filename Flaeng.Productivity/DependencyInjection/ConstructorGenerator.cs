@@ -27,7 +27,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
     private void Execute(SourceProductionContext context, ConstructorData data)
     {
         var cls = data.Class;
-        if (cls is null)
+        if (cls is null || data.ClassSymbol is null)
             return;
 
         SourceBuilder sourceBuilder = new();
@@ -47,14 +47,16 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
 
         // Add wrapper-classes
         foreach (var wrapper in data.WrapperClasses)
+        {
             sourceBuilder.StartClass(new ClassOptions(wrapper.Name)
             {
                 Visibility = wrapper.Visibility,
                 Partial = true
             });
+        }
 
         // Write new source code
-        createClassAndConstructor(cls, sourceBuilder, memberList);
+        createClassAndConstructor(cls, data.ClassSymbol, sourceBuilder, memberList);
 
         // End wrapper-classes
         for (int i = 0; i < data.WrapperClasses.Length; i++)
@@ -72,7 +74,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         context.AddSource($"{filename}.g.cs", sourceBuilder.ToString());
     }
 
-    private static void createClassAndConstructor(ClassDeclarationSyntax cls, SourceBuilder sourceBuilder, ImmutableArray<TypeAndName> memberList)
+    private static void createClassAndConstructor(ClassDeclarationSyntax cls, INamedTypeSymbol clsSymbol, SourceBuilder sourceBuilder, ImmutableArray<TypeAndName> memberList)
     {
         var childTokens = cls.ChildTokens();
         var className = childTokens.First(x => x.IsKind(SyntaxKind.IdentifierToken));
@@ -86,7 +88,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         var parameters = memberList.Select(x => $"{x.TypeName} {x.MemberName}");
 
         sourceBuilder.AddGeneratedCodeAttribute();
-        classBuilder.StartConstructor(new ConstructorOptions(className.Text)
+        classBuilder.StartConstructor(new ConstructorOptions(className.Text, false, new List<string>())
         {
             Visibility = MemberVisibility.Public,
             Parameters = new List<string>(parameters)
@@ -96,6 +98,33 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         classBuilder.EndConstructor();
 
         classBuilder.EndClass();
+    }
+
+    private static TypeAndName GetTypeNameAndMemberName(ISymbol member)
+    {
+        if (member is IFieldSymbol field)
+        {
+            var typeName = field.Type.ContainingNamespace.ToString() == "<global namespace>"
+                ? field.Type.ToString()
+                : $"global::{field.Type}";
+            return new TypeAndName
+            {
+                TypeName = typeName,
+                MemberName = field.Name
+            };
+        }
+        if (member is IPropertySymbol prop)
+        {
+            var typeName = prop.Type.ContainingNamespace.ToString() == "<global namespace>"
+                ? prop.Type.ToString()
+                : $"global::{prop.Type}";
+            return new TypeAndName
+            {
+                TypeName = typeName,
+                MemberName = prop.Name
+            };
+        }
+        throw new Exception("Unsupported symbol in parameterlist");
     }
 
     private static TypeAndName GetTypeNameAndMemberName(MemberDeclarationSyntax member)
@@ -201,7 +230,8 @@ namespace {ATTRIBUTE_NAMESPACE}
     private static readonly ConstructorData Default =
         new ConstructorData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
+            null,
+            new ImmutableArray<ISymbol>(),
             new ImmutableArray<WrapperClassData>());
 
     private static ConstructorData Transform(GeneratorSyntaxContext context, CancellationToken ct)
@@ -213,15 +243,29 @@ namespace {ATTRIBUTE_NAMESPACE}
         if (namedType is null)
             return Default;
 
-        var members = cds.Members
-            .Where(x => x.AttributeLists
-                .SelectMany(x => x.Attributes)
-                .Any(HasInjectAttribute(context, ct)))
+        List<INamedTypeSymbol> allTypes = new(new [] { namedType });
+        var baseType = namedType.BaseType;
+        while (baseType != null)
+        {
+            if (baseType.ToString().Equals("object") && baseType.ContainingNamespace.ToString().Equals("System"))
+                break;
+
+            allTypes.Add(baseType);
+            baseType = baseType.BaseType;
+        }
+
+        var members = allTypes.SelectMany(x => x.GetMembers())
+            .Where(x => x.GetAttributes().Any(HasInjectAttribute2))
             .ToImmutableArray();
 
         var wrapperClasses = WrapperClassData.From(cds).ToImmutableArray();
 
-        return new ConstructorData(cds, members, wrapperClasses);
+        return new ConstructorData(cds, namedType, members, wrapperClasses);
+    }
+
+    private static bool HasInjectAttribute2(AttributeData attr)
+    {
+        return attr.ToString() == "Flaeng.InjectAttribute";
     }
 
     private static Func<AttributeSyntax, bool> HasInjectAttribute(GeneratorSyntaxContext ctx, CancellationToken ct)

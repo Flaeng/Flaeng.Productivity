@@ -107,7 +107,15 @@ abstract class BaseBuilder
         }
 
         builder.AppendRaw(options.Name);
-        writeMethodParameters(options);
+        writeMethodParameters(options.Parameters);
+
+        if (options is ConstructorOptions constructorOptions && constructorOptions.CallBase)
+        {
+            builder.AppendRaw(": base");
+            writeMethodParameters(constructorOptions.BaseParameters);
+            builder.AppendLineBreak();
+        }
+
         writeMethodBody(isStub);
     }
 
@@ -128,19 +136,19 @@ abstract class BaseBuilder
         }
     }
 
-    private void writeMethodParameters(FunctionOptions options)
+    private void writeMethodParameters(List<string> parameters)
     {
-        if (options.Parameters.Any())
+        if (parameters.Any())
         {
             builder.AppendRaw("(");
             builder.AppendLineBreak();
             builder.IncrementTabIndex();
 
-            foreach (var param in options.Parameters)
+            foreach (var param in parameters)
             {
                 builder.AppendTabs();
                 builder.AppendRaw(param);
-                if (param != options.Parameters.Last())
+                if (param != parameters.Last())
                     builder.AppendRaw(",");
                 builder.AppendLineBreak();
             }

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Flaeng.Productivity.Tests.DependencyInjection;
@@ -13,8 +14,8 @@ public class InterfaceStructEqualityComparerTests
     {
         var item = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
         Assert.False(item.Equals(null));
@@ -25,8 +26,8 @@ public class InterfaceStructEqualityComparerTests
     {
         var item = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
         Assert.True(item.Equals(item));
@@ -37,14 +38,14 @@ public class InterfaceStructEqualityComparerTests
     {
         var item1 = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
         var item2 = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
         Assert.True(item1.Equals(item2));
@@ -55,8 +56,8 @@ public class InterfaceStructEqualityComparerTests
     {
         var item = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
         Assert.Throws<NotImplementedException>(() =>

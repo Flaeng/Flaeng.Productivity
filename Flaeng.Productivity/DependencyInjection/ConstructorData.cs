@@ -3,6 +3,7 @@ namespace Flaeng.Productivity;
 internal record struct ConstructorData
 (
     ClassDeclarationSyntax? Class,
-    ImmutableArray<MemberDeclarationSyntax> Members,
+    INamedTypeSymbol? ClassSymbol,
+    ImmutableArray<ISymbol> Members,
     ImmutableArray<WrapperClassData> WrapperClasses
 );

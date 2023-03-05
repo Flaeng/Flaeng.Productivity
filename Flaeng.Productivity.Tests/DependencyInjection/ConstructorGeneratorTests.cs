@@ -23,7 +23,7 @@ public class ConstructorGeneratorTests : TestBase
 
         namespace Flaeng
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
             [global::System.AttributeUsageAttribute(
                 global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, 
                 AllowMultiple = false, 
@@ -86,9 +86,9 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    IList _logger
+                    global::System.Collections.IList _logger
                     )
                 {
                     this._logger = _logger;
@@ -162,9 +162,9 @@ public partial class Dummy
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    IList _logger
+                    global::System.Collections.IList _logger
                     )
                 {
                     this._logger = _logger;
@@ -194,7 +194,7 @@ public partial class Dummy
 
         // Act
         var output = GetGeneratedOutput<ConstructorGenerator>(
-            new SourceFile("dummy.cs", source)
+            new SourceFile("Dummy.cs", source)
         );
 
         // Assert
@@ -208,9 +208,9 @@ public partial class Dummy
 
         public partial class Dummy
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
             public Dummy(
-                IList _logger
+                global::System.Collections.IList _logger
                 )
             {
                 this._logger = _logger;
@@ -274,9 +274,9 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    List<string> _logger
+                    global::System.Collections.Generic.List<string> _logger
                     )
                 {
                     this._logger = _logger;
@@ -322,9 +322,9 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    global::Microsoft.Extensions.Logging.ILogger<System.String> _logger
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
                 {
                     this._logger = _logger;
@@ -370,9 +370,9 @@ namespace TestNamespace
         {
             internal partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    global::Microsoft.Extensions.Logging.ILogger<System.String> _logger
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
                 {
                     this._logger = _logger;
@@ -418,9 +418,9 @@ namespace TestNamespace
         {
             partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    global::Microsoft.Extensions.Logging.ILogger<System.String> _logger
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
                 {
                     this._logger = _logger;
@@ -476,9 +476,9 @@ namespace TestNamespace
                 {
                     public partial class Dummy
                     {
-                        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                         public Dummy(
-                            global::Microsoft.Extensions.Logging.ILogger<System.String> _logger
+                            global::Microsoft.Extensions.Logging.ILogger<string> _logger
                             )
                         {
                             this._logger = _logger;
@@ -494,6 +494,176 @@ namespace TestNamespace
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
         Assert.Equal(expected_output, dummyGenerated?.Content);
+    }
+
+    [Fact]
+    public void can_handle_multiple_classes_in_one_file()
+    {
+        // Arrange
+        string source = """
+        namespace TestNamespace.Controllers
+        {
+            public partial class Dummy
+            {
+                [Flaeng.Inject] 
+                global::Microsoft.Extensions.Logging.ILogger<System.String> _logger;
+            }
+            public partial class DumDum
+            {
+                [Flaeng.Inject] 
+                global::Microsoft.Extensions.Logging.ILogger<System.String> _logger;
+            }
+        }
+        """;
+
+        // Act
+        var output = GetGeneratedOutput<ConstructorGenerator>(
+            new SourceFile("dummy.cs", source)
+        );
+
+        // Assert
+        string expected_output1 = """
+        // <auto-generated/>
+
+        #nullable enable
+
+        namespace TestNamespace.Controllers
+        {
+            public partial class Dummy
+            {
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                public Dummy(
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger
+                    )
+                {
+                    this._logger = _logger;
+                }
+            }
+        }
+
+        """;
+        string expected_output2 = """
+        // <auto-generated/>
+
+        #nullable enable
+
+        namespace TestNamespace.Controllers
+        {
+            public partial class DumDum
+            {
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                public DumDum(
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger
+                    )
+                {
+                    this._logger = _logger;
+                }
+            }
+        }
+
+        """;
+        Assert.Empty(output.Diagnostic);
+
+        var dummyGenerated = output.GeneratedFiles
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.Dummy.g.cs"));
+        Assert.Equal(expected_output1, dummyGenerated?.Content);
+
+        var dumdumGenerated = output.GeneratedFiles
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.DumDum.g.cs"));
+        Assert.Equal(expected_output2, dumdumGenerated?.Content);
+    }
+
+    [Fact]
+    public void can_handle_multiple_files_for_one_class()
+    {
+        // Arrange
+        string source1 = """
+        using System; 
+
+        namespace TestNamespace.Controllers
+        {
+            public partial class Dummy
+            {
+                [Flaeng.Inject] 
+                global::Microsoft.Extensions.Logging.ILogger<System.String> _logger1;
+            }
+        }
+        """;
+        string source2 = """
+        using Microsoft.Extensions.Logging;
+        
+        namespace TestNamespace.Controllers
+        {
+            public partial class DumDum : Dummy
+            {
+                [Flaeng.Inject] 
+                ILogger<System.Int32> _logger2;
+            }
+        }
+        """;
+        
+        // Act
+        var output = GetGeneratedOutput<ConstructorGenerator>(
+            new SourceFile("Dummy.cs", source1),
+            new SourceFile("DumDum.cs", source2)
+        );
+
+        // Assert
+        string expected_output1 = """
+        // <auto-generated/>
+
+        using System;
+        
+        #nullable enable
+        
+        namespace TestNamespace.Controllers
+        {
+            public partial class Dummy
+            {
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                public Dummy(
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger1
+                    )
+                {
+                    this._logger1 = _logger1;
+                }
+            }
+        }
+
+        """;
+        string expected_output2 = """
+        // <auto-generated/>
+
+        using Microsoft.Extensions.Logging;
+
+        #nullable enable
+        
+        namespace TestNamespace.Controllers
+        {
+            public partial class DumDum
+            {
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                public DumDum(
+                    ILogger<int> _logger2,
+                    global::Microsoft.Extensions.Logging.ILogger<string> _logger1
+                    )
+                {
+                    this._logger2 = _logger2;
+                    this._logger1 = _logger1;
+                }
+            }
+        }
+
+        """;
+        Assert.Empty(output.Diagnostic);
+
+        var dummyGenerated = output.GeneratedFiles
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.Dummy.g.cs"));
+        Assert.Equal(expected_output1, dummyGenerated?.Content);
+
+        var dumdumGenerated = output.GeneratedFiles
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.DumDum.g.cs"));
+        Assert.Equal(expected_output2, dumdumGenerated?.Content);
     }
 
     [Theory]
@@ -549,9 +719,9 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
-                    IDictionary<string, object> _logger
+                    global::System.Collections.Generic.IDictionary<string, object> _logger
                     )
                 {
                     this._logger = _logger;
@@ -622,7 +792,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.0.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
                 public Dummy(
                     IDictionary<string, object> _logger1,
                     IDictionary<string, object> _logger2,

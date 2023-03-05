@@ -15,7 +15,7 @@ public abstract class BaseUseCase : TestBase
             .Parent!
             .Parent!
             .Parent!
-            .GetFiles("UseCases/UseCase1/*.txt")
+            .GetFiles($"UseCases/{directoryName}/*.txt")
             .Select(x =>
             {
                 using var reader = new StreamReader(x.OpenRead());

@@ -26,8 +26,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
     readonly static InterfaceData Default = new InterfaceData(
             null,
-            new ImmutableArray<MemberDeclarationSyntax>(),
-            new ImmutableArray<MethodDeclarationSyntax>(),
+            new Dictionary<MemberDeclarationSyntax, ISymbol>().ToImmutableDictionary(),
+            new Dictionary<MethodDeclarationSyntax, IMethodSymbol>().ToImmutableDictionary(),
             new ImmutableArray<string>(),
             new ImmutableArray<WrapperClassData>());
 
@@ -52,16 +52,16 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             ctx,
             cds,
             symbol,
-            out List<MemberDeclarationSyntax> members,
-            out List<MethodDeclarationSyntax> methods,
+            out Dictionary<MemberDeclarationSyntax, ISymbol> members,
+            out Dictionary<MethodDeclarationSyntax, IMethodSymbol> methods,
             ct);
 
         var wrapperClasses = WrapperClassData.From(cds).ToImmutableArray();
 
         return new InterfaceData(
             cds,
-            members.ToImmutableArray(),
-            methods.ToImmutableArray(),
+            members.ToImmutableDictionary(),
+            methods.ToImmutableDictionary(),
             interfaces,
             wrapperClasses);
     }
@@ -69,12 +69,12 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
     private static void GetMemberAndMethods(
         GeneratorSyntaxContext ctx,
         ClassDeclarationSyntax cds,
-        INamedTypeSymbol symbol,
-        out List<MemberDeclarationSyntax> members,
-        out List<MethodDeclarationSyntax> methods,
+        INamedTypeSymbol classSymbol,
+        out Dictionary<MemberDeclarationSyntax, ISymbol> members,
+        out Dictionary<MethodDeclarationSyntax, IMethodSymbol> methods,
         CancellationToken ct)
     {
-        var excludeMembers = symbol.AllInterfaces
+        var excludeMembers = classSymbol.AllInterfaces
                     .SelectMany(x => x.GetMembers())
                     .ToImmutableArray();
 
@@ -82,70 +82,77 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         methods = new();
 
         var allMembers = new List<ISymbol>();
-        var sym = symbol;
+        var sym = classSymbol;
         while (sym != null)
         {
+            if (sym.ToString().Equals("object") && sym.ContainingNamespace.ToString().Equals("System"))
+                break;
+
             allMembers.AddRange(sym.GetMembers());
             sym = sym.BaseType;
         }
 
-        var children = allMembers
-            .Select(x =>
-            {
-                var firstRefs = x.DeclaringSyntaxReferences.FirstOrDefault();
-                if (firstRefs == null)
-                    return null;
-                return firstRefs.GetSyntax();
-            })
-            .Select(x =>
-            {
-                var item = x;
-                while (item is not null)
-                {
-                    if (item is MethodDeclarationSyntax)
-                        return item;
-                    if (item is MemberDeclarationSyntax)
-                        return item;
+        Dictionary<MemberDeclarationSyntax, ISymbol> children = new();
+        foreach (var symbol in allMembers)
+        {
+            var firstRefs = symbol.DeclaringSyntaxReferences.FirstOrDefault();
+            if (firstRefs == null)
+                continue;
 
-                    item = item.Parent;
-                }
-                return null;
-            })
-            .Where(x => x != null)
-            .Distinct()
-            .ToArray();
+            var st = firstRefs.SyntaxTree;
+            var node = firstRefs.GetSyntax();
+            if (node is not MemberDeclarationSyntax)
+            {
+                node = node
+                    .GetParents()
+                    .OfType<MemberDeclarationSyntax>()
+                    .FirstOrDefault();
+            }
+            var member = node as MemberDeclarationSyntax;
+            if (member is null)
+                continue;
 
+            if (children.ContainsKey(member))
+                continue;
+            if (children.ContainsValue(symbol))
+                continue;
+
+            children.Add(member, symbol);
+        }
+
+        HashSet<int> methodHashcodes = new();
         foreach (var child in children)
         {
-            if (child is MethodDeclarationSyntax method)
-            {
-                if (shouldBeExcluded(ctx, child, excludeMembers, ct) == false)
-                    methods.Add(method);
-            }
-            else if (child is MemberDeclarationSyntax member)
-            {
-                if (shouldBeExcluded(ctx, child, excludeMembers, ct) == false)
-                    members.Add(member);
-            }
-        }
+            if (child.Key.Modifiers.Any(x => x.ValueText == "public") == false)
+                continue;
 
-        Dictionary<int, MethodDeclarationSyntax> methodDic = new();
-        foreach (var item in methods)
-        {
-            var hashcode = MethodDSComparer.Instance.GetHashCode(item);
-            if (methodDic.ContainsKey(hashcode) == false)
-                methodDic.Add(hashcode, item);
+            if (shouldBeExcluded(ctx, child.Key, child.Value, excludeMembers, ct))
+                continue;
+
+            if (child.Key is MethodDeclarationSyntax method
+                && child.Value is IMethodSymbol methodSymbol)
+            {
+                var hashcode = MethodDSComparer.Instance.GetHashCode(method);
+                if (methodHashcodes.Contains(hashcode))
+                    continue;
+
+                methodHashcodes.Add(hashcode);
+                methods.Add(method, methodSymbol);
+            }
+            else if (child.Key is PropertyDeclarationSyntax prop)
+                members.Add(prop, child.Value);
+            else if (child.Key is FieldDeclarationSyntax field)
+                members.Add(field, child.Value);
         }
-        methods = methodDic.Values.ToList();
     }
 
     private static bool shouldBeExcluded(
         GeneratorSyntaxContext ctx,
         SyntaxNode node,
+        ISymbol methodSymbol,
         ImmutableArray<ISymbol> excludeMembers,
         CancellationToken ct)
     {
-        var methodSymbol = ctx.SemanticModel.GetDeclaredSymbol(node, ct);
         return
             (
                 methodSymbol is IMethodSymbol mSymbol
@@ -206,11 +213,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         // Add wrapper-classes
         foreach (var wrapper in data.WrapperClasses)
+        {
             sourceBuilder.StartClass(new ClassOptions(wrapper.Name)
             {
                 Visibility = wrapper.Visibility,
                 Partial = true
             });
+        }
 
         // Write new source code
         createInterfaceAndClass(data, cls, sourceBuilder);
@@ -257,11 +266,11 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
             // Partial = true
         });
 
-        foreach (var member in data.Members)
-            writeMember(interfaceBuilder, member);
+        foreach (var member in data.Members.OrderBy(x => x.Value.Name))
+            writeMember(interfaceBuilder, member.Value, member.Key);
 
-        foreach (var method in data.Methods)
-            writeMethod(interfaceBuilder, method);
+        foreach (var method in data.Methods.OrderBy(x => x.Value.Name).ThenBy(x => x.Value.Parameters.Length))
+            writeMethod(interfaceBuilder, method.Value, method.Key);
 
         interfaceBuilder.EndInterface();
 
@@ -274,7 +283,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         classBuilder.EndClass();
     }
 
-    private static void writeMember(InterfaceBuilder interfaceBuilder, CSharpSyntaxNode member)
+    private static void writeMember(InterfaceBuilder interfaceBuilder, ISymbol symbol, CSharpSyntaxNode member)
     {
         if (member is PropertyDeclarationSyntax pds && pds.AccessorList != null)
         {
@@ -347,7 +356,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         return modifier.IsKind(SyntaxKind.PublicKeyword);
     }
 
-    private static void writeMethod(InterfaceBuilder interfaceBuilder, MethodDeclarationSyntax method)
+    private static void writeMethod(InterfaceBuilder interfaceBuilder, IMethodSymbol symbol, MethodDeclarationSyntax method)
     {
         var name = method.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -367,12 +376,45 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var parameters = parameterList.DescendantNodes()
             .Where(x => x.IsKind(SyntaxKind.Parameter));
 
-        var parameterText = parameters.Select(x => x.ToFullString());
+        // var parameterText = parameters.Select(x => x.ToFullString());
 
-        interfaceBuilder.AddMethodStub(new MethodOptions(method.ReturnType.ToString(), name.Text)
+        var returnType = TypeSymbolHelper.WriteType(symbol.ReturnType);
+        var parameterText = symbol.Parameters
+            .Select(TypeSymbolHelper.WriteParameter);
+            // .Select(GetTypeNameAndMemberName)
+            // .Select(x => $"{x.TypeName} {x.MemberName}");
+
+        interfaceBuilder.AddMethodStub(new MethodOptions(returnType, name.Text)
         {
             Parameters = new List<string>(parameterText)
         });
+    }
+
+    private static TypeAndName GetTypeNameAndMemberName(ISymbol member)
+    {
+        if (member is IFieldSymbol field)
+        {
+            var typeName = field.Type.ContainingNamespace == null || field.Type.ContainingNamespace.ToString() == "<global namespace>"
+                ? field.Type.ToString()
+                : $"global::{field.Type}";
+            return new TypeAndName
+            {
+                TypeName = typeName,
+                MemberName = field.Name
+            };
+        }
+        if (member is IPropertySymbol prop)
+        {
+            var typeName = prop.Type.ContainingNamespace == null || prop.Type.ContainingNamespace.ToString() == "<global namespace>"
+                ? prop.Type.ToString()
+                : $"global::{prop.Type}";
+            return new TypeAndName
+            {
+                TypeName = typeName,
+                MemberName = prop.Name
+            };
+        }
+        throw new Exception("Unsupported symbol in parameterlist");
     }
 
     private static void GenerateAttribute(IncrementalGeneratorPostInitializationContext context)

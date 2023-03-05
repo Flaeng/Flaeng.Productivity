@@ -3,8 +3,8 @@ namespace Flaeng.Productivity;
 internal record struct InterfaceData
 (
     ClassDeclarationSyntax? Class,
-    ImmutableArray<MemberDeclarationSyntax> Members,
-    ImmutableArray<MethodDeclarationSyntax> Methods,
+    ImmutableDictionary<MemberDeclarationSyntax, ISymbol> Members,
+    ImmutableDictionary<MethodDeclarationSyntax, IMethodSymbol> Methods,
     ImmutableArray<string> InterfaceNames,
     ImmutableArray<WrapperClassData> WrapperClasses
 );
