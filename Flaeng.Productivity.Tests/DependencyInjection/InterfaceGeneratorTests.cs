@@ -4,6 +4,7 @@ namespace Flaeng.Productivity.Tests.DependencyInjection;
 
 public class InterfaceGeneratorTests : TestBase
 {
+
     [Fact]
     public void Does_generate_attribute()
     {
@@ -24,7 +25,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace Flaeng
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             [global::System.AttributeUsageAttribute(
                 global::System.AttributeTargets.Class, 
                 AllowMultiple = false,
@@ -96,7 +97,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
             }
@@ -142,7 +143,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
             }
@@ -185,7 +186,7 @@ public class InterfaceGeneratorTests : TestBase
 
         #nullable enable
 
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
         public interface IDummy
         {
         }
@@ -234,7 +235,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 void Simple();
@@ -285,7 +286,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Simple { get; set; }
@@ -336,7 +337,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 static string Simple { get; set; }
@@ -387,7 +388,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
             }
@@ -437,7 +438,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Simple;
@@ -488,7 +489,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 static string Simple;
@@ -539,7 +540,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
             }
@@ -589,7 +590,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Simple { get; }
@@ -640,7 +641,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Simple { get; }
@@ -691,7 +692,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Simple { set; }
@@ -742,7 +743,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
             }
@@ -793,7 +794,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 void Simple();
@@ -853,7 +854,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 void Simple();
@@ -876,7 +877,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDumDum
             {
                 void Second();
@@ -933,7 +934,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 bool Simple(
@@ -985,7 +986,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 bool Simple(
@@ -1067,7 +1068,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             internal interface IDummy
             {
                 bool Simple(
@@ -1146,7 +1147,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 int Math(
@@ -1229,7 +1230,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 User Login(
@@ -1237,6 +1238,74 @@ public class InterfaceGeneratorTests : TestBase
                     );
                 void Logout(
                     User data
+                    );
+            }
+            public partial class Dummy : IDummy
+            {
+            }
+        }
+        
+        """;
+        Assert.Empty(output.Diagnostic);
+
+        var dummyGenerated = output.GeneratedFiles
+            .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
+        Assert.Equal(expected_output, dummyGenerated?.Content);
+    }
+
+    [Fact]
+    public void can_handle_async_methods()
+    {
+        // Arrange
+        string source = """
+        using Flaeng;
+        using System.Threading;
+        using System.Threading.Tasks;
+
+        namespace TestNamespace.Providers
+        {
+            public class User
+            {
+                public string Username { get; }
+            }
+            public class Page<T>
+            {
+                public List<T> Items { get; }
+            }
+            [GenerateInterface]
+            public partial class Dummy
+            {
+                public async Task<Page<User>> SimpleAsync(string text, CancellationToken token) 
+                { 
+                    return Task.FromResult(new Page<User>()); 
+                }
+            }
+        }
+        """;
+
+        // Act
+        var output = GetGeneratedOutput<InterfaceGenerator>(
+            new SourceFile("dummy.cs", source)
+        );
+
+        // Assert
+        string expected_output = """
+        // <auto-generated/>
+
+        using Flaeng;
+        using System.Threading;
+        using System.Threading.Tasks;
+
+        #nullable enable
+
+        namespace TestNamespace.Providers
+        {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
+            public interface IDummy
+            {
+                global::System.Threading.Tasks.Task<global::TestNamespace.Providers.Page<global::TestNamespace.Providers.User>> SimpleAsync(
+                    string text,
+                    global::System.Threading.CancellationToken token
                     );
             }
             public partial class Dummy : IDummy
@@ -1294,7 +1363,7 @@ public class InterfaceGeneratorTests : TestBase
             {
                 public partial class Wrapper2
                 {
-                    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                     public interface IDummy
                     {
                         bool Simple(
@@ -1354,7 +1423,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy2
             {
                 bool Advanced(
@@ -1424,7 +1493,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDummy
             {
                 string Paragraph { get; }
@@ -1489,7 +1558,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface IDumDum
             {
                 bool Simple(
@@ -1545,7 +1614,7 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public interface DumDum
             {
                 bool Simple(

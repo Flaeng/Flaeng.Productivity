@@ -17,7 +17,12 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(GenerateDependencies);
 
         var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<ConstructorData>(HasMembersAndIsPartialAndNotStatic, Transform)
+            .CreateSyntaxProvider<ConstructorData>(
+                static (node, _) => node is ClassDeclarationSyntax { Members.Count: > 0 } cds
+                    && cds.Modifiers.Any(SyntaxKind.PartialKeyword)
+                    && cds.Modifiers.Any(SyntaxKind.StaticKeyword) == false, 
+                Transform
+            )
             .Where(static x => x.Class != null)
             .WithComparer(ConstructorDataEqualityComparer.Instance);
 
@@ -216,15 +221,6 @@ namespace {ATTRIBUTE_NAMESPACE}
         {{ }}
     }}
 }}", Encoding.UTF8));
-    }
-
-    private static bool HasMembersAndIsPartialAndNotStatic(SyntaxNode node, CancellationToken ct)
-    {
-        if (node is not ClassDeclarationSyntax { Members.Count: > 0 } cds)
-            return false;
-
-        return cds.Modifiers.Any(SyntaxKind.PartialKeyword) &&
-            cds.Modifiers.Any(SyntaxKind.StaticKeyword) == false;
     }
 
     private static readonly ConstructorData Default =

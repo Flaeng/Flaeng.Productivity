@@ -83,14 +83,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var allMembers = new List<ISymbol>();
         var sym = classSymbol;
-        while (sym != null)
+        do
         {
             if (sym.ToString().Equals("object") && sym.ContainingNamespace.ToString().Equals("System"))
                 break;
-
             allMembers.AddRange(sym.GetMembers());
-            sym = sym.BaseType;
         }
+        while ((sym = sym.BaseType) != null);
 
         Dictionary<MemberDeclarationSyntax, ISymbol> children = new();
         foreach (var symbol in allMembers)
@@ -249,12 +248,9 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         if (data.InterfaceNames.Contains(interfaceName))
         {
             string tmp = interfaceName;
-            for (int i = 2; i < 10; i++)
-            {
-                tmp = $"{interfaceName}{i}";
-                if (data.InterfaceNames.Contains(tmp) == false)
-                    break;
-            }
+            int i = 2;
+            do tmp = $"{interfaceName}{i++}";
+            while (data.InterfaceNames.Contains(tmp));
             interfaceName = tmp;
         }
 
@@ -330,7 +326,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
         var name = pds.ChildTokens()
             .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
-            .FirstOrDefault();
+            .First();
 
         interfaceBuilder.AddProperty(new PropertyOptions(pds.Type.ToString(), name.ToString())
         {

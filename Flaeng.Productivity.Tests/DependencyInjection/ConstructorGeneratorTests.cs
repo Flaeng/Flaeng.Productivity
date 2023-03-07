@@ -23,7 +23,7 @@ public class ConstructorGeneratorTests : TestBase
 
         namespace Flaeng
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             [global::System.AttributeUsageAttribute(
                 global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, 
                 AllowMultiple = false, 
@@ -86,7 +86,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::System.Collections.IList _logger
                     )
@@ -162,7 +162,7 @@ public partial class Dummy
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::System.Collections.IList _logger
                     )
@@ -208,7 +208,7 @@ public partial class Dummy
 
         public partial class Dummy
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
             public Dummy(
                 global::System.Collections.IList _logger
                 )
@@ -274,7 +274,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::System.Collections.Generic.List<string> _logger
                     )
@@ -322,7 +322,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -370,7 +370,7 @@ namespace TestNamespace
         {
             internal partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -418,7 +418,7 @@ namespace TestNamespace
         {
             partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -476,7 +476,7 @@ namespace TestNamespace
                 {
                     public partial class Dummy
                     {
-                        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                         public Dummy(
                             global::Microsoft.Extensions.Logging.ILogger<string> _logger
                             )
@@ -531,7 +531,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -551,7 +551,7 @@ namespace TestNamespace
         {
             public partial class DumDum
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public DumDum(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -620,7 +620,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger1
                     )
@@ -642,7 +642,7 @@ namespace TestNamespace
         {
             public partial class DumDum
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public DumDum(
                     ILogger<int> _logger2,
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger1
@@ -719,7 +719,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     global::System.Collections.Generic.IDictionary<string, object> _logger
                     )
@@ -792,7 +792,7 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.1.0")]
+                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.2.0")]
                 public Dummy(
                     IDictionary<string, object> _logger1,
                     IDictionary<string, object> _logger2,

@@ -8,9 +8,9 @@ internal static class TypeSymbolHelper
         {
             if (named.TypeArguments.Any())
             {
-                var ori = named.OriginalDefinition.ToString();
+                var ori = named.OriginalDefinition.ToString().Split('<').First();
                 var args = named.TypeArguments.Select(WriteType).ToImmutableArray();
-                return $"{ori.TrimEnd('>')}{String.Join(", ", args)}>";
+                return $"global::{ori}<{String.Join(", ", args)}>";
             }
         }
 
