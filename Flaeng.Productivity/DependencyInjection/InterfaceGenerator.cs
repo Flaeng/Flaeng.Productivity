@@ -377,8 +377,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var returnType = TypeSymbolHelper.WriteType(symbol.ReturnType);
         var parameterText = symbol.Parameters
             .Select(TypeSymbolHelper.WriteParameter);
-            // .Select(GetTypeNameAndMemberName)
-            // .Select(x => $"{x.TypeName} {x.MemberName}");
+        // .Select(GetTypeNameAndMemberName)
+        // .Select(x => $"{x.TypeName} {x.MemberName}");
 
         interfaceBuilder.AddMethodStub(new MethodOptions(returnType, name.Text)
         {

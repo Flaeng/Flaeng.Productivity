@@ -1270,7 +1270,7 @@ public class InterfaceGeneratorTests : TestBase
             }
         }
         """;
-        
+
         // Act
         var output = GetGeneratedOutput<InterfaceGenerator>(
             new SourceFile("CanDoStuff.cs", source)
@@ -1324,7 +1324,7 @@ public class InterfaceGeneratorTests : TestBase
             }
         }
         """;
-        
+
         // Act
         var output = GetGeneratedOutput<InterfaceGenerator>(
             new SourceFile("CanDoStuff.cs", source)

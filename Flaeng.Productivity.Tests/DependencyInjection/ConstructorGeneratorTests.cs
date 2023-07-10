@@ -601,7 +601,7 @@ namespace TestNamespace
             }
         }
         """;
-        
+
         // Act
         var output = GetGeneratedOutput<ConstructorGenerator>(
             new SourceFile("Dummy.cs", source1),
