@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Nuke.Common;
-using Nuke.Common.Git;
-using Nuke.Common.ProjectModel;
-
 partial class Build
 {
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]

@@ -1,5 +1,3 @@
-using Nuke.Common.CI.GitHubActions;
-
 [GitHubActions(
     "build",
     GitHubActionsImage.UbuntuLatest,
@@ -17,7 +15,7 @@ using Nuke.Common.CI.GitHubActions;
 [GitHubActions(
     "housekeeping",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Housekeeping), nameof(Test), nameof(Stryker) },
+    InvokedTargets = new[] { nameof(Format), nameof(Test), nameof(Stryker) },
     OnPushBranches = new[] { "main" },
     OnPullRequestBranches = new[] { "main" }
 )]

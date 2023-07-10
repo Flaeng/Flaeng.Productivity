@@ -1,14 +1,3 @@
-using System;
-using System.IO.Compression;
-using System.Linq;
-
-using Nuke.Common;
-using Nuke.Common.IO;
-
-using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.NuGet;
-using Nuke.Common.Utilities.Collections;
-
 partial class Build
 {
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts" / "*.*";

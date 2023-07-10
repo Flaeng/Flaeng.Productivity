@@ -79,7 +79,7 @@
             "enum": [
               "Clean",
               "Compile",
-              "Housekeeping",
+              "Format",
               "Pack",
               "Publish",
               "Restore",
@@ -100,7 +100,7 @@
             "enum": [
               "Clean",
               "Compile",
-              "Housekeeping",
+              "Format",
               "Pack",
               "Publish",
               "Restore",
