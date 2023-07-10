@@ -13,7 +13,6 @@ partial class Build
     [Parameter("Commit message")] readonly string CommitMessage;
 
     Target Commit => _ => _
-        .Before(Compile)
         .Requires(() => CommitMessage)
         .Executes(() =>
         {
@@ -21,12 +20,7 @@ partial class Build
                 .SetIncludeGenerated(false)
                 );
 
-            var isClean = GitTasks.GitHasCleanWorkingCopy();
-            Serilog.Log.Information($"Formatting caused changes: {(isClean == false)}");
-            if (isClean == false)
-            {
-                GitTasks.Git("add .");
-                GitTasks.Git($"commit -m \"{CommitMessage}\"");
-            }
+            GitTasks.Git("add .");
+            GitTasks.Git($"commit -m \"{CommitMessage}\"");
         });
 }
