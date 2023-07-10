@@ -11,14 +11,14 @@ using Nuke.Common.CI.GitHubActions;
     "deploy",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Publish) },
-    OnPushTags = new [] { "main" },
+    OnPushTags = new[] { "main" },
     PublishArtifacts = true
 )]
 [GitHubActions(
     "housekeeping",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Housekeeping), nameof(Test), nameof(Stryker) },
-    OnPushBranches = new [] { "main" },
+    OnPushBranches = new[] { "main" },
     OnPullRequestBranches = new[] { "main" }
 )]
 partial class Build
