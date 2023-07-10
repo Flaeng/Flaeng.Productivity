@@ -15,7 +15,7 @@
 [GitHubActions(
     "housekeeping",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Format), nameof(Test), nameof(Stryker) },
+    InvokedTargets = new[] { nameof(Format), nameof(Test) },
     OnPushBranches = new[] { "main" },
     OnPullRequestBranches = new[] { "main" }
 )]

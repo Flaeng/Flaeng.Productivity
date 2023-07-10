@@ -1,5 +1,8 @@
 partial class Build
 {
+    Target Housekeeping => _ => _
+        .DependsOn(Format, Test, Stryker);
+
     Target Format => _ => _
         .Executes(() =>
         {
@@ -16,7 +19,7 @@ partial class Build
             GitTasks.Git("config --global user.name '@Flaeng'");
             GitTasks.Git("config --global user.email 'flaeng@users.noreply.github.com'");
             GitTasks.Git($"commit -am \"{nameof(Format)}\"");
-            GitTasks.Git("push");
+            GitTasks.Git($"push origin HEAD:{GitRepository.Branch}");
         });
 
 
