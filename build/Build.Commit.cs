@@ -10,17 +10,16 @@ using Nuke.Common.Tools.Git;
 
 partial class Build
 {
-    [Parameter("Commit message")] readonly string CommitMessage;
-
-    Target Commit => _ => _
-        .Requires(() => CommitMessage)
+    Target Housekeeping => _ => _
         .Executes(() =>
         {
             DotNetTasks.DotNetFormat(opts => opts
                 .SetIncludeGenerated(false)
                 );
 
-            GitTasks.Git("add .");
-            GitTasks.Git($"commit -m \"{CommitMessage}\"");
+            GitTasks.Git("config --global user.name '@Flaeng'");
+            GitTasks.Git("config --global user.email 'flaeng@users.noreply.github.com'");
+            GitTasks.Git($"commit -am \"{nameof(Housekeeping)}\"");
+            GitTasks.Git("push");
         });
 }

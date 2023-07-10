@@ -198,11 +198,28 @@ window.addEventListener("load",function(){e.contentLoaded()},!1)}).call(e,n(9))}
 
     <script>
 $(document).ready(function() {
-  $("#Clean").addClass('highlight');
   $("#Restore").addClass('highlight');
   $("#Compile").addClass('highlight');
+  $("#Commit").hover(
+    function() {
+        $("#Commit").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
+        $("#Restore").removeClass('highlight');
+        $("#Compile").removeClass('highlight');
+        $("#Pack").removeClass('highlight');
+        $("#Publish").removeClass('highlight');
+        $("#Stryker").removeClass('highlight');
+        $("#Test").removeClass('highlight');
+        $("#Commit").addClass('highlight');
+    },
+    function() {
+        $("#Commit").removeClass('highlight');
+        $("#Restore").addClass('highlight');
+        $("#Compile").addClass('highlight');
+    });
   $("#Clean").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -214,12 +231,12 @@ $(document).ready(function() {
     },
     function() {
         $("#Clean").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Restore").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -227,18 +244,16 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Compile").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -246,20 +261,18 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Pack").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -267,22 +280,20 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#Pack").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#Pack").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Publish").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -290,24 +301,22 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#Pack").addClass('highlight');
         $("#Publish").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#Pack").removeClass('highlight');
         $("#Publish").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Stryker").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -315,22 +324,20 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#Stryker").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
   $("#Test").hover(
     function() {
+        $("#Commit").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -338,17 +345,14 @@ $(document).ready(function() {
         $("#Publish").removeClass('highlight');
         $("#Stryker").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#Test").addClass('highlight');
     },
     function() {
-        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#Test").removeClass('highlight');
-        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     });
@@ -396,7 +400,8 @@ $(document).ready(function() {
     
     <div class="mermaid">
 graph LR
-Clean --> Restore
+Commit
+Clean -.-> Restore
 Restore --> Compile
 Compile --> Pack
 Compile --> Stryker

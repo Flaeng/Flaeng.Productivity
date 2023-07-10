@@ -4,7 +4,6 @@ using Nuke.Common.CI.GitHubActions;
     "build",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Compile) },
-    OnPushBranches = new[] { "main" },
     OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = true
 )]
@@ -12,9 +11,15 @@ using Nuke.Common.CI.GitHubActions;
     "deploy",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Publish) },
-    OnPushBranches = new[] { "main" },
-    OnPullRequestBranches = new[] { "main" },
+    OnPushTags = new [] { "main" },
     PublishArtifacts = true
+)]
+[GitHubActions(
+    "housekeeping",
+    GitHubActionsImage.UbuntuLatest,
+    InvokedTargets = new[] { nameof(Publish), nameof(Test), nameof(Stryker) },
+    OnPushBranches = new [] { "main" },
+    OnPullRequestBranches = new[] { "main" }
 )]
 partial class Build
 {

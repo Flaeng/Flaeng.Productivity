@@ -9,14 +9,17 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_build --host GitHubActions
+#         nuke --generate-configuration GitHubActions_housekeeping --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: build
+name: housekeeping
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -34,5 +37,15 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Compile'
-        run: ./build.cmd Compile
+      - name: 'Run: Publish, Test, Stryker'
+        run: ./build.cmd Publish Test Stryker
+      - name: 'Publish: artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts
+      - name: 'Publish: StrykerOutput'
+        uses: actions/upload-artifact@v3
+        with:
+          name: StrykerOutput
+          path: StrykerOutput

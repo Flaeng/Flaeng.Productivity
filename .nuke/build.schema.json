@@ -6,10 +6,6 @@
     "build": {
       "type": "object",
       "properties": {
-        "CommitMessage": {
-          "type": "string",
-          "description": "Commit message"
-        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -82,8 +78,8 @@
             "type": "string",
             "enum": [
               "Clean",
-              "Commit",
               "Compile",
+              "Housekeeping",
               "Pack",
               "Publish",
               "Restore",
@@ -103,8 +99,8 @@
             "type": "string",
             "enum": [
               "Clean",
-              "Commit",
               "Compile",
+              "Housekeeping",
               "Pack",
               "Publish",
               "Restore",
