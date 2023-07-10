@@ -17,6 +17,9 @@ partial class Build
                 .SetIncludeGenerated(false)
                 );
 
+            if (GitTasks.GitHasCleanWorkingCopy())
+                return;
+
             GitTasks.Git("config --global user.name '@Flaeng'");
             GitTasks.Git("config --global user.email 'flaeng@users.noreply.github.com'");
             GitTasks.Git($"commit -am \"{nameof(Housekeeping)}\"");
