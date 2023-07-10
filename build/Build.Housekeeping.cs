@@ -6,20 +6,10 @@ partial class Build
     Target Format => _ => _
         .Executes(() =>
         {
-            DotNetTasks.DotNetFormat(opts => opts
-                .SetIncludeGenerated(false)
-                );
+            DotNetTasks.DotNetFormat();
 
-            if (GitTasks.GitHasCleanWorkingCopy())
-                return;
-
-            if (IsServerBuild == false)
-                return;
-
-            GitTasks.Git("config --global user.name '@Flaeng'");
-            GitTasks.Git("config --global user.email 'flaeng@users.noreply.github.com'");
-            GitTasks.Git($"commit -am \"{nameof(Format)}\"");
-            GitTasks.Git($"push origin HEAD:{GitRepository.Branch}");
+            if (IsServerBuild && GitTasks.GitHasCleanWorkingCopy() == false)
+                throw new Exception($"Branch needs formatting - Please run 'dotnet format' locally and push changes");
         });
 
 
