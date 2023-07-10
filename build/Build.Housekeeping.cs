@@ -6,10 +6,8 @@ partial class Build
     Target Format => _ => _
         .Executes(() =>
         {
-            DotNetTasks.DotNetFormat();
-
-            if (IsServerBuild && GitTasks.GitHasCleanWorkingCopy() == false)
-                throw new Exception($"Branch needs formatting - Please run 'dotnet format' locally and push changes");
+            DotNetTasks.DotNetFormat(opts => opts
+                .SetVerifyNoChanges(true));
         });
 
 
