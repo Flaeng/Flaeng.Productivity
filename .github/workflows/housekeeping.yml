@@ -37,13 +37,8 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Publish, Test, Stryker'
-        run: ./build.cmd Publish Test Stryker
-      - name: 'Publish: artifacts'
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: artifacts
+      - name: 'Run: Housekeeping, Test, Stryker'
+        run: ./build.cmd Housekeeping Test Stryker
       - name: 'Publish: StrykerOutput'
         uses: actions/upload-artifact@v3
         with:

@@ -17,7 +17,7 @@ using Nuke.Common.CI.GitHubActions;
 [GitHubActions(
     "housekeeping",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Publish), nameof(Test), nameof(Stryker) },
+    InvokedTargets = new[] { nameof(Housekeeping), nameof(Test), nameof(Stryker) },
     OnPushBranches = new [] { "main" },
     OnPullRequestBranches = new[] { "main" }
 )]
