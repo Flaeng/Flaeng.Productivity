@@ -287,7 +287,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         }
         else if (member is FieldDeclarationSyntax fds)
         {
-            writeMemberFromField(interfaceBuilder, fds);
+            // writeMemberFromField(interfaceBuilder, fds);
         }
     }
 
