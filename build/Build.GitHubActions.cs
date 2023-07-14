@@ -8,7 +8,7 @@
 [GitHubActions(
     "Deploy new version",
     GitHubActionsImage.UbuntuLatest,
-    OnPushTags = new [] { "main" },
+    OnPushTags = new[] { "main" },
     InvokedTargets = new[] { nameof(Publish) },
     PublishArtifacts = true
 )]
