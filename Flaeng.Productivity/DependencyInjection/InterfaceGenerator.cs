@@ -287,12 +287,13 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         }
         else if (member is FieldDeclarationSyntax fds)
         {
-            // writeMemberFromField(interfaceBuilder, fds);
+            writeMemberFromField(interfaceBuilder, fds);
         }
     }
 
     private static void writeMemberFromField(InterfaceBuilder interfaceBuilder, FieldDeclarationSyntax fds)
     {
+        // Interfaces cannot contain instance fields
         var isPublic = fds.Modifiers.Any(x => x.Text == "public");
         if (isPublic == false)
             return;
@@ -304,6 +305,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var type = nodes.First();
 
         var isStatic = fds.Modifiers.Any(x => x.Text.Equals("static", StringComparison.InvariantCultureIgnoreCase));
+        if (isStatic == false)
+            return;
 
         interfaceBuilder.AddField(new FieldOptions(type.ToString(), fds.Declaration.Variables.ToString())
         {

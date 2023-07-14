@@ -406,6 +406,7 @@ public class InterfaceGeneratorTests : TestBase
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 
+
     [Fact]
     public void can_make_interface_with_single_field()
     {
@@ -441,7 +442,6 @@ public class InterfaceGeneratorTests : TestBase
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
-                string Simple;
             }
             public partial class Dummy : IDummy
             {
@@ -1894,6 +1894,7 @@ public class InterfaceGeneratorTests : TestBase
         Assert.Equal(expected_output, dummyGenerated?.Content);
     }
 
+
     [Fact(Skip = "Not implemented yet")]
     public void can_handle_public_readonly_fields()
     {
@@ -1930,6 +1931,7 @@ public class InterfaceGeneratorTests : TestBase
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
+                readonly IFileComparer fileComparer;
                 void Main();
             }
             public partial class Test : ITest
