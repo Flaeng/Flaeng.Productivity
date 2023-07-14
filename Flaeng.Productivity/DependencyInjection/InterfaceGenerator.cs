@@ -293,6 +293,7 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
 
     private static void writeMemberFromField(InterfaceBuilder interfaceBuilder, FieldDeclarationSyntax fds)
     {
+        // Interfaces cannot contain instance fields
         var isPublic = fds.Modifiers.Any(x => x.Text == "public");
         if (isPublic == false)
             return;
@@ -304,6 +305,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var type = nodes.First();
 
         var isStatic = fds.Modifiers.Any(x => x.Text.Equals("static", StringComparison.InvariantCultureIgnoreCase));
+        if (isStatic == false)
+            return;
 
         interfaceBuilder.AddField(new FieldOptions(type.ToString(), fds.Declaration.Variables.ToString())
         {
@@ -377,8 +380,8 @@ public sealed class InterfaceGenerator : IIncrementalGenerator
         var returnType = TypeSymbolHelper.WriteType(symbol.ReturnType);
         var parameterText = symbol.Parameters
             .Select(TypeSymbolHelper.WriteParameter);
-            // .Select(GetTypeNameAndMemberName)
-            // .Select(x => $"{x.TypeName} {x.MemberName}");
+        // .Select(GetTypeNameAndMemberName)
+        // .Select(x => $"{x.TypeName} {x.MemberName}");
 
         interfaceBuilder.AddMethodStub(new MethodOptions(returnType, name.Text)
         {

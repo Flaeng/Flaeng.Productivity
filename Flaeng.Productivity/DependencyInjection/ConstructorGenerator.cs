@@ -20,7 +20,7 @@ public sealed class ConstructorGenerator : IIncrementalGenerator
             .CreateSyntaxProvider<ConstructorData>(
                 static (node, _) => node is ClassDeclarationSyntax { Members.Count: > 0 } cds
                     && cds.Modifiers.Any(SyntaxKind.PartialKeyword)
-                    && cds.Modifiers.Any(SyntaxKind.StaticKeyword) == false, 
+                    && cds.Modifiers.Any(SyntaxKind.StaticKeyword) == false,
                 Transform
             )
             .Where(static x => x.Class != null)
@@ -239,7 +239,7 @@ namespace {ATTRIBUTE_NAMESPACE}
         if (namedType is null)
             return Default;
 
-        List<INamedTypeSymbol> allTypes = new(new [] { namedType });
+        List<INamedTypeSymbol> allTypes = new(new[] { namedType });
         var baseType = namedType.BaseType;
         while (baseType != null)
         {
