@@ -72,7 +72,8 @@ partial class Build
                     );
             });
 
-        ArtifactsDirectory.CreateOrCleanDirectory();
+        ArtifactsDirectory.DeleteDirectory();
+        ArtifactsDirectory.CreateDirectory();
         RootDirectory.GlobFiles($"**/*.{version}.nupkg")
             .ForEach(file => file.MoveToDirectory(ArtifactsDirectory));
     }
@@ -81,35 +82,27 @@ partial class Build
 
     Target Publish => _ => _
         .OnlyWhenDynamic(() => IsTaggedBuild || IsServerBuild == false)
+        .OnlyWhenDynamic(() => GitRepository.IsOnMainBranch())
         .DependsOn(Pack)
         .Requires(() => NuGetApiKey)
-        .Executes(() =>
-        {
-            ArtifactsDirectory.GlobFiles("*.nupkg")
-                .ForEach(file =>
-                {
-                    NuGetTasks.NuGetPush(opts => opts
-                        .SetApiKey(NuGetApiKey)
-                        .SetTargetPath(file)
-                        );
-                });
-        });
+        .Executes(PublishArtificatsToNuGet);
 
     Target PublishRC => _ => _
         .OnlyWhenDynamic(() => IsTaggedBuild || IsServerBuild == false)
+        .OnlyWhenDynamic(() => GitRepository.IsOnMainBranch())
         .DependsOn(PackRC)
         .Requires(() => NuGetApiKey)
-        .Executes(() =>
-        {
-            ArtifactsDirectory.GlobFiles("*.nupkg")
-                .ForEach(file =>
-                    NuGetTasks.NuGetPush(opts => opts
-                        .SetApiKey(NuGetApiKey)
-                        .SetSource(DefaultNuGetSource)
-                        .SetTargetPath(file)
-                        )
-                );
-        });
+        .Executes(PublishArtificatsToNuGet);
 
+    private void PublishArtificatsToNuGet() => 
+        ArtifactsDirectory.GlobFiles("*.nupkg")
+            .ForEach(file =>
+                NuGetTasks.NuGetPush(opts => opts
+                    .SetApiKey(NuGetApiKey)
+                    .SetSource(DefaultNuGetSource)
+                    .SetTargetPath(file)
+                    )
+            );
+    
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
 }

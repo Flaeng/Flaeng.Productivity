@@ -19,7 +19,7 @@ name: Deploy_new_version
 on:
   push:
     tags:
-      - main
+      - '^v[0-9]+\.[0-9]+\.[0-9]+'
 
 jobs:
   ubuntu-latest:

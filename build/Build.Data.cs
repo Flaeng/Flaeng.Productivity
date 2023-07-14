@@ -21,12 +21,12 @@ partial class Build
 
     string GetVersionNo()
     {
-        if (Debugger.IsAttached)
-            return "0.3.0-rc.1";
+        // if (Debugger.IsAttached)
+        //     return "0.3.0-rc.1";
         if (IsServerBuild)
         {
             var tags = GitRepository.Tags;
-            return tags.FirstOrDefault();
+            return tags.Last();
         }
         else return VersionParameter;
     }
