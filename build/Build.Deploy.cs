@@ -2,7 +2,7 @@ using NuGet.Versioning;
 
 partial class Build
 {
-    [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
+    [Parameter("NuGet API Key"), Secret] string NuGetApiKey;
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
 
@@ -38,7 +38,7 @@ partial class Build
         });
 
     Target Publish => _ => _
-        .OnlyWhenDynamic(() => IsTaggedBuild || IsServerBuild == false)
+        .OnlyWhenDynamic(() => IsTaggedBuild || IsLocalBuild)
         .OnlyWhenDynamic(() => GitRepository.IsOnMainBranch())
         .DependsOn(Pack)
         .Requires(() => NuGetApiKey)
@@ -46,8 +46,8 @@ partial class Build
             ArtifactsDirectory.GlobFiles("*.nupkg")
                 .ForEach(file =>
                     NuGetTasks.NuGetPush(opts => opts
-                        .SetApiKey(NuGetApiKey)
                         .SetSource(DefaultNuGetSource)
+                        .SetApiKey(NuGetApiKey)
                         .SetTargetPath(file)
                         )
                     )
