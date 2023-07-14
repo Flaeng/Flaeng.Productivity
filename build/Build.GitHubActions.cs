@@ -1,17 +1,11 @@
 [GitHubActions(
-    "Housekeeping",
+    "PR",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Format), nameof(Test) },
+    InvokedTargets = new[] { nameof(Format), nameof(Test), nameof(Stryker) },
     OnPullRequestBranches = new[] { "main" }
 )]
 [GitHubActions(
-    "Run mutation tests",
-    GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Stryker) },
-    OnPushBranches = new[] { "main" }
-)]
-[GitHubActions(
-    "Deploy new version",
+    "Deploy",
     GitHubActionsImage.UbuntuLatest,
     // OnPushBranches = new [] { "main" },
     OnPushTags = new[] { @"v*.*.*" },

@@ -9,17 +9,17 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_Deploy_new_RC --host GitHubActions
+#         nuke --generate-configuration GitHubActions_Deploy --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: Deploy_new_RC
+name: Deploy
 
 on:
   push:
     tags:
-      - '^v[0-9]+\.[0-9]+\.[0-9]+\-rc\.[0-9]$'
+      - 'v*.*.*'
 
 jobs:
   ubuntu-latest:
@@ -34,8 +34,8 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: PublishRC'
-        run: ./build.cmd PublishRC
+      - name: 'Run: Publish'
+        run: ./build.cmd Publish
       - name: 'Publish: artifacts'
         uses: actions/upload-artifact@v3
         with:
