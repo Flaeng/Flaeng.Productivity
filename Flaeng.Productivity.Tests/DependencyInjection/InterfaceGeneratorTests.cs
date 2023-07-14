@@ -25,7 +25,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace Flaeng
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             [global::System.AttributeUsageAttribute(
                 global::System.AttributeTargets.Class, 
                 AllowMultiple = false,
@@ -36,7 +35,7 @@ public class InterfaceGeneratorTests : TestBase
                 { }
             }
         }
-        """, source?.Content);
+        """, source?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -97,7 +96,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -112,7 +110,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -143,7 +141,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -158,7 +155,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -186,7 +183,6 @@ public class InterfaceGeneratorTests : TestBase
 
         #nullable enable
 
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
         public interface IDummy
         {
         }
@@ -200,7 +196,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -235,7 +231,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 void Simple();
@@ -251,7 +246,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -286,7 +281,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 string Simple { get; set; }
@@ -302,7 +296,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -337,7 +331,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 static string Simple { get; set; }
@@ -353,7 +346,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -388,7 +381,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -403,7 +395,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
 
@@ -439,7 +431,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -454,7 +445,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -489,7 +480,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 static string Simple;
@@ -505,7 +495,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -540,7 +530,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -555,7 +544,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -590,7 +579,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 string Simple { get; }
@@ -606,7 +594,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -641,7 +629,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 string Simple { get; }
@@ -657,7 +644,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -692,7 +679,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 string Simple { set; }
@@ -708,7 +694,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -743,7 +729,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
             }
@@ -758,7 +743,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -794,7 +779,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 void Simple();
@@ -812,7 +796,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -854,7 +838,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 void Simple();
@@ -877,7 +860,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDumDum
             {
                 void Second();
@@ -895,11 +877,11 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output1, dummyGenerated?.Content);
+        Assert.Equal(expected_output1, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
 
         var dumdumGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDumDum.g.cs"));
-        Assert.Equal(expected_output2, dumdumGenerated?.Content);
+        Assert.Equal(expected_output2, dumdumGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -934,7 +916,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 bool Simple(
@@ -951,7 +932,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -986,7 +967,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 bool Simple(
@@ -1004,7 +984,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1068,7 +1048,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             internal interface IDummy
             {
                 bool Simple(
@@ -1086,7 +1065,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1147,7 +1126,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 int Math(
@@ -1176,7 +1154,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1230,7 +1208,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 User Login(
@@ -1250,7 +1227,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1287,7 +1264,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ICanDoStuff
             {
                 global::System.Collections.Generic.Dictionary<string, T> DoStuff(
@@ -1304,7 +1280,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.ICanDoStuff.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1341,7 +1317,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ICanDoStuff
             {
                 global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.IList<T>> DoStuff(
@@ -1358,7 +1333,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.ICanDoStuff.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1408,7 +1383,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 global::System.Threading.Tasks.Task<global::TestNamespace.Providers.Page<global::TestNamespace.Providers.User>> SimpleAsync(
@@ -1426,7 +1400,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1471,7 +1445,6 @@ public class InterfaceGeneratorTests : TestBase
             {
                 public partial class Wrapper2
                 {
-                    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                     public interface IDummy
                     {
                         bool Simple(
@@ -1491,7 +1464,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.Wrapper1.Wrapper2.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1531,7 +1504,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy2
             {
                 bool Advanced(
@@ -1548,7 +1520,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1601,7 +1573,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDummy
             {
                 string Paragraph { get; }
@@ -1619,7 +1590,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1666,7 +1637,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IDumDum
             {
                 bool Simple(
@@ -1687,7 +1657,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.IDumDum.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1721,7 +1691,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
                 Task MainAsync(
@@ -1738,7 +1707,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.ITest.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1772,7 +1741,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
                 Task MainAsync(
@@ -1789,7 +1757,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.ITest.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1823,7 +1791,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
                 Task MainAsync(
@@ -1840,7 +1807,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.ITest.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -1874,7 +1841,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
                 void Main(
@@ -1891,7 +1857,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.ITest.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
 
@@ -1928,7 +1894,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ITest
             {
                 readonly IFileComparer fileComparer;
@@ -1944,7 +1909,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.ITest.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact(Skip = "Not implemented yet")]
@@ -1979,7 +1944,6 @@ public class InterfaceGeneratorTests : TestBase
 
         namespace TestNamespace.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface DumDum
             {
                 bool Simple(
@@ -1997,7 +1961,7 @@ public class InterfaceGeneratorTests : TestBase
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Providers.Wrapper1.Wrapper2.IDummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
 }

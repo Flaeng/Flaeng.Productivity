@@ -25,7 +25,6 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Providers
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface ISummaryProvider
             {
                 string[] GetSummaries();
@@ -35,7 +34,7 @@ public class UseCase1 : BaseUseCase
             }
         }
 
-        """, generatedSource.Content);
+        """, generatedSource.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -57,7 +56,6 @@ public class UseCase1 : BaseUseCase
         {
             public partial class WeatherForecastController
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public WeatherForecastController(
                     ILogger<Flaeng.Productivity.Sample.Controllers.WeatherForecastController> _logger1,
                     ILogger<Flaeng.Productivity.Sample.Controllers.WeatherForecastController> _logger2,
@@ -81,7 +79,7 @@ public class UseCase1 : BaseUseCase
             }
         }
 
-        """, generatedSource.Content);
+        """, generatedSource.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -101,7 +99,6 @@ public class UseCase1 : BaseUseCase
 
         namespace Flaeng.Productivity.Sample.Services
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public interface IWeatherForecastService
             {
                 global::System.Collections.Generic.IEnumerable<global::Flaeng.Productivity.Sample.WeatherForecast> GetWeatherForecast();
@@ -111,7 +108,7 @@ public class UseCase1 : BaseUseCase
             }
         }
 
-        """, generatedSource.Content);
+        """, generatedSource.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -133,7 +130,6 @@ public class UseCase1 : BaseUseCase
         {
             public partial class WeatherForecastService
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public WeatherForecastService(
                     ISummaryProvider _summaryProvider
                     )
@@ -143,7 +139,7 @@ public class UseCase1 : BaseUseCase
             }
         }
 
-        """, generatedSource.Content);
+        """, generatedSource.Content?.WithoutGeneratedCodeAttribute());
     }
 
 }

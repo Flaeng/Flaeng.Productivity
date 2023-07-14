@@ -23,7 +23,6 @@ public class ConstructorGeneratorTests : TestBase
 
         namespace Flaeng
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             [global::System.AttributeUsageAttribute(
                 global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, 
                 AllowMultiple = false, 
@@ -34,7 +33,7 @@ public class ConstructorGeneratorTests : TestBase
                 { }
             }
         }
-        """, source?.Content);
+        """, source?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Theory]
@@ -86,7 +85,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::System.Collections.IList _logger
                     )
@@ -101,7 +99,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("Dummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -162,7 +160,6 @@ public partial class Dummy
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::System.Collections.IList _logger
                     )
@@ -177,7 +174,7 @@ public partial class Dummy
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Dummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -208,7 +205,6 @@ public partial class Dummy
 
         public partial class Dummy
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
             public Dummy(
                 global::System.Collections.IList _logger
                 )
@@ -222,7 +218,7 @@ public partial class Dummy
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("Dummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Theory]
@@ -274,7 +270,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::System.Collections.Generic.List<string> _logger
                     )
@@ -289,7 +284,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -322,7 +317,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -337,7 +331,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -370,7 +364,6 @@ namespace TestNamespace
         {
             internal partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -385,7 +378,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -418,7 +411,6 @@ namespace TestNamespace
         {
             partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -433,7 +425,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -476,7 +468,6 @@ namespace TestNamespace
                 {
                     public partial class Dummy
                     {
-                        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                         public Dummy(
                             global::Microsoft.Extensions.Logging.ILogger<string> _logger
                             )
@@ -493,7 +484,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -531,7 +522,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -551,7 +541,6 @@ namespace TestNamespace
         {
             public partial class DumDum
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public DumDum(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger
                     )
@@ -566,11 +555,11 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.Dummy.g.cs"));
-        Assert.Equal(expected_output1, dummyGenerated?.Content);
+        Assert.Equal(expected_output1, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
 
         var dumdumGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.DumDum.g.cs"));
-        Assert.Equal(expected_output2, dumdumGenerated?.Content);
+        Assert.Equal(expected_output2, dumdumGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact]
@@ -620,7 +609,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger1
                     )
@@ -642,7 +630,6 @@ namespace TestNamespace
         {
             public partial class DumDum
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public DumDum(
                     ILogger<int> _logger2,
                     global::Microsoft.Extensions.Logging.ILogger<string> _logger1
@@ -659,11 +646,11 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.Dummy.g.cs"));
-        Assert.Equal(expected_output1, dummyGenerated?.Content);
+        Assert.Equal(expected_output1, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
 
         var dumdumGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("TestNamespace.Controllers.DumDum.g.cs"));
-        Assert.Equal(expected_output2, dumdumGenerated?.Content);
+        Assert.Equal(expected_output2, dumdumGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Theory]
@@ -719,7 +706,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     global::System.Collections.Generic.IDictionary<string, object> _logger
                     )
@@ -734,7 +720,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
     [Fact(Skip = "Not implemented yet")]
@@ -792,7 +778,6 @@ namespace TestNamespace
         {
             public partial class Dummy
             {
-                [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.2.3.0")]
                 public Dummy(
                     IDictionary<string, object> _logger1,
                     IDictionary<string, object> _logger2,
@@ -808,7 +793,7 @@ namespace TestNamespace
 
         var dummyGenerated = output.GeneratedFiles
             .SingleOrDefault(x => x.Filename.EndsWith("ummy.g.cs"));
-        Assert.Equal(expected_output, dummyGenerated?.Content);
+        Assert.Equal(expected_output, dummyGenerated?.Content?.WithoutGeneratedCodeAttribute());
     }
 
 }

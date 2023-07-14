@@ -1,62 +1,115 @@
+using NuGet.Versioning;
+
 partial class Build
 {
-    readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts" / "*.*";
+    readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
 
     Target Pack => _ => _
-        .DependsOn(Compile)
+        .DependsOn(Test)
         .Produces(ArtifactsDirectory)
         .Executes(() =>
         {
-            // if (Configuration != Configuration.Release)
-            //     throw new InvalidOperationException("Cannot pack in release configuration");
-
             var version = GetVersionNo();
-
-            Projects
-                .Where(x => x.IsTestProject() == false)
-                .ForEach(proj =>
-                {
-                    DotNetTasks.DotNetPack(opts => opts
-                        .SetVersion(version)
-                        .SetFileVersion(version)
-                        .SetAssemblyVersion(version)
-                        .SetInformationalVersion(version)
-                        .SetIncludeSymbols(true)
-                        .SetIncludeSource(true)
-                        );
-
-                    var nuspec = proj.Directory.GlobFiles("*.nuspec")
-                        .SingleOrDefault();
-
-                    if (nuspec == null)
-                        return;
-
-                    NuGetTasks.NuGetPack(opts => opts
-                        .SetOutputDirectory(ArtifactsDirectory)
-                        .SetConfiguration(Configuration)
-                        .SetVersion(version)
-                        .SetTargetPath(nuspec)
-                        .SetSymbols(true)
-                        );
-                });
-
-            RootDirectory.GlobFiles("*.nupkg")
-                .ForEach(file => file
-                    .MoveToDirectory(ArtifactsDirectory)
-                    );
+            DoPack(version);
         });
+
+    [LatestNuGetVersion(
+        packageId: "Flaeng.Productivity",
+        IncludePrerelease = true)]
+    readonly NuGetVersion LatestVersionOnNuGet;
+
+    Target PackRC => _ => _
+        .DependsOn(Test)
+        .Requires(() => LatestVersionOnNuGet)
+        .Requires(() => VersionParameter)
+        .Produces(ArtifactsDirectory)
+        .Executes(() =>
+        {
+            var version = GetVersionNo();
+            version = NextVersionNo(version);
+            DoPack(version);
+        });
+
+    private string NextVersionNo(string version)
+    {
+        if (LatestVersionOnNuGet.IsPrerelease == false)
+        {
+            return new Version(
+                LatestVersionOnNuGet.Major,
+                LatestVersionOnNuGet.Minor,
+                LatestVersionOnNuGet.Patch + 1
+            ).ToString() + "-rc.1";
+        }
+        else
+        {
+            int num = int.Parse(LatestVersionOnNuGet.ToString().Split("rc").Last());
+            num++;
+            return new Version(
+                LatestVersionOnNuGet.Major,
+                LatestVersionOnNuGet.Minor,
+                LatestVersionOnNuGet.Patch
+            ).ToString() + "-rc." + num;
+        }
+    }
+
+    private void DoPack(string version)
+    {
+        var fileversion = version.Split('-').First();
+        Projects
+            .Where(x => x.IsTestProject() == false)
+            .Where(x => x.IsSampleProject() == false)
+            .ForEach(proj =>
+            {
+                DotNetTasks.DotNetPack(opts => opts
+                    .SetProject(proj)
+                    .SetVersion(version)
+                    .SetFileVersion(version)
+                    .SetAssemblyVersion(fileversion)
+                    .SetInformationalVersion(version)
+                    .SetIncludeSymbols(true)
+                    .SetIncludeSource(true)
+                    .SetConfiguration(Configuration.Release)
+                    );
+            });
+
+        ArtifactsDirectory.CreateOrCleanDirectory();
+        RootDirectory.GlobFiles($"**/*.{version}.nupkg")
+            .ForEach(file => file.MoveToDirectory(ArtifactsDirectory));
+    }
 
     [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
 
     Target Publish => _ => _
-        .OnlyWhenDynamic(() => IsTaggedBuild)
+        .OnlyWhenDynamic(() => IsTaggedBuild || IsServerBuild == false)
         .DependsOn(Pack)
         .Requires(() => NuGetApiKey)
         .Executes(() =>
         {
-            NuGetTasks.NuGetPush(opts => opts
-                );
-            DotNetTasks.DotNetNuGetPush(opts => opts
+            ArtifactsDirectory.GlobFiles("*.nupkg")
+                .ForEach(file =>
+                {
+                    NuGetTasks.NuGetPush(opts => opts
+                        .SetApiKey(NuGetApiKey)
+                        .SetTargetPath(file)
+                        );
+                });
+        });
+
+    Target PublishRC => _ => _
+        .OnlyWhenDynamic(() => IsTaggedBuild || IsServerBuild == false)
+        .DependsOn(PackRC)
+        .Requires(() => NuGetApiKey)
+        .Executes(() =>
+        {
+            ArtifactsDirectory.GlobFiles("*.nupkg")
+                .ForEach(file =>
+                    NuGetTasks.NuGetPush(opts => opts
+                        .SetApiKey(NuGetApiKey)
+                        .SetSource(DefaultNuGetSource)
+                        .SetTargetPath(file)
+                        )
                 );
         });
+
+    const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 partial class Build
 {
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -8,13 +10,19 @@ partial class Build
 
     bool IsTaggedBuild => GitRepository.Tags.Any();
 
-    [Parameter("Version of the package being built for NuGets")] readonly string VersionParameter;
+    [Parameter(
+        description: "Version of the package being built for NuGets",
+        Name = "Version"
+        )]
+    readonly string VersionParameter;
 
     IEnumerable<Project> Projects => Solution
         .Projects.Where(x => x.Name != "_build");
 
     string GetVersionNo()
     {
+        if (Debugger.IsAttached)
+            return "0.3.0-rc.1";
         if (IsServerBuild)
         {
             var tags = GitRepository.Tags;
