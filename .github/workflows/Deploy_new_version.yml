@@ -16,7 +16,10 @@
 
 name: Deploy_new_version
 
-on: [push]
+on:
+  push:
+    tags:
+      - main
 
 jobs:
   ubuntu-latest:

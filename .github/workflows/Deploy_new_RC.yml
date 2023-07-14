@@ -17,7 +17,7 @@
 name: Deploy_new_RC
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
