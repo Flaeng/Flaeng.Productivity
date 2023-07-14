@@ -82,9 +82,7 @@
               "Format",
               "Housekeeping",
               "Pack",
-              "PackRC",
               "Publish",
-              "PublishRC",
               "Restore",
               "Stryker",
               "Test"
@@ -106,9 +104,7 @@
               "Format",
               "Housekeeping",
               "Pack",
-              "PackRC",
               "Publish",
-              "PublishRC",
               "Restore",
               "Stryker",
               "Test"

@@ -18,8 +18,8 @@ name: Deploy_new_RC
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '^v[0-9]+\.[0-9]+\.[0-9]+\-rc\.[0-9]$'
 
 jobs:
   ubuntu-latest:

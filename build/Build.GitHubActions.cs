@@ -1,16 +1,8 @@
 [GitHubActions(
-    "Deploy new RC",
+    "Housekeeping",
     GitHubActionsImage.UbuntuLatest,
-    OnPushBranches = new[] { "main" },
-    InvokedTargets = new[] { nameof(PublishRC) },
-    PublishArtifacts = true
-)]
-[GitHubActions(
-    "Deploy new version",
-    GitHubActionsImage.UbuntuLatest,
-    OnPushTags = new[] { @"^v[0-9]+\.[0-9]+\.[0-9]+" },
-    InvokedTargets = new[] { nameof(Publish) },
-    PublishArtifacts = true
+    InvokedTargets = new[] { nameof(Format), nameof(Test) },
+    OnPullRequestBranches = new[] { "main" }
 )]
 [GitHubActions(
     "Run mutation tests",
@@ -19,11 +11,12 @@
     OnPushBranches = new[] { "main" }
 )]
 [GitHubActions(
-    "Housekeeping",
+    "Deploy new version",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Format), nameof(Test) },
-    OnPushBranches = new[] { "main" },
-    OnPullRequestBranches = new[] { "main" }
+    // OnPushBranches = new [] { "main" },
+    OnPushTags = new[] { @"v*.*.*" },
+    InvokedTargets = new[] { nameof(Publish) },
+    PublishArtifacts = true
 )]
 partial class Build
 {

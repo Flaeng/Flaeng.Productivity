@@ -21,8 +21,8 @@ partial class Build
 
     string GetVersionNo()
     {
-        // if (Debugger.IsAttached)
-        //     return "0.3.0-rc.1";
+        if (Debugger.IsAttached)
+            return "0.3.0-rc.2";
         if (IsServerBuild)
         {
             var tags = GitRepository.Tags;
