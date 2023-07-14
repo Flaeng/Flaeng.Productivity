@@ -1,14 +1,14 @@
 [GitHubActions(
     "Deploy new RC",
     GitHubActionsImage.UbuntuLatest,
+    OnPushBranches = new[] { "main" },
     InvokedTargets = new[] { nameof(PublishRC) },
-    OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = true
 )]
 [GitHubActions(
     "Deploy new version",
     GitHubActionsImage.UbuntuLatest,
-    On = new[] { GitHubActionsTrigger.Push },
+    OnPushTags = new [] { "main" },
     InvokedTargets = new[] { nameof(Publish) },
     PublishArtifacts = true
 )]
