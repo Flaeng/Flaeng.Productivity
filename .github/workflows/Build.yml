@@ -9,17 +9,17 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_Deploy --host GitHubActions
+#         nuke --generate-configuration GitHubActions_Build --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: Deploy
+name: Build
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - main
 
 jobs:
   ubuntu-latest:
@@ -34,10 +34,5 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Publish'
-        run: ./build.cmd Publish
-      - name: 'Publish: artifacts'
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: artifacts
+      - name: 'Run: Stryker'
+        run: ./build.cmd Stryker
