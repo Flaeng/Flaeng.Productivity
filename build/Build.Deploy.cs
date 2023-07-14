@@ -8,7 +8,6 @@ partial class Build
 
     Target Pack => _ => _
         .DependsOn(Test)
-        .Requires(() => VersionParameter)
         .Produces(ArtifactsDirectory)
         .Executes(() =>
         {

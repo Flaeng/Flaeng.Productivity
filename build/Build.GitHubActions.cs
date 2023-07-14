@@ -7,7 +7,6 @@
 [GitHubActions(
     "Deploy",
     GitHubActionsImage.UbuntuLatest,
-    // OnPushBranches = new [] { "main" },
     OnPushTags = new[] { @"v*.*.*" },
     InvokedTargets = new[] { nameof(Publish) },
     PublishArtifacts = true
