@@ -27,22 +27,7 @@ internal static class TypeSymbolHelper
         switch (param.RefKind)
         {
             case RefKind.None:
-                if (param.IsParams)
-                {
-                    return $"params {result}";
-                }
-                if (param.HasExplicitDefaultValue)
-                {
-                    var dValue = param.ExplicitDefaultValue;
-                    if (dValue is null)
-                        return $"{result} = default";
-
-                    if (dValue.GetType() == typeof(string))
-                        return $"{result} = \"{dValue}\"";
-                    else
-                        return $"{result} = {dValue}";
-                }
-                return result;
+                return FormatDefaultParameter(param, result);
             case RefKind.Ref:
                 return $"ref {result}";
             case RefKind.Out:
@@ -51,5 +36,25 @@ internal static class TypeSymbolHelper
                 return $"in {result}";
         }
         throw new Exception($"Unknown refkind for parameter with name: '{param.Name}'");
+    }
+
+    private static string FormatDefaultParameter(IParameterSymbol param, string result)
+    {
+        if (param.IsParams)
+        {
+            return $"params {result}";
+        }
+        if (param.HasExplicitDefaultValue)
+        {
+            var dValue = param.ExplicitDefaultValue;
+            if (dValue is null)
+                return $"{result} = default";
+
+            if (dValue.GetType() == typeof(string))
+                return $"{result} = \"{dValue}\"";
+            else
+                return $"{result} = {dValue}";
+        }
+        return result;
     }
 }
