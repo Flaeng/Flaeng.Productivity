@@ -51,14 +51,7 @@ public sealed class FluentApiGenerator : GeneratorBase
 
     public override void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(GenerateTriggerAttribute);
-
-        var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<Data>(Predicate, Transform)
-            .Where(static x => x != null)
-            .WithComparer(FluentApiDataEqualityComparer.Instance);
-
-        context.RegisterSourceOutput(provider, Execute);
+        Initialize(context, GenerateTriggerAttribute, Predicate, Transform, FluentApiDataEqualityComparer.Instance, Execute);
     }
 
     private static bool Predicate(SyntaxNode node, CancellationToken token)

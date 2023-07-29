@@ -1,10 +1,8 @@
 namespace Flaeng.Productivity.Comparers;
 
-internal class FieldDefinitionEqualityComparer : IEqualityComparer<FieldDefinition>
+internal class FieldDefinitionEqualityComparer : EqualityComparerBase<FieldDefinition, FieldDefinitionEqualityComparer>
 {
-    public static readonly FieldDefinitionEqualityComparer Instance = new();
-
-    public bool Equals(FieldDefinition x, FieldDefinition y)
+    public override bool Equals(FieldDefinition x, FieldDefinition y)
     {
         return x.IsStatic == y.IsStatic
             && x.DefaultValue == y.DefaultValue
@@ -13,7 +11,7 @@ internal class FieldDefinitionEqualityComparer : IEqualityComparer<FieldDefiniti
             && x.Visibility == y.Visibility;
     }
 
-    public int GetHashCode(FieldDefinition obj)
+    public override int GetHashCode(FieldDefinition obj)
     {
         return obj.IsStatic.GetHashCode()
             ^ (obj.Name?.GetHashCode() ?? 0)

@@ -66,11 +66,7 @@ internal record struct MethodDefinition : IMemberDefinition
             }
         }
         if (returnType is null || name is null)
-#if DEBUG
-            throw new Exception("Failed to find type or name");
-#else
             return default;
-#endif
 
         return new MethodDefinition(
             visibility,

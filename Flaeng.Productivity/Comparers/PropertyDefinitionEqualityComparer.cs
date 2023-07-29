@@ -1,10 +1,8 @@
 namespace Flaeng.Productivity.Comparers;
 
-internal class PropertyDefinitionEqualityComparer : IEqualityComparer<PropertyDefinition>
+internal class PropertyDefinitionEqualityComparer : EqualityComparerBase<PropertyDefinition, PropertyDefinitionEqualityComparer>
 {
-    public static readonly PropertyDefinitionEqualityComparer Instance = new();
-
-    public bool Equals(PropertyDefinition x, PropertyDefinition y)
+    public override bool Equals(PropertyDefinition x, PropertyDefinition y)
     {
         return x.IsStatic == y.IsStatic
             && x.Name == y.Name
@@ -15,7 +13,7 @@ internal class PropertyDefinitionEqualityComparer : IEqualityComparer<PropertyDe
             && x.Visibility == y.Visibility;
     }
 
-    public int GetHashCode(PropertyDefinition obj)
+    public override int GetHashCode(PropertyDefinition obj)
     {
         return obj.IsStatic.GetHashCode()
             ^ (obj.Name?.GetHashCode() ?? 0)

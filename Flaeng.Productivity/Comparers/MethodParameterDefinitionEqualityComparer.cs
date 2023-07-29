@@ -1,10 +1,8 @@
 namespace Flaeng.Productivity.Comparers;
 
-internal class MethodParameterDefinitionEqualityComparer : IEqualityComparer<MethodParameterDefinition>
+internal class MethodParameterDefinitionEqualityComparer : EqualityComparerBase<MethodParameterDefinition, MethodParameterDefinitionEqualityComparer>
 {
-    public static readonly MethodParameterDefinitionEqualityComparer Instance = new();
-
-    public bool Equals(MethodParameterDefinition x, MethodParameterDefinition y)
+    public override bool Equals(MethodParameterDefinition x, MethodParameterDefinition y)
     {
         return x.DefaultValue == y.DefaultValue
             && x.Name == y.Name
@@ -12,7 +10,7 @@ internal class MethodParameterDefinitionEqualityComparer : IEqualityComparer<Met
             && x.Type == y.Type;
     }
 
-    public int GetHashCode(MethodParameterDefinition obj)
+    public override int GetHashCode(MethodParameterDefinition obj)
     {
         return (obj.DefaultValue?.GetHashCode() ?? 0)
             ^ (obj.Name?.GetHashCode() ?? 0)

@@ -71,11 +71,7 @@ internal struct FieldDefinition : IMemberDefinition, IHasDefaultValue, IHasPrett
             }
         }
         if (type is null || name is null)
-#if DEBUG
-            throw new Exception("Failed to find type or name");
-#else
             return default;
-#endif
 
         return new FieldDefinition(
             visibility,

@@ -109,17 +109,10 @@ internal struct PropertyDefinition : IMemberDefinition, IHasDefaultValue, IHasPr
                 case (int)SyntaxKind.AccessorList:
                     if (nodeToken.AsNode() is not AccessorListSyntax als)
                         continue;
-                    NewMethod(als, ref getterVisibility, ref setterVisibility);
+                    GetAccessorVisiblity(als, ref getterVisibility, ref setterVisibility);
                     break;
             }
         }
-        if (type is null || name is null)
-#if DEBUG
-            throw new Exception("Failed to find type or name");
-#else
-            return default;
-#endif
-
         return new PropertyDefinition(
                 visibility,
                 isStatic,
@@ -131,7 +124,7 @@ internal struct PropertyDefinition : IMemberDefinition, IHasDefaultValue, IHasPr
             );
     }
 
-    private static void NewMethod(AccessorListSyntax als, ref Visibility? getterVisibility, ref Visibility? setterVisibility)
+    private static void GetAccessorVisiblity(AccessorListSyntax als, ref Visibility? getterVisibility, ref Visibility? setterVisibility)
     {
         foreach (var alsChild in als.ChildNodes())
         {

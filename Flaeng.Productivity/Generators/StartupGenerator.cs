@@ -11,21 +11,13 @@ public sealed class StartupGenerator : GeneratorBase
 
     public record struct Data(
         ImmutableArray<Diagnostic> Diagnostics,
-        string Namespace,
+        string? Namespace,
         ImmutableArray<InjectData> Injectables
     );
 
     public override void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(GenerateDependencies);
-
-        var provider = context.SyntaxProvider
-            .CreateSyntaxProvider<Data>(Predicate, Transform)
-            .Where(static x => x != null)
-            ;
-        // .WithComparer(ConstructorDataEqualityComparer.Instance);
-
-        context.RegisterSourceOutput(provider, Execute);
+        Initialize(context, GenerateTriggerAttribute, Predicate, Transform, StartupDataEqualityComparer.Instance, Execute);
     }
 
     public static bool Predicate(SyntaxNode node, CancellationToken ct)
@@ -234,7 +226,7 @@ public sealed class StartupGenerator : GeneratorBase
         };
     }
 
-    private void GenerateDependencies(IncrementalGeneratorPostInitializationContext context)
+    private static void GenerateTriggerAttribute(IncrementalGeneratorPostInitializationContext context)
     {
         context.AddSource(
             "RegisterAttribute.g.cs", 

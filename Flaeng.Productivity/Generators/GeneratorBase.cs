@@ -5,6 +5,25 @@ public abstract class GeneratorBase : IIncrementalGenerator
     internal static readonly CSharpOptions DefaultCSharpOptions = new(IgnoreUnnecessaryUsingDirectives: true);
     public abstract void Initialize(IncrementalGeneratorInitializationContext context);
 
+    protected void Initialize<T>(
+        IncrementalGeneratorInitializationContext context,
+        Action<IncrementalGeneratorPostInitializationContext> generateTriggerAttribute,
+        Func<SyntaxNode, CancellationToken, bool> predicate,
+        Func<GeneratorSyntaxContext, CancellationToken, T> transform,
+        IEqualityComparer<T> instance,
+        Action<SourceProductionContext, T> execute
+    )
+    {
+        context.RegisterPostInitializationOutput(generateTriggerAttribute);
+
+        var provider = context.SyntaxProvider
+            .CreateSyntaxProvider<T>(predicate, transform)
+            .Where(static x => x != null)
+            .WithComparer(instance);
+
+        context.RegisterSourceOutput(provider, execute);
+    }
+
     protected static bool IsSystemObjectType(INamedTypeSymbol? sym)
     {
         if (sym is null)
@@ -84,7 +103,7 @@ public abstract class GeneratorBase : IIncrementalGenerator
     private static bool NameSyntaxIsAttribute(NameSyntax qualifiedName, string attrName)
     {
         var name = qualifiedName.ToString();
-        
+
         // If user uses normal usings 
         return name == attrName
             || name == $"{attrName}Attribute"
@@ -99,8 +118,22 @@ public abstract class GeneratorBase : IIncrementalGenerator
             || name.Split('.').Last() == $"{attrName}Attribute";
     }
 
-    protected static List<string> GetUsings(ImmutableArray<SyntaxNode> roots)
+    protected static ImmutableArray<ClassDeclarationSyntax> GetAllDeclarations(INamedTypeSymbol symbol)
     {
+        return symbol.DeclaringSyntaxReferences
+                .Select(x => x.GetSyntax())
+                .OfType<ClassDeclarationSyntax>()
+                .ToImmutableArray();
+    }
+
+    protected static List<string> GetUsings(ImmutableArray<ClassDeclarationSyntax> syntaxes)
+    {
+        var roots = syntaxes
+            .Select(x => x.SyntaxTree)
+            .Select(x => x.TryGetRoot(out var root) ? root : null)
+            .OfType<SyntaxNode>()
+            .ToImmutableArray();
+
         List<string> usings = new();
         foreach (var child in roots.SelectMany(x => x.ChildNodesAndTokens()))
         {

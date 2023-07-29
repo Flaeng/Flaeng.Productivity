@@ -1,10 +1,8 @@
 namespace Flaeng.Productivity.Comparers;
 
-internal class IMemberDefinitionEqualityComparer : IEqualityComparer<IMemberDefinition>
+internal class IMemberDefinitionEqualityComparer : EqualityComparerBase<IMemberDefinition, IMemberDefinitionEqualityComparer>
 {
-    public static readonly IMemberDefinitionEqualityComparer Instance = new();
-
-    public bool Equals(IMemberDefinition x, IMemberDefinition y)
+    public override bool Equals(IMemberDefinition x, IMemberDefinition y)
     {
         return x switch
         {
@@ -24,7 +22,7 @@ internal class IMemberDefinitionEqualityComparer : IEqualityComparer<IMemberDefi
         };
     }
 
-    public int GetHashCode(IMemberDefinition obj)
+    public override int GetHashCode(IMemberDefinition obj)
     {
         return obj.GetHashCode();
     }
