@@ -109,22 +109,7 @@ internal struct PropertyDefinition : IMemberDefinition, IHasDefaultValue, IHasPr
                 case (int)SyntaxKind.AccessorList:
                     if (nodeToken.AsNode() is not AccessorListSyntax als)
                         continue;
-
-                    foreach (var alsChild in als.ChildNodes())
-                    {
-                        switch (alsChild.RawKind)
-                        {
-                            case (int)SyntaxKind.GetAccessorDeclaration:
-                                getterVisibility = GetVisibility(alsChild);
-                                break;
-                            case (int)SyntaxKind.SetAccessorDeclaration:
-                                setterVisibility = GetVisibility(alsChild);
-                                break;
-                            case (int)SyntaxKind.InitAccessorDeclaration:
-                                setterVisibility = Visibility.Init;
-                                break;
-                        }
-                    }
+                    NewMethod(als, ref getterVisibility, ref setterVisibility);
                     break;
             }
         }
@@ -144,6 +129,25 @@ internal struct PropertyDefinition : IMemberDefinition, IHasDefaultValue, IHasPr
                 setterVisibility,
                 defaultValue
             );
+    }
+
+    private static void NewMethod(AccessorListSyntax als, ref Visibility? getterVisibility, ref Visibility? setterVisibility)
+    {
+        foreach (var alsChild in als.ChildNodes())
+        {
+            switch (alsChild.RawKind)
+            {
+                case (int)SyntaxKind.GetAccessorDeclaration:
+                    getterVisibility = GetVisibility(alsChild);
+                    break;
+                case (int)SyntaxKind.SetAccessorDeclaration:
+                    setterVisibility = GetVisibility(alsChild);
+                    break;
+                case (int)SyntaxKind.InitAccessorDeclaration:
+                    setterVisibility = Visibility.Init;
+                    break;
+            }
+        }
     }
 
     private static Visibility GetVisibility(SyntaxNode node)

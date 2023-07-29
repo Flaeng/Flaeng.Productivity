@@ -2,7 +2,6 @@ namespace Flaeng.Productivity.Definitions;
 
 internal static class MemberDefinitions
 {
-
     public static IMemberDefinition? Parse(SyntaxNode? syntax)
     {
         return syntax switch

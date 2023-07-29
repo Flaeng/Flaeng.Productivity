@@ -10,16 +10,7 @@ internal class MethodDefinitionEqualityComparer : IEqualityComparer<MethodDefini
             && x.IsStatic == y.IsStatic
             && x.Name == y.Name
             && x.Type == y.Type
-            && (
-                (
-                    x.Parameters == null 
-                    && y.Parameters == null
-                ) || (
-                    x.Parameters != null
-                    && y.Parameters != null
-                    && x.Parameters.SequenceEqual(y.Parameters, MethodParameterDefinitionEqualityComparer.Instance)
-                )
-            );
+            && EqualityComparerHelper.Equals(x.Parameters, y.Parameters, MethodParameterDefinitionEqualityComparer.Instance);
     }
 
     public int GetHashCode(MethodDefinition obj)
@@ -28,10 +19,6 @@ internal class MethodDefinitionEqualityComparer : IEqualityComparer<MethodDefini
             ^ obj.IsStatic.GetHashCode()
             ^ (obj.Name?.GetHashCode() ?? 0) 
             ^ (obj.Type?.GetHashCode() ?? 0)
-            ^ (
-                obj.Parameters == null 
-                    ? 0
-                    : obj.Parameters.Aggregate(0, (x, y) => x ^ y.GetHashCode())
-            );
+            ^ EqualityComparerHelper.GetHashCode(obj.Parameters, MethodParameterDefinitionEqualityComparer.Instance);
     }
 }

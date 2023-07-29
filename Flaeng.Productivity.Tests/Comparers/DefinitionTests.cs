@@ -72,7 +72,6 @@ public class EqualityComparerTests
                 }
             }
         }
-
     }
 
     private static object?[] GetValuesForType(Type memberType)
