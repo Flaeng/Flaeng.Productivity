@@ -186,14 +186,6 @@ public abstract class GeneratorBase : IIncrementalGenerator
                 case (int)SyntaxKind.UsingDirective:
                     usings.Add(child.ToString());
                     break;
-                case (int)SyntaxKind.UsingKeyword:
-                    Debugger.Break();
-                    usings.Add(child.ToString());
-                    break;
-                case (int)SyntaxKind.UsingStatement:
-                    Debugger.Break();
-                    usings.Add(child.ToString());
-                    break;
             }
         }
         return usings;

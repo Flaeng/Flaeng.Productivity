@@ -65,8 +65,10 @@ public sealed class FluentApiGenerator : GeneratorBase
 
     private static Data Transform(GeneratorSyntaxContext context, CancellationToken ct)
     {
-        if (SyntaxNodeShouldRunTransform(context, ct, out var classSymbol) == false || classSymbol is null)
+        if (SyntaxNodeShouldRunTransform(context, ct, out var classSymbol) == false)
             return new Data();
+
+        classSymbol = Unsafe.As<INamedTypeSymbol>(classSymbol);
 
         var namespaceName = classSymbol.ContainingNamespace.IsGlobalNamespace ? null : classSymbol.ContainingNamespace.ToDisplayString();
 
@@ -81,13 +83,7 @@ public sealed class FluentApiGenerator : GeneratorBase
             .OfType<IMemberDefinition>()
             .ToImmutableArray();
 
-        List<ClassDefinition> parentClasses = new();
-        var sym = classSymbol;
-        while ((sym = sym.ContainingType) != null && IsSystemObjectType(sym) == false)
-        {
-            var cls = ClassDefinition.Parse(sym, ct);
-            parentClasses.Add(cls);
-        }
+        var parentClasses = GetContainingTypeRecursively(classSymbol, ct);
 
         return new Data(ImmutableArray<Diagnostic>.Empty, namespaceName, parentClasses.ToImmutableArray(), classDefinition, members);
     }

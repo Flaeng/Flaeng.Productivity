@@ -90,15 +90,27 @@ public sealed class StartupGenerator : GeneratorBase
 
     private static InjectData ToInjectData(INamedTypeSymbol symbol, CancellationToken ct)
     {
-        static string FormatName(ISymbol sym)
-            => sym.ContainingNamespace.IsGlobalNamespace
-                ? $"global::{sym.Name}"
-                : $"global::{sym.ContainingNamespace}.{sym.Name}";
+        static string FormatName(INamedTypeSymbol sym, CancellationToken ct)
+        {
+            StringBuilder builder = new("global::");
+            if (sym.ContainingNamespace.IsGlobalNamespace == false)
+            {
+                builder.Append(sym.ContainingNamespace);
+                builder.Append(".");
+            }
+            foreach (var containingType in GetContainingTypeRecursively(sym, ct).AsEnumerable().Reverse())
+            {
+                builder.Append(containingType.Name);
+                builder.Append(".");
+            }
+            builder.Append(sym.Name);
+            return builder.ToString();
+        }
 
         return new InjectData(
             GetInjectType(symbol, ct),
-            FormatName(symbol),
-            symbol.Interfaces.Select(FormatName).ToImmutableArray()
+            FormatName(symbol, ct),
+            symbol.Interfaces.Select(x => FormatName(x, ct)).ToImmutableArray()
         );
     }
 
