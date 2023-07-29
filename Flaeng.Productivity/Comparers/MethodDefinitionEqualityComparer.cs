@@ -15,7 +15,7 @@ internal class MethodDefinitionEqualityComparer : EqualityComparerBase<MethodDef
     {
         return obj.Visibility.GetHashCode()
             ^ obj.IsStatic.GetHashCode()
-            ^ (obj.Name?.GetHashCode() ?? 0) 
+            ^ (obj.Name?.GetHashCode() ?? 0)
             ^ (obj.Type?.GetHashCode() ?? 0)
             ^ GetHashCode(obj.Parameters, MethodParameterDefinitionEqualityComparer.Instance);
     }

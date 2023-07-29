@@ -40,7 +40,7 @@ public sealed class InterfaceGenerator : GeneratorBase
         var symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
         if (symbol is null)
             return default;
-    
+
         var syntaxes = symbol.DeclaringSyntaxReferences.Length == 1
             ? new[] { cds }.ToImmutableArray()
             : GetAllDeclarations(symbol);

@@ -89,7 +89,7 @@ public class MembersWithoutTypeParameterTests : IClassFixture<CSharpCompiler>
         Assert.Equal(Path.Combine(Constants.ConstructorGeneratorGeneratedContentPathPrefix, "TestNamespace.Dummy.g.cs"), dummyGenerated.Filename);
         Assert.Equal(expected_output, dummyGenerated.Content);
     }
-    
+
     [Theory]
     // readonly field
     [InlineData("private readonly static IList _logger;")]

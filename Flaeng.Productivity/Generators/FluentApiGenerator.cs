@@ -73,8 +73,8 @@ public sealed class FluentApiGenerator : GeneratorBase
         var classDefinition = ClassDefinition.Parse(classSymbol, ct);
         var members = classSymbol
             .GetMembers()
-            .Where(x => 
-                (x is IFieldSymbol fs && fs.IsImplicitlyDeclared == false) 
+            .Where(x =>
+                (x is IFieldSymbol fs && fs.IsImplicitlyDeclared == false)
                 || (x is IPropertySymbol)
             )
             .Select(x => MemberDefinitions.Parse(x, ct))

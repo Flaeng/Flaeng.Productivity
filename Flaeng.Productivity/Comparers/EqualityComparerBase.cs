@@ -1,13 +1,13 @@
 namespace Flaeng.Productivity.Comparers;
 
-internal abstract class EqualityComparerBase<T, TEqualityComparer> : IEqualityComparer<T> 
+internal abstract class EqualityComparerBase<T, TEqualityComparer> : IEqualityComparer<T>
     where TEqualityComparer : EqualityComparerBase<T, TEqualityComparer>, new()
 {
     public static TEqualityComparer Instance = new TEqualityComparer();
 
     public abstract bool Equals(T x, T y);
     public abstract int GetHashCode(T obj);
-    
+
     protected static bool SameLength<TData>(ImmutableArray<TData> collection1, ImmutableArray<TData> collection2)
     {
         if (collection1 == default && collection2 == default)

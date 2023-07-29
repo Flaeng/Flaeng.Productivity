@@ -8,11 +8,11 @@ internal record struct InterfaceDefinition
     public ImmutableArray<string> TypeArguments { get; }
     public ImmutableArray<IMemberDefinition> Members { get; }
 
-    private bool isInitialized = false;
+    private readonly bool isInitialized = false;
 
     public InterfaceDefinition(
         Visibility visibility,
-        bool isPartial, 
+        bool isPartial,
         string name,
         ImmutableArray<string> typeArguments,
         ImmutableArray<IMemberDefinition> members

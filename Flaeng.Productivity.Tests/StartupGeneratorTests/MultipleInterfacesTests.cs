@@ -53,7 +53,7 @@ public class MultipleInterfacesTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact]
     public void can_handle_multiple_interfaces_in_different_files()
     {
@@ -109,5 +109,5 @@ public class MultipleInterfacesTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
 }

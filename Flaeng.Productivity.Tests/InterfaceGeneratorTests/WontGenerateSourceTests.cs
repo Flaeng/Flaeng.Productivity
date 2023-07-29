@@ -163,7 +163,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
 
         // Assert
         Assert.Empty(output.GeneratedFiles.ExcludeTriggerAttribute());
-        
+
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.InterfaceGenerator_ClassIsNotPartial.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
@@ -196,7 +196,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
 
         // Assert
         Assert.Empty(output.GeneratedFiles.ExcludeTriggerAttribute());
-        
+
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.InterfaceGenerator_ClassIsStatic.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);

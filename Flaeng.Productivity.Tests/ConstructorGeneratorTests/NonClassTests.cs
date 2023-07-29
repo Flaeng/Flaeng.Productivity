@@ -32,7 +32,7 @@ public class NonClassTests : IClassFixture<CSharpCompiler>
         Assert.Empty(output.GeneratedFiles.ExcludeTriggerAttribute());
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact(Timeout = 1000)]
     public void Wont_run_for_interfaces()
     {

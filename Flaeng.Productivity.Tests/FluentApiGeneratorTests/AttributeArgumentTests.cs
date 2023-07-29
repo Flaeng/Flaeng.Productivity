@@ -70,5 +70,5 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
 }

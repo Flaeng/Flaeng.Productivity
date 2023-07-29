@@ -8,9 +8,9 @@ internal record struct MethodParameterDefinition
     public string? DefaultValue { get; }
 
     public MethodParameterDefinition(
-        string? parameterKind, 
-        string? type, 
-        string? name, 
+        string? parameterKind,
+        string? type,
+        string? name,
         string? defaultValue
     )
     {

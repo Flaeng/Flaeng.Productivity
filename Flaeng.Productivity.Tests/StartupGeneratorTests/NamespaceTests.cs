@@ -52,7 +52,7 @@ public class NamespaceTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact]
     public void can_handle_no_namespace()
     {
@@ -95,7 +95,7 @@ public class NamespaceTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact]
     public void can_handle_normal_namespace()
     {
@@ -141,5 +141,5 @@ public class NamespaceTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
 }

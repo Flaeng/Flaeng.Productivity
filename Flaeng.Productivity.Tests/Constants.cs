@@ -20,18 +20,18 @@ public static class Constants
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.3.0.0")]
     """;
 
-    public static readonly string ConstructorGeneratorGeneratedContentPathPrefix = 
+    public static readonly string ConstructorGeneratorGeneratedContentPathPrefix =
         $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.ConstructorGenerator{Path.DirectorySeparatorChar}";
-        
-    public static readonly string InterfaceGeneratorGeneratedContentPathPrefix = 
+
+    public static readonly string InterfaceGeneratorGeneratedContentPathPrefix =
         $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.InterfaceGenerator{Path.DirectorySeparatorChar}";
-        
-        
-    public static readonly string StartupGeneratorGeneratedContentPathPrefix = 
+
+
+    public static readonly string StartupGeneratorGeneratedContentPathPrefix =
         $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.StartupGenerator{Path.DirectorySeparatorChar}";
-        
-        
-    public static readonly string FluentApiGeneratorGeneratedContentPathPrefix = 
+
+
+    public static readonly string FluentApiGeneratorGeneratedContentPathPrefix =
         $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.FluentApiGenerator{Path.DirectorySeparatorChar}";
-        
+
 }

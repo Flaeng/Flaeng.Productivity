@@ -112,7 +112,7 @@ public class EqualityComparerTests
             //         )
             //     }
             // };
-            
+
             // var arr = Array.CreateInstance(memberType,);
         }
         else if (memberType.UnderlyingSystemType != null)

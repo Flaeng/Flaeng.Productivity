@@ -58,7 +58,7 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Theory]
     [InlineData("[Flaeng.RegisterService(ServiceType = Flaeng.ServiceType.Transient)]")]
     [InlineData("[global::Flaeng.RegisterService(ServiceType = global::Flaeng.ServiceType.Transient)]")]
@@ -110,7 +110,7 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Theory]
     [InlineData("[Flaeng.RegisterService(ServiceType = Flaeng.ServiceType.Scoped)]")]
     [InlineData("[global::Flaeng.RegisterService(ServiceType = global::Flaeng.ServiceType.Scoped)]")]
@@ -161,7 +161,7 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Theory]
     [InlineData("[Flaeng.RegisterService(ServiceType = Flaeng.ServiceType.Scoped)]")]
     [InlineData("[Flaeng.RegisterServiceAttribute(ServiceType = Flaeng.ServiceType.Scoped)]")]
@@ -223,7 +223,7 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Theory]
     [InlineData("[Flaeng.RegisterService(ServiceType = Flaeng.ServiceType.Singleton)]")]
     [InlineData("[Flaeng.RegisterServiceAttribute(ServiceType = Flaeng.ServiceType.Singleton)]")]
@@ -283,7 +283,7 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Theory]
     [InlineData("[Flaeng.RegisterService(ServiceType = Flaeng.ServiceType.Singleton)]")]
     [InlineData("[Flaeng.RegisterServiceAttribute(ServiceType = Flaeng.ServiceType.Singleton)]")]
@@ -344,5 +344,5 @@ public class AttributeArgumentTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
 }

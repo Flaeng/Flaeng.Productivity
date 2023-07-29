@@ -49,7 +49,7 @@ public class SimpleTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact(Timeout = 1000)]
     public void Can_make_startup_extension_with_two_class()
     {
@@ -96,7 +96,7 @@ public class SimpleTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact(Timeout = 1000)]
     public void Can_handle_partial_class_with_multiple_interfaces_in_same_file()
     {
@@ -142,7 +142,7 @@ public class SimpleTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact(Timeout = 1000)]
     public void Can_handle_partial_class_with_multiple_interfaces_in_different_files()
     {
@@ -191,6 +191,6 @@ public class SimpleTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
 }
 

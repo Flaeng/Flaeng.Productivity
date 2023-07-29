@@ -45,7 +45,7 @@ internal struct PropertyDefinition : IMemberDefinition, IHasDefaultValue, IHasPr
         var type = MemberDefinitions.FormatType(symbol.Type);
         var name = symbol.Name;
         string? defaultValue = MemberDefinitions.GetDefaultValue(symbol, ct);
-        
+
         Visibility? getterVisibility = symbol.GetMethod is null
                             ? null
                             : MemberDefinitions.GetVisibilityFromAccessibility(symbol.GetMethod.DeclaredAccessibility);

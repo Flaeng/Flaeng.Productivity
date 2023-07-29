@@ -2,7 +2,7 @@ using NuGet.Versioning;
 
 partial class Build
 {
-    [Parameter("NuGet API Key"), Secret] string NuGetApiKey;
+    [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
 

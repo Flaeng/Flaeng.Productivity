@@ -78,7 +78,7 @@ public class MultipleMembersTests : IClassFixture<CSharpCompiler>
         Assert.Equal(expected_output, file.Content);
         Assert.Empty(output.Diagnostic);
     }
-    
+
     [Fact]
     public void Can_handle_multiple_members_in_multiple_files()
     {

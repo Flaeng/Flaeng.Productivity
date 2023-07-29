@@ -9,7 +9,7 @@
     "Build",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Stryker) },
-    OnPushBranches = new [] { "main" },
+    OnPushBranches = new[] { "main" },
     PublishArtifacts = false
 )]
 partial class Build
