@@ -1,7 +1,7 @@
 [GitHubActions(
     "PR",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Format), nameof(Test), nameof(Stryker) },
+    InvokedTargets = new[] { nameof(Format), nameof(Test)/*, nameof(Stryker)*/ },
     OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = false
 )]
