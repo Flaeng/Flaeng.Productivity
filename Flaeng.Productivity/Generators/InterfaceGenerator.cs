@@ -136,23 +136,15 @@ public sealed class InterfaceGenerator : GeneratorBase
 
     private void Execute(SourceProductionContext context, Data source)
     {
-        if (source.Diagnostics != default)
-        {
-            foreach (var dia in source.Diagnostics)
-                context.ReportDiagnostic(dia);
+        if (TryWriteDiagnostics(context, source.Diagnostics))
             return;
-        }
 
         CSharpBuilder builder = new(DefaultCSharpOptions);
         List<string> filenameParts = new();
 
         // Get namespace
-        if (source.Namespace is not null && source.Namespace.Length != 0)
-        {
-            builder.WriteNamespace(source.Namespace);
-            builder.StartScope();
-            filenameParts.Add(source.Namespace);
-        }
+        if (TryWriteNamespace(source.Namespace, builder))
+            filenameParts.Add(source.Namespace!);
 
         // Write class and wrapper classes
         foreach (var parentClass in source.ParentClasses.Reverse())

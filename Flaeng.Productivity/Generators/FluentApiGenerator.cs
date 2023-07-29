@@ -127,11 +127,7 @@ public sealed class FluentApiGenerator : GeneratorBase
 
     private static void Execute(SourceProductionContext context, Data source)
     {
-        if (source.Diagnostics != default && source.Diagnostics.Length != 0)
-        {
-            foreach (var dia in source.Diagnostics)
-                context.ReportDiagnostic(dia);
-        }
+        TryWriteDiagnostics(context, source.Diagnostics);
 
         var clsName = source.ClassDefinition.Name;
         if (clsName is null)
@@ -140,12 +136,9 @@ public sealed class FluentApiGenerator : GeneratorBase
         CSharpBuilder builder = new(DefaultCSharpOptions);
         List<string> filenameParts = new();
 
-        if (source.Namespace is not null)
-        {
-            builder.WriteNamespace(source.Namespace);
-            builder.StartScope();
-            filenameParts.Add(source.Namespace);
-        }
+
+        if (TryWriteNamespace(source.Namespace, builder))
+            filenameParts.Add(source.Namespace!);
 
         // Write class and wrapper classes
         foreach (var parentClass in source.ParentClasses.Reverse())

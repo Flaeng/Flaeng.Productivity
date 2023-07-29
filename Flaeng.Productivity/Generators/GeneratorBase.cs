@@ -33,6 +33,25 @@ public abstract class GeneratorBase : IIncrementalGenerator
             && sym.ToDisplayString().Equals("object", StringComparison.InvariantCultureIgnoreCase);
     }
 
+    internal static bool TryWriteNamespace(string? namespaceName, CSharpBuilder builder)
+    {
+        if (namespaceName is null || String.IsNullOrWhiteSpace(namespaceName))
+            return false;
+        builder.WriteNamespace(namespaceName);
+        builder.StartScope();
+        return true;
+    }
+
+    protected static bool TryWriteDiagnostics(SourceProductionContext context, ImmutableArray<Diagnostic> diagnostics)
+    {
+        if (diagnostics == default || diagnostics.Length == 0)
+            return false;
+
+        foreach (var dia in diagnostics)
+            context.ReportDiagnostic(dia);
+        return true;
+    }
+
     protected static IEnumerable<INamedTypeSymbol> GetBaseTypeRecursively(INamedTypeSymbol? symbol)
     {
         if (symbol is null)

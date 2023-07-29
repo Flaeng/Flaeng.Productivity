@@ -48,7 +48,7 @@ public sealed class StartupGenerator : GeneratorBase
             .ToImmutableArray();
 
         if (classDeclarations.First() != context.Node)
-            return default;
+            return new Data();
 
         var injectables = classDeclarations
             .Select(x => TryGetDeclaredSymbol(context, x, ct))
@@ -117,14 +117,10 @@ public sealed class StartupGenerator : GeneratorBase
 
     private void Execute(SourceProductionContext context, Data source)
     {
-        if (source == default)
-            return;
+        TryWriteDiagnostics(context, source.Diagnostics);
 
-        if (source.Diagnostics != default && source.Diagnostics.Length != 0)
-        {
-            foreach (var dia in source.Diagnostics)
-                context.ReportDiagnostic(dia);
-        }
+        if (source.Injectables == default || source.Injectables.Length == 0)
+            return;
 
         CSharpBuilder builder = new(DefaultCSharpOptions);
         List<string> filenameParts = new();
@@ -132,11 +128,7 @@ public sealed class StartupGenerator : GeneratorBase
         builder.WriteLine("using Microsoft.Extensions.DependencyInjection;");
         builder.WriteLine();
 
-        if (source.Namespace is not null && source.Namespace.Length != 0)
-        {
-            builder.WriteNamespace(source.Namespace);
-            builder.StartScope();
-        }
+        TryWriteNamespace(source.Namespace, builder);
 
         builder.WriteClass(new ClassDefinition(
             Visibility.Public,

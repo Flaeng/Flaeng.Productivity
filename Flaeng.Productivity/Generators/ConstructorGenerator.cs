@@ -127,11 +127,8 @@ public sealed class ConstructorGenerator : GeneratorBase
 
     private void Execute(SourceProductionContext context, Data source)
     {
-        if (source.Diagnostics != default && source.Diagnostics.Length != 0)
-        {
-            foreach (var dia in source.Diagnostics)
-                context.ReportDiagnostic(dia);
-        }
+        TryWriteDiagnostics(context, source.Diagnostics);
+
         if (source.ClassDefinition.Name == default)
             return;
 
@@ -146,12 +143,8 @@ public sealed class ConstructorGenerator : GeneratorBase
         }
 
         // Get namespace
-        if (source.Namespace is not null && source.Namespace.Length != 0)
-        {
-            builder.WriteNamespace(source.Namespace);
-            builder.StartScope();
+        if (TryWriteNamespace(source.Namespace, builder))
             filenameParts.Add(source.Namespace!);
-        }
 
         // Write class and wrapper classes
         if (source.ContainingClasses != default)

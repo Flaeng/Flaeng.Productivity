@@ -112,18 +112,23 @@ internal static class MemberDefinitions
                     type = child.ToString();
                     break;
                 case (int)SyntaxKind.VariableDeclarator:
-                    foreach (var varDeclChild in child.ChildNodesAndTokens())
-                    {
-                        switch (varDeclChild.RawKind)
-                        {
-                            case (int)SyntaxKind.IdentifierToken:
-                                name = varDeclChild.ToString();
-                                break;
-                            case (int)SyntaxKind.EqualsValueClause:
-                                defaultValue = varDeclChild.ToString();
-                                break;
-                        }
-                    }
+                    GetNameAndDefaultValueFromVariableDeclarator(child, ref name, ref defaultValue);
+                    break;
+            }
+        }
+    }
+
+    private static void GetNameAndDefaultValueFromVariableDeclarator(SyntaxNode child, ref string? name, ref string? defaultValue)
+    {
+        foreach (var varDeclChild in child.ChildNodesAndTokens())
+        {
+            switch (varDeclChild.RawKind)
+            {
+                case (int)SyntaxKind.IdentifierToken:
+                    name = varDeclChild.ToString();
+                    break;
+                case (int)SyntaxKind.EqualsValueClause:
+                    defaultValue = varDeclChild.ToString();
                     break;
             }
         }
