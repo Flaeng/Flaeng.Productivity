@@ -20,18 +20,18 @@ public static class Constants
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Flaeng.Productivity", "0.3.0.0")]
     """;
 
-    public const string ConstructorGeneratorGeneratedContentPathPrefix = 
-        @"Flaeng.Productivity\Flaeng.Productivity.Generators.ConstructorGenerator\";
+    public static readonly string ConstructorGeneratorGeneratedContentPathPrefix = 
+        $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.ConstructorGenerator{Path.DirectorySeparatorChar}";
         
-    public const string InterfaceGeneratorGeneratedContentPathPrefix = 
-        @"Flaeng.Productivity\Flaeng.Productivity.Generators.InterfaceGenerator\";
-        
-        
-    public const string StartupGeneratorGeneratedContentPathPrefix = 
-        @"Flaeng.Productivity\Flaeng.Productivity.Generators.StartupGenerator\";
+    public static readonly string InterfaceGeneratorGeneratedContentPathPrefix = 
+        $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.InterfaceGenerator{Path.DirectorySeparatorChar}";
         
         
-    public const string FluentApiGeneratorGeneratedContentPathPrefix = 
-        @"Flaeng.Productivity\Flaeng.Productivity.Generators.FluentApiGenerator\";
+    public static readonly string StartupGeneratorGeneratedContentPathPrefix = 
+        $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.StartupGenerator{Path.DirectorySeparatorChar}";
+        
+        
+    public static readonly string FluentApiGeneratorGeneratedContentPathPrefix = 
+        $"Flaeng.Productivity{Path.DirectorySeparatorChar}Flaeng.Productivity.Generators.FluentApiGenerator{Path.DirectorySeparatorChar}";
         
 }
