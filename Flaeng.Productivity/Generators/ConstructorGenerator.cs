@@ -27,19 +27,10 @@ public sealed class ConstructorGenerator : GeneratorBase
 
     internal static Data Transform(GeneratorSyntaxContext context, CancellationToken ct)
     {
-        var cds = Unsafe.As<ClassDeclarationSyntax>(context.Node);
+        if (ShouldRunTransform(context, ct, out var symbol, out var syntaxes) == false)
+            return new Data();
 
-        var symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct) as INamedTypeSymbol;
-        if (symbol is null)
-            return default;
-
-        var syntaxes = symbol.DeclaringSyntaxReferences.Length == 1
-            ? new[] { cds }.ToImmutableArray()
-            : GetAllDeclarations(symbol);
-
-        // Make sure we only generate one new source file for partial classes in multiple files
-        if (symbol.DeclaringSyntaxReferences[0].GetSyntax() != context.Node)
-            return default;
+        symbol = Unsafe.As<INamedTypeSymbol>(symbol);
 
         List<string> usings = GetUsings(syntaxes);
         GetClassModifiers(context, out bool isPartial, out bool isStatic);
@@ -56,45 +47,17 @@ public sealed class ConstructorGenerator : GeneratorBase
             ? null
             : symbol.ContainingNamespace.ToDisplayString();
 
-        var members = syntaxes.SelectMany(x => x.DescendantNodes(
-                    x => x is ClassDeclarationSyntax
-                )
-            )
+        var members = syntaxes
+            .SelectMany(x => x.DescendantNodes(x => x is ClassDeclarationSyntax))
             .OfType<MemberDeclarationSyntax>()
             .Where(HasTriggerAttribute)
-            .Where(x =>
-                x is FieldDeclarationSyntax
-                || x is PropertyDeclarationSyntax
-            )
-            .Select(x =>
-            {
-                var member = MemberDefinitions.Parse(x);
-                if (member is null)
-                    return null;
-
-                if (member.IsStatic)
-                {
-                    var diag = Diagnostic.Create(
-                        descriptor: Rules.ConstructorGenerator_MemberIsStatic,
-                        location: x.GetLocation(),
-                        messageArgs: new[] { member.Name }
-                    );
-                    if (diag is not null)
-                        diagnostics.Add(diag);
-                    return null;
-                }
-                return member;
-            })
+            .Where(x => x is FieldDeclarationSyntax || x is PropertyDeclarationSyntax)
+            .Select(x => new Tuple<MemberDeclarationSyntax, IMemberDefinition?>(x, MemberDefinitions.Parse(x)))
+            .Select(x => AddDiagnosticsForEachStaticMember(x.Item1, x.Item2, diagnostics))
             .OfType<IMemberDefinition>()
             .ToImmutableArray();
 
-        List<ClassDefinition> parentClasses = new();
-        var sym = symbol;
-        while ((sym = sym.ContainingType) != null && IsSystemObjectType(sym) == false)
-        {
-            var cls = ClassDefinition.Parse(sym, ct);
-            parentClasses.Add(cls);
-        }
+        List<ClassDefinition> parentClasses = GetContainingTypeRecursively(symbol, ct);
 
         return new Data(
             Diagnostics: diagnostics.ToImmutableArray(),
@@ -104,6 +67,40 @@ public sealed class ConstructorGenerator : GeneratorBase
             ClassDefinition: ClassDefinition.Parse(symbol, ct),
             InjectableMembers: members
         );
+    }
+
+    private static bool ShouldRunTransform(GeneratorSyntaxContext context, CancellationToken ct, out INamedTypeSymbol? symbol, out ImmutableArray<ClassDeclarationSyntax> syntaxes)
+    {
+        var cds = Unsafe.As<ClassDeclarationSyntax>(context.Node);
+
+        symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
+        if (symbol is null)
+            return false;
+
+        syntaxes = symbol.DeclaringSyntaxReferences.Length == 1
+            ? new[] { cds }.ToImmutableArray()
+            : GetAllDeclarations(symbol);
+
+        // Make sure we only generate one new source file for partial classes in multiple files
+        if (symbol.DeclaringSyntaxReferences[0].GetSyntax() != context.Node)
+            return false;
+
+        return true;
+    }
+
+    private static IMemberDefinition? AddDiagnosticsForEachStaticMember(MemberDeclarationSyntax syntax, IMemberDefinition? member, List<Diagnostic> diagnostics)
+    {
+        if (member is null || member.IsStatic == false)
+            return member;
+
+        var diag = Diagnostic.Create(
+            descriptor: Rules.ConstructorGenerator_MemberIsStatic,
+            location: syntax.GetLocation(),
+            messageArgs: new[] { member.Name }
+        );
+        if (diag is not null)
+            diagnostics.Add(diag);
+        return null;
     }
 
     private static Data DataWithDiagnostic(
@@ -130,9 +127,6 @@ public sealed class ConstructorGenerator : GeneratorBase
 
     private void Execute(SourceProductionContext context, Data source)
     {
-        if (source == default)
-            return;
-
         if (source.Diagnostics != default && source.Diagnostics.Length != 0)
         {
             foreach (var dia in source.Diagnostics)

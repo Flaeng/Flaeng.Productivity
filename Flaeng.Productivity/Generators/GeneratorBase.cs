@@ -33,6 +33,31 @@ public abstract class GeneratorBase : IIncrementalGenerator
             && sym.ToDisplayString().Equals("object", StringComparison.InvariantCultureIgnoreCase);
     }
 
+    protected static IEnumerable<INamedTypeSymbol> GetBaseTypeRecursively(INamedTypeSymbol? symbol)
+    {
+        if (symbol is null)
+            yield break;
+
+        yield return symbol;
+        while ((symbol = symbol.BaseType) != null && IsSystemObjectType(symbol) == false)
+        {
+            yield return symbol;
+        }
+    }
+
+    internal static List<ClassDefinition> GetContainingTypeRecursively(INamedTypeSymbol symbol, CancellationToken ct)
+    {
+        List<ClassDefinition> parentClasses = new();
+        var sym = symbol;
+        while ((sym = sym.ContainingType) != null && IsSystemObjectType(sym) == false)
+        {
+            var cls = ClassDefinition.Parse(sym, ct);
+            parentClasses.Add(cls);
+        }
+
+        return parentClasses;
+    }
+
     protected static Dictionary<string, string> GetAttributeParameters(
         ClassDeclarationSyntax syntax,
         string attributeName

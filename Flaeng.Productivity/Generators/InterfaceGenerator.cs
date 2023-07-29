@@ -65,15 +65,10 @@ public sealed class InterfaceGenerator : GeneratorBase
             ? null
             : symbol.ContainingNamespace.ToDisplayString();
 
-        List<INamedTypeSymbol> memberContainer = new();
-        INamedTypeSymbol? sym = symbol;
-        do memberContainer.Add(sym);
-        while ((sym = sym.BaseType) != null
-            && sym.ContainingNamespace.ToString().Equals("System", StringComparison.InvariantCultureIgnoreCase) == false);
-
-        var members = memberContainer.SelectMany(x => x.GetMembers())
+        var baseTypes = GetBaseTypeRecursively(symbol);
+        var members = baseTypes.SelectMany(x => x.GetMembers())
             .Where(x =>
-                (x is IFieldSymbol && x.IsImplicitlyDeclared == false)
+                (x is IFieldSymbol && x.IsImplicitlyDeclared == false) // IsImplicitlyDeclared == Property's backingfield
                 || x is IPropertySymbol
                 || (
                     x is IMethodSymbol method
@@ -85,13 +80,7 @@ public sealed class InterfaceGenerator : GeneratorBase
             .OfType<IMemberDefinition>()
             .ToImmutableArray();
 
-        List<ClassDefinition> parentClasses = new();
-        sym = symbol;
-        while ((sym = sym.ContainingType) != null && IsSystemObjectType(sym) == false)
-        {
-            var cls = ClassDefinition.Parse(sym, ct);
-            parentClasses.Add(cls);
-        }
+        List<ClassDefinition> parentClasses = GetContainingTypeRecursively(symbol, ct);
 
         var data = new Data(
             Diagnostics: new ImmutableArray<Diagnostic>(),
