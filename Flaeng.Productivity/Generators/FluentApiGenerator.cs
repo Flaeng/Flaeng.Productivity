@@ -34,8 +34,6 @@
 //     }
 // }
 
-using System.Linq;
-
 namespace Flaeng.Productivity.Generators;
 
 [Generator(LanguageNames.CSharp)]
