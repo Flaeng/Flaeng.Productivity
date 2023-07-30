@@ -4,9 +4,7 @@ internal class InterfaceDataEqualityComparer : EqualityComparerBase<InterfaceGen
 {
     public override bool Equals(InterfaceGenerator.Data x, InterfaceGenerator.Data y)
     {
-        return x.ClassDefinition.IsPartial == y.ClassDefinition.IsPartial
-            && x.ClassDefinition.Name == y.ClassDefinition.Name
-            && x.ClassDefinition.Visibility == y.ClassDefinition.Visibility
+        return ClassDefinitionEqualityComparer.Instance.Equals(x.ClassDefinition, y.ClassDefinition)
             && SameLength(x.Diagnostics, y.Diagnostics)
             && SequenceEqual(x.Members, y.Members, IMemberDefinitionEqualityComparer.Instance)
             && x.Namespace == y.Namespace
@@ -17,7 +15,7 @@ internal class InterfaceDataEqualityComparer : EqualityComparerBase<InterfaceGen
 
     public override int GetHashCode(InterfaceGenerator.Data obj)
     {
-        return obj.ClassDefinition.GetHashCode()
+        return ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition)
             ^ (obj.Diagnostics == default ? 0 : obj.Diagnostics.Length)
             ^ GetHashCode(obj.Members, IMemberDefinitionEqualityComparer.Instance)
             ^ (obj.Namespace?.GetHashCode() ?? 0)
