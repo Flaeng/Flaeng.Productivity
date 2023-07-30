@@ -1,10 +1,12 @@
-using NuGet.Versioning;
-
 partial class Build
 {
     [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
+    readonly AbsolutePath ReadmeSourceFile = RootDirectory / "README.md";
+    readonly AbsolutePath LicenseSourceFile = RootDirectory / "LICENSE";
+    readonly AbsolutePath ReadmeTargetFile = RootDirectory / "Flaeng.Productivity" / "README.md";
+    readonly AbsolutePath LicenseTargetFile = RootDirectory / "Flaeng.Productivity" / "LICENSE";
 
     Target Pack => _ => _
         .Requires(() => VersionParameter)
@@ -14,6 +16,16 @@ partial class Build
         {
             var version = VersionParameter;
             var fileversion = version.Split('-').First();
+
+            new Dictionary<AbsolutePath, AbsolutePath>
+            {
+                { ReadmeSourceFile, ReadmeTargetFile },
+                { LicenseSourceFile, LicenseTargetFile }
+            }.ForEach(x =>
+            {
+                x.Value.DeleteFile();
+                x.Value.WriteAllBytes(x.Key.ReadAllBytes());
+            });
 
             Projects
                 .Where(x => x.IsTestProject() == false)

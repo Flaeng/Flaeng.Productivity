@@ -4,6 +4,11 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/badge/main)](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/overview/main)
 
+![Nuget](https://img.shields.io/nuget/v/Flaeng.Productivity)
+
+![Nuget](https://img.shields.io/nuget/dt/Flaeng.Productivity)
+
+
 ## What does it do?
 
 GenerateInterfaceAttribute generates a interface with all the public properties, fields and methods in your class so you don't have to keep it up-to-date but only need to change your test code.
