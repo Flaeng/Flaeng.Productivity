@@ -2,11 +2,12 @@ namespace Flaeng.Productivity;
 
 public static class IEnumerableExtensions
 {
-    public static Stack<T> ToStack<T>(this IEnumerable<T> coll)
-    {
-        var result = new Stack<T>();
-        foreach (var item in coll)
-            result.Push(item);
-        return result;
-    }
+    public static string Join(this IEnumerable<string> coll)
+        => coll.Join(String.Empty);
+
+    public static string Join(this IEnumerable<string> coll, char seperator)
+        => coll.Join(seperator.ToString());
+
+    public static string Join(this IEnumerable<string> coll, string seperator)
+        => String.Join(seperator, coll);
 }

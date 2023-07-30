@@ -2,16 +2,17 @@ using NuGet.Versioning;
 
 partial class Build
 {
-    [Parameter("NuGet API Key"), Secret] string NuGetApiKey;
+    [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
 
     Target Pack => _ => _
+        .Requires(() => VersionParameter)
         .DependsOn(Test)
         .Produces(ArtifactsDirectory)
         .Executes(() =>
         {
-            var version = GetVersionNo();
+            var version = VersionParameter;
             var fileversion = version.Split('-').First();
 
             Projects
@@ -38,8 +39,7 @@ partial class Build
         });
 
     Target Publish => _ => _
-        .OnlyWhenDynamic(() => IsTaggedBuild || IsLocalBuild)
-        .OnlyWhenDynamic(() => GitRepository.IsOnMainBranch())
+        .OnlyWhenDynamic(() => IsLocalBuild && GitRepository.IsOnMainBranch())
         .DependsOn(Pack)
         .Requires(() => NuGetApiKey)
         .Executes(() =>

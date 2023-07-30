@@ -1,8 +1,10 @@
 namespace Flaeng.Productivity.Sample.Providers;
 
-[GenerateInterface]
-// [GenerateInterface, Register(ServiceLifetime.Scoped)]
-public partial class SummaryProvider
+public partial interface ISummaryProvider { }
+
+[Flaeng.RegisterService(ServiceType = ServiceType.Scoped)]
+[Flaeng.GenerateInterface]
+public partial class SummaryProvider : ISummaryProvider
 {
     public string[] GetSummaries()
     {

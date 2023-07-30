@@ -11,25 +11,11 @@ partial class Build
     bool IsTaggedBuild => GitRepository.Tags.Any();
 
     [Parameter(
-        description: "Version of the package being built for NuGets",
+        description: "Version of the package being built for NuGets (i.e. \"0.3.0-rc.2\")",
         Name = "Version"
         )]
     readonly string VersionParameter;
 
     IEnumerable<Project> Projects => Solution
         .Projects.Where(x => x.Name != "_build");
-
-    string GetVersionNo()
-    {
-        // if (Debugger.IsAttached)
-        //     return "0.3.0-rc.2";
-        // if (IsServerBuild)
-        // {
-        return GitRepository.Tags
-            .Where(x => x.StartsWith('v'))
-            .Last()
-            .Substring(1);
-        // }
-        // else return VersionParameter;
-    }
 }

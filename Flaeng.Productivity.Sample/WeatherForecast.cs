@@ -1,5 +1,6 @@
 namespace Flaeng.Productivity.Sample;
 
+[Flaeng.MakeFluent]
 public class WeatherForecast
 {
     public DateOnly Date { get; set; }
