@@ -82,11 +82,9 @@ public abstract class GeneratorBase : IIncrementalGenerator
         string attributeName
         )
     {
-        var attrList = syntax
+        var attribute = syntax
             .ChildNodes()
-            .OfType<AttributeListSyntax>();
-
-        var attribute = attrList
+            .OfType<AttributeListSyntax>()
             .SelectMany(x => x.ChildNodes())
             .OfType<AttributeSyntax>()
             .Single(x =>

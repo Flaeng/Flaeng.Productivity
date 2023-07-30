@@ -198,52 +198,60 @@ public sealed class InterfaceGenerator : GeneratorBase
         var interfaceWithSameName = data.ClassDefinition.Interfaces
             .SingleOrDefault(x => x.Name == candidate);
 
-        if (classHasInterfaces == false || interfaceWithSameName.IsDefault() || interfaceWithSameName.IsPartial)
-        {
-            interfaceResult = new InterfaceDefinition(
-                visibility: data.Visibility == Visibility.Default
-                    ? data.ClassDefinition.Visibility
-                    : data.Visibility,
-                isPartial: classHasInterfaces && (interfaceWithSameName.IsDefault() == false && interfaceWithSameName.IsPartial),
-                name: candidate,
-                typeArguments: data.ClassDefinition.TypeArguments,
-                members: interfaceWithSameName.IsDefault()
-                    ? ImmutableArray<IMemberDefinition>.Empty
-                    : interfaceWithSameName.Members
-            );
-        }
-        else
-        {
-            InterfaceDefinition existingInterface = data.ClassDefinition.Interfaces
-                .SingleOrDefault(x => x.Name == candidate);
+        interfaceResult = classHasInterfaces == false || interfaceWithSameName.IsDefault() || interfaceWithSameName.IsPartial
+            ? MakeInterfaceFromDefault(data, candidate, classHasInterfaces, interfaceWithSameName)
+            : MakeInterfaceWithConflictingInterfaceNaming(data, candidate);
 
-            string newCandidate = String.Empty;
-            if (data.InterfaceName is null && existingInterface.IsDefault() == false)
-            {
-                for (int i = 2; i < 20; i++)
-                {
-                    newCandidate = $"{candidate}{i}";
-                    existingInterface = data.ClassDefinition.Interfaces
-                        .SingleOrDefault(x => x.Name == newCandidate);
-
-                    if (existingInterface.IsDefault())
-                        break;
-                    if (existingInterface.IsPartial)
-                        break;
-                }
-            }
-
-            interfaceResult = existingInterface.IsDefault() == false
-                ? existingInterface
-                : new InterfaceDefinition(
-                    visibility: Visibility.Public,
-                    isPartial: false,
-                    name: newCandidate,
-                    typeArguments: ImmutableArray<string>.Empty,
-                    members: ImmutableArray<IMemberDefinition>.Empty
-                );
-        }
         builder.WriteInterface(interfaceResult);
+    }
+
+    private static InterfaceDefinition MakeInterfaceWithConflictingInterfaceNaming(Data data, string candidate)
+    {
+        InterfaceDefinition interfaceResult;
+        InterfaceDefinition existingInterface = data.ClassDefinition.Interfaces
+                        .SingleOrDefault(x => x.Name == candidate);
+
+        string newCandidate = String.Empty;
+        if (data.InterfaceName is null && existingInterface.IsDefault() == false)
+        {
+            for (int i = 2; i < 20; i++)
+            {
+                newCandidate = $"{candidate}{i}";
+                existingInterface = data.ClassDefinition.Interfaces
+                    .SingleOrDefault(x => x.Name == newCandidate);
+
+                if (existingInterface.IsDefault())
+                    break;
+                if (existingInterface.IsPartial)
+                    break;
+            }
+        }
+
+        interfaceResult = existingInterface.IsDefault() == false
+            ? existingInterface
+            : new InterfaceDefinition(
+                visibility: Visibility.Public,
+                isPartial: false,
+                name: newCandidate,
+                typeArguments: ImmutableArray<string>.Empty,
+                members: ImmutableArray<IMemberDefinition>.Empty
+            );
+        return interfaceResult;
+    }
+
+    private static InterfaceDefinition MakeInterfaceFromDefault(Data data, string candidate, bool classHasInterfaces, InterfaceDefinition interfaceWithSameName)
+    {
+        return new InterfaceDefinition(
+                        visibility: data.Visibility == Visibility.Default
+                            ? data.ClassDefinition.Visibility
+                            : data.Visibility,
+                        isPartial: classHasInterfaces && (interfaceWithSameName.IsDefault() == false && interfaceWithSameName.IsPartial),
+                        name: candidate,
+                        typeArguments: data.ClassDefinition.TypeArguments,
+                        members: interfaceWithSameName.IsDefault()
+                            ? ImmutableArray<IMemberDefinition>.Empty
+                            : interfaceWithSameName.Members
+                    );
     }
 
     private static bool HasTriggerAttribute(ClassDeclarationSyntax syntax)
