@@ -114,19 +114,6 @@ public sealed class StartupGenerator : GeneratorBase
         );
     }
 
-    private static Data DataWithDiagnostic(
-        GeneratorSyntaxContext context,
-        INamedTypeSymbol symbol,
-        DiagnosticDescriptor diagnosticDescriptor
-    )
-    {
-        var data = new Data();
-        // data.Diagnostics = new Diagnostic[] {
-        //     Diagnostic.Create()
-        // }.ToImmutableArray();
-        return data;
-    }
-
     private void Execute(SourceProductionContext context, Data source)
     {
         TryWriteDiagnostics(context, source.Diagnostics);
@@ -141,44 +128,47 @@ public sealed class StartupGenerator : GeneratorBase
         builder.WriteLine();
 
         TryWriteNamespace(source.Namespace, builder);
-        WriteClass(source, builder);
+        
+        builder.WriteClass(CLASS_DEFINITION);
+        builder.StartScope();
+
+        builder.WriteLine(Constants.GeneratedCodeAttribute);
+        builder.WriteMethod(METHOD_DEFINITION);
+        builder.StartScope();
+
+        WriteMethodBody(source, builder);
 
         var content = builder.Build();
         context.AddSource("StartupExtensions.g.cs", content);
     }
 
-    private static void WriteClass(Data source, CSharpBuilder builder)
-    {
-        builder.WriteClass(new ClassDefinition(
-                    Visibility.Public,
-                    isStatic: true,
-                    isPartial: true,
-                    name: "StartupExtensions",
-                    typeArguments: ImmutableArray<string>.Empty,
-                    interfaces: ImmutableArray<InterfaceDefinition>.Empty,
-                    constructors: ImmutableArray<MethodDefinition>.Empty
-                ));
-        builder.StartScope();
+    private static readonly ClassDefinition CLASS_DEFINITION = 
+        new ClassDefinition(
+            Visibility.Public,
+            isStatic: true,
+            isPartial: true,
+            name: "StartupExtensions",
+            typeArguments: ImmutableArray<string>.Empty,
+            interfaces: ImmutableArray<InterfaceDefinition>.Empty,
+            constructors: ImmutableArray<MethodDefinition>.Empty
+        );
 
-        builder.WriteLine(Constants.GeneratedCodeAttribute);
-        builder.WriteMethod(new MethodDefinition(
+    private static readonly MethodDefinition METHOD_DEFINITION =
+        new MethodDefinition(
             Visibility.Public,
             isStatic: true,
             type: ServiceCollectionQualifiedName,
             name: "RegisterServices",
-            new[] {
-                new MethodParameterDefinition(
-                    parameterKind: "this",
-                    type: ServiceCollectionQualifiedName,
-                    name: "services",
-                    defaultValue: null
-                )
-            }.ToImmutableArray()
-        ));
-        builder.StartScope();
+            parameters: new[] { METHOD_PARAMETER_DEFINITION }.ToImmutableArray()
+        );
 
-        WriteMethodBody(source, builder);
-    }
+    private static readonly MethodParameterDefinition METHOD_PARAMETER_DEFINITION = 
+        new MethodParameterDefinition(
+            parameterKind: "this",
+            type: ServiceCollectionQualifiedName,
+            name: "services",
+            defaultValue: null
+        );
 
     private static void WriteMethodBody(Data source, CSharpBuilder builder)
     {
