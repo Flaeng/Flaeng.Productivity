@@ -200,27 +200,20 @@ public sealed class InterfaceGenerator : GeneratorBase
 
     private static InterfaceDefinition MakeInterfaceWithConflictingInterfaceNaming(Data data, string candidate)
     {
-        InterfaceDefinition interfaceResult;
         InterfaceDefinition existingInterface = data.ClassDefinition.Interfaces
                         .SingleOrDefault(x => x.Name == candidate);
 
         string newCandidate = String.Empty;
         if (data.InterfaceName is null && existingInterface.IsDefault() == false)
         {
-            for (int i = 2; i < 20; i++)
-            {
-                newCandidate = $"{candidate}{i}";
-                existingInterface = data.ClassDefinition.Interfaces
-                    .SingleOrDefault(x => x.Name == newCandidate);
-
-                if (existingInterface.IsDefault())
-                    break;
-                if (existingInterface.IsPartial)
-                    break;
-            }
+            newCandidate = generateNameOnConflictingInterfaceNaming(
+                data,
+                candidate,
+                out existingInterface
+            );
         }
 
-        interfaceResult = existingInterface.IsDefault() == false
+        var interfaceResult = existingInterface.IsDefault() == false
             ? existingInterface
             : new InterfaceDefinition(
                 visibility: Visibility.Public,
@@ -230,6 +223,24 @@ public sealed class InterfaceGenerator : GeneratorBase
                 members: ImmutableArray<IMemberDefinition>.Empty
             );
         return interfaceResult;
+    }
+
+    private static string generateNameOnConflictingInterfaceNaming(
+        Data data,
+        string candidate,
+        out InterfaceDefinition existingInterface
+    )
+    {
+        for (int i = 2; i < 20; i++)
+        {
+            var candidateName = $"{candidate}{i}";
+            existingInterface = data.ClassDefinition.Interfaces
+                .SingleOrDefault(x => x.Name == candidateName);
+
+            if (existingInterface.IsDefault() || existingInterface.IsPartial)
+                return candidateName;
+        }
+        throw new Exception("Failed to generate interfacename");
     }
 
     private static InterfaceDefinition MakeInterfaceFromDefault(Data data, string candidate, bool classHasInterfaces, InterfaceDefinition interfaceWithSameName)

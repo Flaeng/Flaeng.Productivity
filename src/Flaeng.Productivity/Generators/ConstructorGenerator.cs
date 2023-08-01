@@ -150,66 +150,85 @@ public sealed class ConstructorGenerator : GeneratorBase
             filenameParts.Add(source.Namespace!);
 
         // Write class and wrapper classes
-        if (source.ContainingClasses != default)
-        {
-            foreach (var parentClass in source.ContainingClasses.Reverse())
-            {
-                builder.WriteClass(parentClass.WithIsPartial(true));
-                builder.StartScope();
-
-                if (parentClass.Name is not null)
-                    filenameParts.Add(parentClass.Name);
-            }
-        }
+        WriteContainingClasses(source, builder, filenameParts);
 
         // Write class itself
         builder.WriteClass(source.ClassDefinition.WithIsPartial(true));
         builder.StartScope();
 
+        WriteConstructorMethod(source, builder);
+
+        string filename = filenameParts.Select(x => $"{x}.").Join() + $"{source.ClassDefinition.Name}.g.cs";
+        var content = builder.Build();
+        context.AddSource(filename, content);
+    }
+
+    private static void WriteConstructorMethod(Data source, CSharpBuilder builder)
+    {
         // Writing constructor
         builder.WriteLine(Constants.GeneratedCodeAttribute);
         builder.WriteLine($"public {source.ClassDefinition.Name}(", increaseIndentation: true);
         // Write constructor parameters
-        List<string> injectedList = new();
-        if (source.InjectableMembers != default)
-        {
-            for (int i = 0; i < source.InjectableMembers.Length; i++)
-            {
-                var member = source.InjectableMembers[i];
-
-                string? name = member is IHasPrettyName pretty ? pretty.GetPrettyName() : member.Name;
-                name ??= member.Name;
-                if (name is null)
-                    continue;
-
-                builder.Write($"{member.Type} {name}");
-
-                if (i + 1 != source.InjectableMembers.Length)
-                    builder.Write(",");
-
-                builder.WriteLine();
-            }
-        }
+        WriteConstructorParameters(source, builder);
         builder.DecreaseIndentation();
         builder.WriteLine(")");
 
         // Write constructor body
         builder.StartScope();
-        if (source.InjectableMembers != default)
-        {
-            foreach (var member in source.InjectableMembers)
-            {
-                string? name = member is IHasPrettyName pretty ? pretty.GetPrettyName() : member.Name;
-                name ??= member.Name;
-                if (name is not null)
-                    builder.WriteLine($"this.{member.Name} = {name};");
-            }
-        }
+        WriteConstructorBody(source, builder);
         builder.EndScope();
+    }
 
-        string filename = filenameParts.Select(x => $"{x}.").Join() + $"{source.ClassDefinition.Name}.g.cs";
-        var content = builder.Build();
-        context.AddSource(filename, content);
+    private static void WriteContainingClasses(Data source, CSharpBuilder builder, List<string> filenameParts)
+    {
+        if (source.ContainingClasses == default || source.ContainingClasses.Length == 0)
+            return;
+
+        foreach (var parentClass in source.ContainingClasses.Reverse())
+        {
+            builder.WriteClass(parentClass.WithIsPartial(true));
+            builder.StartScope();
+
+            if (parentClass.Name is not null)
+                filenameParts.Add(parentClass.Name);
+        }
+    }
+
+    private static void WriteConstructorBody(Data source, CSharpBuilder builder)
+    {
+        if (source.InjectableMembers == default || source.InjectableMembers.Length == 0)
+            return;
+
+        foreach (var member in source.InjectableMembers)
+        {
+            string? name = member is IHasPrettyName pretty ? pretty.GetPrettyName() : member.Name;
+            name ??= member.Name;
+            if (name is not null)
+                builder.WriteLine($"this.{member.Name} = {name};");
+        }
+    }
+
+    private static void WriteConstructorParameters(Data source, CSharpBuilder builder)
+    {
+        if (source.InjectableMembers == default || source.InjectableMembers.Length == 0)
+            return;
+
+        for (int i = 0; i < source.InjectableMembers.Length; i++)
+        {
+            var member = source.InjectableMembers[i];
+
+            string? name = member is IHasPrettyName pretty ? pretty.GetPrettyName() : member.Name;
+            name ??= member.Name;
+            if (name is null)
+                continue;
+
+            builder.Write($"{member.Type} {name}");
+
+            if (i + 1 != source.InjectableMembers.Length)
+                builder.Write(",");
+
+            builder.WriteLine();
+        }
     }
 
     private static bool HasTriggerAttribute(MemberDeclarationSyntax syntax)
