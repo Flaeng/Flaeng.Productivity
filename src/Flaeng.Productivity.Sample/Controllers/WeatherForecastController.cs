@@ -2,8 +2,6 @@ using Flaeng.Productivity.Sample.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
-#nullable disable
-
 namespace Flaeng.Productivity.Sample.Controllers;
 
 [ApiController, Route("[controller]")]

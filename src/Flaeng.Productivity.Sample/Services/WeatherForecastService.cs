@@ -1,7 +1,5 @@
 using Flaeng.Productivity.Sample.Providers;
 
-#nullable disable
-
 namespace Flaeng.Productivity.Sample.Services;
 
 [Flaeng.GenerateInterface, Flaeng.RegisterService]
