@@ -29,41 +29,34 @@ internal class CSharpBuilder : SourceBuilder
             throw new NullReferenceException();
 
         base.Write(cls.Name);
-        if (cls.TypeArguments == default || cls.TypeArguments.Length == 0)
+        TryWriteTypeArguements(cls.TypeArguments);
+    }
+
+    private void TryWriteTypeArguements(ImmutableArray<string> typeArguments)
+    {
+        if (typeArguments == default || typeArguments.Length == 0)
             return;
 
         base.Write("<");
-        for (int i = 0; i < cls.TypeArguments.Length; i++)
+        for (int i = 0; i < typeArguments.Length; i++)
         {
-            var item = cls.TypeArguments[i];
+            var item = typeArguments[i];
             base.Write(item);
-            if (i + 1 != cls.TypeArguments.Length)
+            if (i + 1 != typeArguments.Length)
                 base.Write(", ");
         }
         base.Write(">");
     }
 
-    public void WriteInterface(InterfaceDefinition interfaceResult)
+    public void WriteInterface(InterfaceDefinition interfaceDef)
     {
-        WriteVisibility(interfaceResult.Visibility);
-        WriteIf(interfaceResult.IsPartial, "partial ");
+        WriteVisibility(interfaceDef.Visibility);
+        WriteIf(interfaceDef.IsPartial, "partial ");
         base.Write("interface ");
 
-        base.Write(interfaceResult.Name);
+        base.Write(interfaceDef.Name);
 
-        if (interfaceResult.TypeArguments != default && interfaceResult.TypeArguments.Length != 0)
-        {
-            base.Write("<");
-            for (int i = 0; i < interfaceResult.TypeArguments.Length; i++)
-            {
-                var item = interfaceResult.TypeArguments[i];
-                base.Write(item);
-                if (i + 1 != interfaceResult.TypeArguments.Length)
-                    base.Write(", ");
-            }
-            base.Write(">");
-        }
-
+        TryWriteTypeArguements(interfaceDef.TypeArguments);
         base.WriteLine();
     }
 

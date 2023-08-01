@@ -147,14 +147,7 @@ public sealed class InterfaceGenerator : GeneratorBase
             filenameParts.Add(source.Namespace!);
 
         // Write class and wrapper classes
-        foreach (var parentClass in source.ParentClasses.Reverse())
-        {
-            builder.WriteClass(parentClass);
-            builder.StartScope();
-
-            if (parentClass.Name is not null)
-                filenameParts.Add(parentClass.Name);
-        }
+        WriteWrapperClasses(source.ParentClasses, builder, filenameParts);
 
         // Write interface
         builder.WriteLine(Constants.GeneratedCodeAttribute);
