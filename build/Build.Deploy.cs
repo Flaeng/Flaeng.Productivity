@@ -33,6 +33,7 @@ partial class Build
                 .ForEach(proj =>
                 {
                     DotNetTasks.DotNetPack(opts => opts
+                        .SetProcessWorkingDirectory("src")
                         .SetProject(proj)
                         .SetVersion(version)
                         .SetFileVersion(version)
@@ -58,6 +59,7 @@ partial class Build
             ArtifactsDirectory.GlobFiles("*.nupkg")
                 .ForEach(file =>
                     NuGetTasks.NuGetPush(opts => opts
+                        .SetProcessWorkingDirectory("src")
                         .SetSource(DefaultNuGetSource)
                         .SetApiKey(NuGetApiKey)
                         .SetTargetPath(file)

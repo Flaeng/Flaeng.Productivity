@@ -7,6 +7,7 @@ partial class Build
         .Executes(() =>
         {
             DotNetTasks.DotNetFormat(opts => opts
+                .SetProcessWorkingDirectory("src")
                 .SetVerifyNoChanges(true));
         });
 
@@ -18,7 +19,8 @@ partial class Build
                 .Where(proj => proj.IsTestProject())
                 .ForEach(proj =>
                     DotNetTasks.DotNetTest(opts => opts
-                    .SetProjectFile(proj)));
+                        .SetProcessWorkingDirectory("src")
+                        .SetProjectFile(proj)));
         });
 
 }

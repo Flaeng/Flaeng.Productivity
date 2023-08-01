@@ -12,7 +12,7 @@ partial class Build
                 .SetGlobal(true)
                 .SetProcessExitHandler(process => { })
                 );
-            DotNetTasks.DotNet("stryker -l Advanced");
+            DotNetTasks.DotNet("stryker -l Advanced", "src");
         });
 
 }
