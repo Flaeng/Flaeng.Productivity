@@ -14,8 +14,10 @@ internal class FluentApiDataEqualityComparer : EqualityComparerBase<FluentApiGen
 
     public override int GetHashCode(FluentApiGenerator.Data obj)
     {
-        return obj.ClassDefinition.GetHashCode()
-            ^ (obj.Diagnostics == default ? 0 : obj.Diagnostics.Length)
-            ^ GetHashCode(obj.Members, IMemberDefinitionEqualityComparer.Instance);
+        return CalculateHashCode(
+            ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition),
+            obj.Diagnostics,
+            GetHashCode(obj.Members, IMemberDefinitionEqualityComparer.Instance)
+        );
     }
 }

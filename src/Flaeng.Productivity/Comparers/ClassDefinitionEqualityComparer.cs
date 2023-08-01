@@ -13,10 +13,12 @@ internal class ClassDefinitionEqualityComparer : EqualityComparerBase<ClassDefin
 
     public override int GetHashCode(ClassDefinition obj)
     {
-        return obj.IsPartial.GetHashCode()
-            ^ obj.IsStatic.GetHashCode()
-            ^ (obj.Name?.GetHashCode() ?? 0)
-            ^ obj.Visibility.GetHashCode()
-            ^ GetHashCode(obj.TypeArguments, comparer: null);
+        return CalculateHashCode(
+            obj.IsPartial,
+            obj.IsStatic,
+            obj.Name,
+            obj.Visibility,
+            GetHashCode(obj.TypeArguments, comparer: null)
+        );
     }
 }

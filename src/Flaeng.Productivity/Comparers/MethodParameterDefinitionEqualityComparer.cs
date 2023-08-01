@@ -12,9 +12,11 @@ internal class MethodParameterDefinitionEqualityComparer : EqualityComparerBase<
 
     public override int GetHashCode(MethodParameterDefinition obj)
     {
-        return (obj.DefaultValue?.GetHashCode() ?? 0)
-            ^ (obj.Name?.GetHashCode() ?? 0)
-            ^ (obj.ParameterKind?.GetHashCode() ?? 0)
-            ^ (obj.Type?.GetHashCode() ?? 0);
+        return CalculateHashCode(
+            obj.DefaultValue,
+            obj.Name,
+            obj.ParameterKind,
+            obj.Type
+        );
     }
 }

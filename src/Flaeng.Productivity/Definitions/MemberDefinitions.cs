@@ -74,5 +74,4 @@ internal static class MemberDefinitions
             _ => null
         };
     }
-
 }

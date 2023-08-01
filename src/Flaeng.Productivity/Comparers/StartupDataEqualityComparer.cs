@@ -11,8 +11,10 @@ internal class StartupDataEqualityComparer : EqualityComparerBase<StartupGenerat
 
     public override int GetHashCode(StartupGenerator.Data obj)
     {
-        return (obj.Diagnostics == default ? 0 : obj.Diagnostics.Length)
-            ^ GetHashCode(obj.Injectables, StartupInjectDataEqualityComparer.Instance)
-            ^ (obj.Namespace?.GetHashCode() ?? 0);
+        return CalculateHashCode(
+            obj.Diagnostics,
+            GetHashCode(obj.Injectables, StartupInjectDataEqualityComparer.Instance),
+            obj.Namespace
+        );
     }
 }

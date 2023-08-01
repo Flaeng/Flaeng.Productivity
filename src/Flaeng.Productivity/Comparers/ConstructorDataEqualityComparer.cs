@@ -13,10 +13,12 @@ internal class ConstructorDataEqualityComparer : EqualityComparerBase<Constructo
 
     public override int GetHashCode(ConstructorGenerator.Data obj)
     {
-        return ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition)
-            ^ (obj.Diagnostics == default ? 0 : obj.Diagnostics.Length)
-            ^ GetHashCode(obj.InjectableMembers, IMemberDefinitionEqualityComparer.Instance)
-            ^ (obj.Namespace?.GetHashCode() ?? 0)
-            ^ GetHashCode(obj.ContainingClasses, ClassDefinitionEqualityComparer.Instance);
+        return CalculateHashCode(
+            ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition),
+            obj.Diagnostics,
+            GetHashCode(obj.InjectableMembers, IMemberDefinitionEqualityComparer.Instance),
+            obj.Namespace,
+            GetHashCode(obj.ContainingClasses, ClassDefinitionEqualityComparer.Instance)
+        );
     }
 }

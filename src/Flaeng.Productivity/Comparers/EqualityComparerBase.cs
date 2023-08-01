@@ -30,6 +30,16 @@ internal abstract class EqualityComparerBase<T, TEqualityComparer> : IEqualityCo
         return collection1.SequenceEqual(collection2, comparer);
     }
 
+    public static int CalculateHashCode(params object?[] variables)
+    {
+        int hashCode = 0;
+        foreach (var item in variables)
+        {
+            hashCode ^= item is null ? 0 : item.GetHashCode();
+        }
+        return hashCode;
+    }
+
     public static int GetHashCode<TData>(ImmutableArray<TData> collection, IEqualityComparer<TData>? comparer)
     {
         if (collection == default)

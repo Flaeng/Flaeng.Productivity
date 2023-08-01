@@ -13,10 +13,12 @@ internal class FieldDefinitionEqualityComparer : EqualityComparerBase<FieldDefin
 
     public override int GetHashCode(FieldDefinition obj)
     {
-        return obj.IsStatic.GetHashCode()
-            ^ (obj.Name?.GetHashCode() ?? 0)
-            ^ (obj.Type?.GetHashCode() ?? 0)
-            ^ (obj.DefaultValue?.GetHashCode() ?? 0)
-            ^ obj.Visibility.GetHashCode();
+        return CalculateHashCode(
+            obj.IsStatic,
+            obj.Name,
+            obj.Type,
+            obj.DefaultValue,
+            obj.Visibility
+        );
     }
 }

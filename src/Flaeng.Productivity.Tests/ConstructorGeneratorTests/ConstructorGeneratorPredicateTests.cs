@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Tests.ConstructorGeneratorTests;
 
-public class PredicateTests
+public class ConstructorGeneratorPredicateTests
 {
 
     [Fact(Timeout = 1000)]
