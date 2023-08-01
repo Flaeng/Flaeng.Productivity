@@ -13,10 +13,12 @@ internal class MethodDefinitionEqualityComparer : EqualityComparerBase<MethodDef
 
     public override int GetHashCode(MethodDefinition obj)
     {
-        return obj.Visibility.GetHashCode()
-            ^ obj.IsStatic.GetHashCode()
-            ^ (obj.Name?.GetHashCode() ?? 0)
-            ^ (obj.Type?.GetHashCode() ?? 0)
-            ^ GetHashCode(obj.Parameters, MethodParameterDefinitionEqualityComparer.Instance);
+        return CalculateHashCode(
+            obj.Visibility,
+            obj.IsStatic,
+            obj.Name,
+            obj.Type,
+            GetHashCode(obj.Parameters, MethodParameterDefinitionEqualityComparer.Instance)
+        );
     }
 }

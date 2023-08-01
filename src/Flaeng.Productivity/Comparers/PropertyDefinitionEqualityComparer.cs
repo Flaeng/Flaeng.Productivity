@@ -15,12 +15,14 @@ internal class PropertyDefinitionEqualityComparer : EqualityComparerBase<Propert
 
     public override int GetHashCode(PropertyDefinition obj)
     {
-        return obj.IsStatic.GetHashCode()
-            ^ (obj.Name?.GetHashCode() ?? 0)
-            ^ (obj.Type?.GetHashCode() ?? 0)
-            ^ (obj.DefaultValue?.GetHashCode() ?? 0)
-            ^ obj.GetterVisibility.GetHashCode()
-            ^ obj.SetterVisibility.GetHashCode()
-            ^ obj.Visibility.GetHashCode();
+        return CalculateHashCode(
+            obj.IsStatic, 
+            obj.Name, 
+            obj.Type, 
+            obj.DefaultValue, 
+            obj.GetterVisibility, 
+            obj.SetterVisibility, 
+            obj.Visibility
+        );
     }
 }

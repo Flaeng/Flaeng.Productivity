@@ -15,12 +15,14 @@ internal class InterfaceDataEqualityComparer : EqualityComparerBase<InterfaceGen
 
     public override int GetHashCode(InterfaceGenerator.Data obj)
     {
-        return ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition)
-            ^ (obj.Diagnostics == default ? 0 : obj.Diagnostics.Length)
-            ^ GetHashCode(obj.Members, IMemberDefinitionEqualityComparer.Instance)
-            ^ (obj.Namespace?.GetHashCode() ?? 0)
-            ^ GetHashCode(obj.ParentClasses, ClassDefinitionEqualityComparer.Instance)
-            ^ (obj.InterfaceName?.GetHashCode() ?? 0)
-            ^ obj.Visibility.GetHashCode();
+        return CalculateHashCode(
+            ClassDefinitionEqualityComparer.Instance.GetHashCode(obj.ClassDefinition),
+            obj.Diagnostics,
+            GetHashCode(obj.Members, IMemberDefinitionEqualityComparer.Instance),
+            obj.Namespace,
+            GetHashCode(obj.ParentClasses, ClassDefinitionEqualityComparer.Instance),
+            obj.InterfaceName,
+            obj.Visibility
+        );
     }
 }

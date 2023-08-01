@@ -19,7 +19,6 @@ partial class Build
                 .Where(proj => proj.IsTestProject())
                 .ForEach(proj =>
                     DotNetTasks.DotNetTest(opts => opts
-                        .SetProcessWorkingDirectory("src")
                         .SetProjectFile(proj)));
         });
 

@@ -24,9 +24,9 @@ on:
       - 'src/**'
 
 jobs:
-  windows-latest:
-    name: windows-latest
-    runs-on: windows-latest
+  ubuntu-latest:
+    name: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: 'Cache: .nuke/temp, ~/.nuget/packages'
@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: StrykerOutput
-          path: StrykerOutput
+          path: src/StrykerOutput
