@@ -2,18 +2,6 @@ namespace Flaeng.Productivity.Definitions;
 
 internal static class MemberDefinitions
 {
-    public static IMemberDefinition? Parse(SyntaxNode? syntax)
-    {
-        return syntax switch
-        {
-            FieldDeclarationSyntax field => FieldDefinition.Parse(field),
-            PropertyDeclarationSyntax prop => PropertyDefinition.Parse(prop),
-            MethodDeclarationSyntax method => MethodDefinition.Parse(method),
-            // IParameterSymbol parameter => MethodParameterDefinition.Parse(parameter),
-            _ => default
-        };
-    }
-
     public static IMemberDefinition? Parse(ISymbol symbol, CancellationToken ct)
     {
         return symbol switch
@@ -87,50 +75,4 @@ internal static class MemberDefinitions
         };
     }
 
-    internal static void GetTypeAndName(
-        SyntaxNode? syntaxNode,
-        out string? type,
-        out string? name,
-        out string? defaultValue
-        )
-    {
-        type = null;
-        name = null;
-        defaultValue = null;
-        if (syntaxNode is null)
-            return;
-
-        foreach (var child in syntaxNode.ChildNodes())
-        {
-            switch (child.RawKind)
-            {
-                case (int)SyntaxKind.ArrayType:
-                case (int)SyntaxKind.PredefinedType:
-                case (int)SyntaxKind.QualifiedName:
-                case (int)SyntaxKind.IdentifierName:
-                case (int)SyntaxKind.GenericName:
-                    type = child.ToString();
-                    break;
-                case (int)SyntaxKind.VariableDeclarator:
-                    GetNameAndDefaultValueFromVariableDeclarator(child, ref name, ref defaultValue);
-                    break;
-            }
-        }
-    }
-
-    private static void GetNameAndDefaultValueFromVariableDeclarator(SyntaxNode child, ref string? name, ref string? defaultValue)
-    {
-        foreach (var varDeclChild in child.ChildNodesAndTokens())
-        {
-            switch (varDeclChild.RawKind)
-            {
-                case (int)SyntaxKind.IdentifierToken:
-                    name = varDeclChild.ToString();
-                    break;
-                case (int)SyntaxKind.EqualsValueClause:
-                    defaultValue = varDeclChild.ToString();
-                    break;
-            }
-        }
-    }
 }

@@ -47,12 +47,15 @@ public sealed class ConstructorGenerator : GeneratorBase
             ? null
             : symbol.ContainingNamespace.ToDisplayString();
 
+        var serializer = new SyntaxSerializer();
+
         var members = syntaxes
             .SelectMany(x => x.DescendantNodes(x => x is ClassDeclarationSyntax))
             .OfType<MemberDeclarationSyntax>()
             .Where(HasTriggerAttribute)
             .Where(x => x is FieldDeclarationSyntax || x is PropertyDeclarationSyntax)
-            .Select(x => new Tuple<MemberDeclarationSyntax, IMemberDefinition?>(x, MemberDefinitions.Parse(x)))
+            .OfType<MemberDeclarationSyntax>()
+            .Select(x => new Tuple<MemberDeclarationSyntax, IMemberDefinition?>(x, serializer.DeserializeMember(x)))
             .Select(x => AddDiagnosticsForEachStaticMember(x.Item1, x.Item2, diagnostics))
             .OfType<IMemberDefinition>()
             .ToImmutableArray();

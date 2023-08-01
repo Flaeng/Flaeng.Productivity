@@ -47,47 +47,4 @@ internal record struct ClassDefinition
             symbol.Constructors.Select(MethodDefinition.Parse).ToImmutableArray()
         );
     }
-
-    internal static ClassDefinition Parse(ClassDeclarationSyntax syntax, CancellationToken ct)
-    {
-        Visibility visibility = Visibility.Default;
-        bool isStatic = false, isPartial = false;
-        string? name = null;
-        List<string> typeArguments = new();
-        List<InterfaceDefinition> interfaces = new();
-        List<MethodDefinition> constructors = new();
-
-        foreach (var child in syntax.ChildNodesAndTokens())
-        {
-            switch (child.RawKind)
-            {
-                case (int)SyntaxKind.PublicKeyword:
-                    visibility = Visibility.Public;
-                    break;
-                case (int)SyntaxKind.InternalKeyword:
-                    visibility = Visibility.Internal;
-                    break;
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
-                    break;
-                case (int)SyntaxKind.PartialKeyword:
-                    isPartial = true;
-                    break;
-                case (int)SyntaxKind.IdentifierToken:
-                    name = child.ToString();
-                    break;
-            }
-        }
-
-        return new ClassDefinition(
-            visibility,
-            isStatic,
-            isPartial,
-            name,
-            typeArguments.ToImmutableArray(),
-            interfaces.ToImmutableArray(),
-            constructors.ToImmutableArray()
-        );
-    }
-
 }

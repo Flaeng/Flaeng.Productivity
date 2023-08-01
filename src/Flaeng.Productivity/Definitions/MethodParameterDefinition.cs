@@ -20,58 +20,6 @@ internal record struct MethodParameterDefinition
         this.DefaultValue = defaultValue;
     }
 
-    public static MethodParameterDefinition Parse(ParameterSyntax parameter)
-    {
-        string? parameterKind = null;
-        string? type = null, name = null, defaultValue = null;
-
-        foreach (var nodeToken in parameter.ChildNodesAndTokens())
-        {
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.OutKeyword:
-                    parameterKind = "out";
-                    break;
-                case (int)SyntaxKind.EqualsValueClause:
-                    if (nodeToken.AsNode() is not EqualsValueClauseSyntax evc)
-                        continue;
-                    defaultValue = evc.ChildNodes().First().ToString();
-                    break;
-                case (int)SyntaxKind.RefKeyword:
-                    parameterKind = "ref";
-                    break;
-                case (int)SyntaxKind.ParamsKeyword:
-                    parameterKind = "params";
-                    break;
-                case (int)SyntaxKind.InKeyword:
-                    parameterKind = "in";
-                    break;
-                case (int)SyntaxKind.VariableDeclaration:
-                    MemberDefinitions.GetTypeAndName(nodeToken.AsNode(), out type, out name, out _);
-                    break;
-                case (int)SyntaxKind.ArrayType:
-                case (int)SyntaxKind.PredefinedType:
-                case (int)SyntaxKind.QualifiedName:
-                case (int)SyntaxKind.IdentifierName:
-                case (int)SyntaxKind.GenericName:
-                    type = nodeToken.ToString();
-                    break;
-                case (int)SyntaxKind.IdentifierToken:
-                    name = nodeToken.ToString();
-                    break;
-            }
-        }
-        if (type is null || name is null)
-            return default;
-
-        return new MethodParameterDefinition(
-            parameterKind,
-            type,
-            name,
-            defaultValue
-        );
-    }
-
     public static MethodParameterDefinition Parse(IParameterSymbol symbol)
     {
         var parameterKind = symbol.RefKind switch

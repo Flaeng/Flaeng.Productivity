@@ -1,6 +1,6 @@
 partial class Build
 {
-    readonly AbsolutePath StrykerOutput = RootDirectory / "StrykerOutput" / "**" / "mutation-report.html";
+    readonly AbsolutePath StrykerOutput = RootDirectory / "src" / "StrykerOutput" / "**" / "mutation-report.html";
 
     Target Stryker => _ => _
         .DependsOn(Compile)

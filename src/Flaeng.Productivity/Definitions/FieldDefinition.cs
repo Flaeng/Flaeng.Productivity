@@ -39,46 +39,4 @@ internal struct FieldDefinition : IMemberDefinition, IHasDefaultValue, IHasPrett
             defaultValue
         );
     }
-
-    internal static FieldDefinition? Parse(FieldDeclarationSyntax field)
-    {
-        Visibility visibility = Visibility.Default;
-        bool isStatic = false;
-        string? type = null, name = null, defaultValue = null;
-
-        foreach (var nodeToken in field.ChildNodesAndTokens())
-        {
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.PublicKeyword:
-                    visibility = Visibility.Public;
-                    break;
-                case (int)SyntaxKind.InternalKeyword:
-                    visibility = Visibility.Internal;
-                    break;
-                case (int)SyntaxKind.ProtectedKeyword:
-                    visibility = Visibility.Protected;
-                    break;
-                case (int)SyntaxKind.PrivateKeyword:
-                    visibility = Visibility.Private;
-                    break;
-                case (int)SyntaxKind.VariableDeclaration:
-                    MemberDefinitions.GetTypeAndName(nodeToken.AsNode(), out type, out name, out defaultValue);
-                    break;
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
-                    break;
-            }
-        }
-        if (type is null || name is null)
-            return default;
-
-        return new FieldDefinition(
-            visibility,
-            isStatic,
-            type,
-            name,
-            defaultValue
-        );
-    }
 }
