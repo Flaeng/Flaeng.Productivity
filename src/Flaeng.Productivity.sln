@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flaeng.Productivity.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flaeng.Productivity.Sample", "Flaeng.Productivity.Sample\Flaeng.Productivity.Sample.csproj", "{FA7343C2-E688-4F0A-A672-4DC81C66B85F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{B1DFA70A-4ECF-49EA-8125-82C3EF732CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\build\_build.csproj", "{B1DFA70A-4ECF-49EA-8125-82C3EF732CE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
