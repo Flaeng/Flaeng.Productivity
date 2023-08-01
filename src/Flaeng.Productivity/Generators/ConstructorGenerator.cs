@@ -55,7 +55,7 @@ public sealed class ConstructorGenerator : GeneratorBase
             .Where(HasTriggerAttribute)
             .Where(x => x is FieldDeclarationSyntax || x is PropertyDeclarationSyntax)
             .OfType<MemberDeclarationSyntax>()
-            .Select(x => new Tuple<MemberDeclarationSyntax, IMemberDefinition?>(x, serializer.DeserializeMember(x)))
+            .Select(x => new Tuple<MemberDeclarationSyntax, IMemberDefinition?>(x, serializer.Deserialize(x)))
             .Select(x => AddDiagnosticsForEachStaticMember(x.Item1, x.Item2, diagnostics))
             .OfType<IMemberDefinition>()
             .ToImmutableArray();

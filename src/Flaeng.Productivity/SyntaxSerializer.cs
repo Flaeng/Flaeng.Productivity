@@ -1,237 +1,169 @@
 namespace Flaeng.Productivity;
 
-internal sealed class SyntaxSerializer
+internal sealed partial class SyntaxSerializer
 {
-    private readonly SyntaxNodeOrTokenSerializer nodeOrTokenSerializer = new();
-
-    public IMemberDefinition? DeserializeMember(MemberDeclarationSyntax syntax)
+    private void GetTypeAndName(
+        SyntaxNode? syntaxNode,
+        out string? type,
+        out string? name,
+        out string? defaultValue
+        )
     {
-        return syntax switch
+        type = null;
+        name = null;
+        defaultValue = null;
+        if (syntaxNode is null)
+            return;
+
+        foreach (var child in syntaxNode.ChildNodes())
         {
-            FieldDeclarationSyntax field => DeserializeField(field),
-            PropertyDeclarationSyntax prop => DeserializeProperty(prop),
-            MethodDeclarationSyntax method => DeserializeMethod(method),
-            // IParameterSymbol parameter => MethodParameterDefinition.Parse(parameter),
-            _ => default
-        };
-    }
-
-    public ClassDefinition DeserializeClass(ClassDeclarationSyntax syntax)
-    {
-        Visibility visibility = Visibility.Default;
-        bool isStatic = false, isPartial = false;
-        string? name = null;
-
-        foreach (var nodeToken in syntax.ChildNodesAndTokens())
-        {
-            if (nodeOrTokenSerializer.TryGetVisibility(nodeToken, out var tmp_visibility))
+            switch (child.RawKind)
             {
-                visibility = tmp_visibility;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetName(nodeToken, out var tmp_name))
-            {
-                name = tmp_name;
-                continue;
-            }
-
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
+                case (int)SyntaxKind.ArrayType:
+                case (int)SyntaxKind.PredefinedType:
+                case (int)SyntaxKind.QualifiedName:
+                case (int)SyntaxKind.IdentifierName:
+                case (int)SyntaxKind.GenericName:
+                    type = child.ToString();
                     break;
-                case (int)SyntaxKind.PartialKeyword:
-                    isPartial = true;
+                case (int)SyntaxKind.VariableDeclarator:
+                    GetNameAndDefaultValueFromVariableDeclarator(child, ref name, ref defaultValue);
                     break;
             }
         }
-
-        return new ClassDefinition(
-            visibility,
-            isStatic,
-            isPartial,
-            name,
-            ImmutableArray<string>.Empty, // TODO
-            ImmutableArray<InterfaceDefinition>.Empty, // TODO
-            ImmutableArray<MethodDefinition>.Empty // TODO
-        );
     }
 
-    public MethodDefinition? DeserializeMethod(MethodDeclarationSyntax method)
+    private static void GetNameAndDefaultValueFromVariableDeclarator(SyntaxNode child, ref string? name, ref string? defaultValue)
     {
-        Visibility visibility = Visibility.Default;
-        bool isStatic = false;
-        string? returnType = null, name = null;
-        ImmutableArray<MethodParameterDefinition> parameters = default;
-
-        foreach (var nodeToken in method.ChildNodesAndTokens())
+        foreach (var varDeclChild in child.ChildNodesAndTokens())
         {
-            if (nodeOrTokenSerializer.TryGetVisibility(nodeToken, out var tmp_visibility))
+            switch (varDeclChild.RawKind)
             {
-                visibility = tmp_visibility;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetReturnType(nodeToken, out var tmp_returnType))
-            {
-                returnType = tmp_returnType;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetName(nodeToken, out var tmp_name))
-            {
-                name = tmp_name;
-                continue;
-            }
-
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
+                case (int)SyntaxKind.IdentifierToken:
+                    name = varDeclChild.ToString();
                     break;
-                case (int)SyntaxKind.ParameterList:
-                    var pl = nodeToken.AsNode();
-                    if (pl is null)
-                        continue;
-
-                    parameters = pl.ChildNodes()
-                        .OfType<ParameterSyntax>()
-                        .Select(DeserializeMethodParameter)
-                        .ToImmutableArray();
+                case (int)SyntaxKind.EqualsValueClause:
+                    defaultValue = varDeclChild.ToString();
                     break;
             }
         }
-        if (returnType is null || name is null)
-            return default;
-
-        return new MethodDefinition(visibility, isStatic, returnType, name, parameters);
     }
 
-    public MethodParameterDefinition DeserializeMethodParameter(ParameterSyntax parameter)
+    private bool TryGetReturnType(SyntaxNodeOrToken nodeToken, out string tmp_returnType)
     {
-        string? parameterKind = null;
-        string? type = null, name = null, defaultValue = null;
-
-        foreach (var nodeToken in parameter.ChildNodesAndTokens())
+        tmp_returnType = String.Empty;
+        switch (nodeToken.RawKind)
         {
-            if (nodeOrTokenSerializer.TryGetDefaultValue(nodeToken, out var tmp_defaultValue))
-            {
-                defaultValue = tmp_defaultValue;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetParameterKind(nodeToken, out var tmp_parameterKind))
-            {
-                parameterKind = tmp_parameterKind;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetReturnType(nodeToken, out var tmp_type))
-            {
-                type = tmp_type;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetName(nodeToken, out var tmp_name))
-            {
-                name = tmp_name;
-                continue;
-            }
+            case (int)SyntaxKind.ArrayType:
+            case (int)SyntaxKind.PredefinedType:
+            case (int)SyntaxKind.QualifiedName:
+            case (int)SyntaxKind.IdentifierName:
+            case (int)SyntaxKind.GenericName:
+                tmp_returnType = nodeToken.ToString();
+                return true;
+        }
+        return false;
+    }
 
-            switch (nodeToken.RawKind)
+    private bool TryGetVisibility(SyntaxNodeOrToken nodeOrToken, out Visibility visibility)
+    {
+        visibility = default;
+        switch (nodeOrToken.RawKind)
+        {
+            case (int)SyntaxKind.PublicKeyword:
+                visibility = Visibility.Public;
+                return true;
+            case (int)SyntaxKind.InternalKeyword:
+                visibility = Visibility.Internal;
+                return true;
+            case (int)SyntaxKind.ProtectedKeyword:
+                visibility = Visibility.Protected;
+                return true;
+            case (int)SyntaxKind.PrivateKeyword:
+                visibility = Visibility.Private;
+                return true;
+        }
+        return false;
+    }
+
+    private bool TryGetParameterKind(SyntaxNodeOrToken nodeOrToken, out string parameterKind)
+    {
+        parameterKind = String.Empty;
+        switch (nodeOrToken.RawKind)
+        {
+            case (int)SyntaxKind.OutKeyword:
+                parameterKind = "out";
+                return true;
+            case (int)SyntaxKind.RefKeyword:
+                parameterKind = "ref";
+                return true;
+            case (int)SyntaxKind.ParamsKeyword:
+                parameterKind = "params";
+                return true;
+            case (int)SyntaxKind.InKeyword:
+                parameterKind = "in";
+                return true;
+        }
+        return false;
+    }
+
+    private bool TryGetName(SyntaxNodeOrToken nodeOrToken, out string name)
+    {
+        name = String.Empty;
+        if (nodeOrToken.RawKind != (int)SyntaxKind.IdentifierToken)
+            return false;
+
+        name = nodeOrToken.ToString();
+        return true;
+    }
+
+    private bool TryGetDefaultValue(SyntaxNodeOrToken nodeOrToken, out string defaultValue)
+    {
+        defaultValue = String.Empty;
+        switch (nodeOrToken.RawKind)
+        {
+            case (int)SyntaxKind.EqualsValueClause:
+                if (nodeOrToken.AsNode() is not EqualsValueClauseSyntax evc)
+                    return false;
+                defaultValue = evc.ChildNodes().First().ToString();
+                return true;
+        }
+        return false;
+    }
+
+    private void GetAccessorVisiblity(AccessorListSyntax als, ref Visibility? getterVisibility, ref Visibility? setterVisibility)
+    {
+        foreach (var alsChild in als.ChildNodes())
+        {
+            switch (alsChild.RawKind)
             {
-                case (int)SyntaxKind.VariableDeclaration:
-                    nodeOrTokenSerializer.GetTypeAndName(nodeToken.AsNode(), out type, out name, out _);
+                case (int)SyntaxKind.GetAccessorDeclaration:
+                    getterVisibility = GetAccessorVisibility(alsChild);
+                    break;
+                case (int)SyntaxKind.SetAccessorDeclaration:
+                    setterVisibility = GetAccessorVisibility(alsChild);
+                    break;
+                case (int)SyntaxKind.InitAccessorDeclaration:
+                    setterVisibility = Visibility.Init;
                     break;
             }
         }
-        if (type is null || name is null)
-            return default;
-
-        return new MethodParameterDefinition(
-            parameterKind,
-            type,
-            name,
-            defaultValue
-        );
     }
 
-    public FieldDefinition? DeserializeField(FieldDeclarationSyntax field)
+    private static Visibility GetAccessorVisibility(SyntaxNode node)
     {
-        Visibility visibility = Visibility.Default;
-        bool isStatic = false;
-        string? type = null, name = null, defaultValue = null;
-
-        foreach (var nodeToken in field.ChildNodesAndTokens())
+        foreach (var token in node.ChildTokens())
         {
-            if (nodeOrTokenSerializer.TryGetVisibility(nodeToken, out var tmp_visibility))
+            switch (token.RawKind)
             {
-                visibility = tmp_visibility;
-                continue;
-            }
-
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.VariableDeclaration:
-                    nodeOrTokenSerializer.GetTypeAndName(nodeToken.AsNode(), out type, out name, out defaultValue);
-                    break;
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
-                    break;
+                case (int)SyntaxKind.ProtectedKeyword:
+                    return Visibility.Protected;
+                case (int)SyntaxKind.InternalKeyword:
+                    return Visibility.Internal;
+                case (int)SyntaxKind.PrivateKeyword:
+                    return Visibility.Private;
             }
         }
-        if (type is null || name is null)
-            return default;
-
-        return new FieldDefinition(
-            visibility,
-            isStatic,
-            type,
-            name,
-            defaultValue
-        );
-    }
-
-    public PropertyDefinition? DeserializeProperty(PropertyDeclarationSyntax prop)
-    {
-        Visibility visibility = Visibility.Default;
-        Visibility? getterVisibility = null, setterVisibility = null;
-        bool isStatic = false;
-        string? type = null, name = null, defaultValue = null;
-
-        foreach (var nodeToken in prop.ChildNodesAndTokens())
-        {
-            if (nodeOrTokenSerializer.TryGetVisibility(nodeToken, out var tmp_visibility))
-            {
-                visibility = tmp_visibility;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetReturnType(nodeToken, out var tmp_returnType))
-            {
-                type = tmp_returnType;
-                continue;
-            }
-            if (nodeOrTokenSerializer.TryGetName(nodeToken, out var tmp_name))
-            {
-                name = tmp_name;
-                continue;
-            }
-
-            switch (nodeToken.RawKind)
-            {
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
-                    break;
-                case (int)SyntaxKind.AccessorList:
-                    if (nodeToken.AsNode() is not AccessorListSyntax als)
-                        continue;
-                    nodeOrTokenSerializer.GetAccessorVisiblity(als, ref getterVisibility, ref setterVisibility);
-                    break;
-            }
-        }
-        return new PropertyDefinition(
-                visibility,
-                isStatic,
-                type,
-                name,
-                getterVisibility,
-                setterVisibility,
-                defaultValue
-            );
+        return Visibility.Default;
     }
 }
