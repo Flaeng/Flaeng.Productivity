@@ -146,11 +146,11 @@ public class CSharpCompiler
         if (driver1firstRunDiagnostics != default)
             diagnostics.AddRange(driver1firstRunDiagnostics);
 
-        if (Debugger.IsAttached)
-        {
-            var outputDirectory = Path.Combine("CompilationOutput", caller);
-            WriteOutputToFileSystem(outputDirectory, outputCompilationFiles);
-        }
+        // if (Debugger.IsAttached)
+        // {
+        //     var outputDirectory = Path.Combine("CompilationOutput", caller);
+        //     WriteOutputToFileSystem(outputDirectory, outputCompilationFiles);
+        // }
 
         // var diagnostics = driver2firstRunDiagnostics.Concat(driver2diragnostics).Concat(driv1outputDiagnostics).Concat(driver1firstRunDiagnostics).ToImmutableArray();
 

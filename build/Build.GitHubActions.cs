@@ -1,16 +1,16 @@
 [GitHubActions(
     "PR",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.WindowsLatest,
     InvokedTargets = new[] { nameof(Format), nameof(Test)/*, nameof(Stryker)*/ },
     OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = false
 )]
 [GitHubActions(
     "Build",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.WindowsLatest,
     InvokedTargets = new[] { nameof(Stryker) },
     OnPushBranches = new[] { "main" },
-    PublishArtifacts = false
+    PublishArtifacts = true
 )]
 partial class Build
 {
