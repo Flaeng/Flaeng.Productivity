@@ -55,11 +55,10 @@ public sealed class InterfaceGenerator : GeneratorBase
         List<string> usings = GetUsings(syntaxes);
         GetClassModifiers(context, out bool isPartial, out bool isStatic);
 
-        if (isStatic)
-            return DataWithDiagnostic(context, symbol, Rules.InterfaceGenerator_ClassIsStatic);
+        var classDef = new SyntaxSerializer().Deserialize(cds);
 
-        if (isPartial == false)
-            return DataWithDiagnostic(context, symbol, Rules.InterfaceGenerator_ClassIsNotPartial);
+        if (HasError(classDef, out var diagnostics) && diagnostics is not null)
+            return DataWithDiagnostic(context, symbol, diagnostics);
 
         var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
             ? null
@@ -92,6 +91,24 @@ public sealed class InterfaceGenerator : GeneratorBase
             visibility
         );
         return data;
+    }
+
+    private static bool HasError(ClassDefinition classDef, out DiagnosticDescriptor? diagnostics)
+    {
+        if (classDef.IsStatic)
+        {
+            diagnostics = Rules.InterfaceGenerator_ClassIsStatic;
+            return true;
+        }
+
+        if (classDef.IsPartial == false)
+        {
+            diagnostics = Rules.InterfaceGenerator_ClassIsNotPartial;
+            return true;
+        }
+
+        diagnostics = default;
+        return false;
     }
 
     private static void GetAttributeParameters(
