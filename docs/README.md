@@ -1,11 +1,11 @@
 # Overview
 
-[ConstructorGenerator](docs/ConstructorGenerator/README.md)
+[ConstructorGenerator](ConstructorGenerator/README.md)
 
-[EqualityComparerGenerator](docs/EqualityComparerGenerator/README.md)
+[EqualityComparerGenerator](EqualityComparerGenerator/README.md)
 
-[FluentApiGenerator](docs/FluentApiGenerator/README.md)
+[FluentApiGenerator](FluentApiGenerator/README.md)
 
-[InterfaceGenerator](docs/InterfaceGenerator/README.md)
+[InterfaceGenerator](InterfaceGenerator/README.md)
 
-[StartupGenerator](docs/StartupGenerator/README.md)
+[StartupGenerator](StartupGenerator/README.md)
