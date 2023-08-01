@@ -5,6 +5,8 @@
 ConstructorGenerator generates a constructor for each class containing a field or property with the attribute Inject (Flaeng.InjectAttribute).
 The generated constructor accepts all fields and properties that have this attribute and sets them to the correct field.
 
+Important: The class needs to be *partial* for the generator to extend the class.
+
 ## Example
 
 ### Input
@@ -14,7 +16,6 @@ using Flaeng.Productivity.Sample.Providers;
 
 namespace Flaeng.Productivity.Sample.Services;
 
-[Flaeng.GenerateInterface]
 public partial class WeatherForecastService
 {
     [Flaeng.Inject] protected readonly ISummaryProvider _summaryProvider;
