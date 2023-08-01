@@ -1,13 +1,13 @@
 [GitHubActions(
     "PR",
-    GitHubActionsImage.WindowsLatest,
+    GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { /*nameof(Format),*/ nameof(Test) },
     OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = false
 )]
 [GitHubActions(
     "Build",
-    GitHubActionsImage.WindowsLatest,
+    GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Stryker) },
     OnPushBranches = new[] { "main" },
     OnPushIncludePaths = new[] { "src/**" },
