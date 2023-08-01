@@ -64,6 +64,22 @@ public abstract class GeneratorBase : IIncrementalGenerator
         }
     }
 
+    internal static void WriteWrapperClasses(
+        ImmutableArray<ClassDefinition> parentClassList, 
+        CSharpBuilder builder, 
+        List<string> filenameParts
+    )
+    {
+        foreach (var parentClass in parentClassList.Reverse())
+        {
+            builder.WriteClass(parentClass);
+            builder.StartScope();
+
+            if (parentClass.Name is not null)
+                filenameParts.Add(parentClass.Name);
+        }
+    }
+
     internal static List<ClassDefinition> GetContainingTypeRecursively(INamedTypeSymbol symbol, CancellationToken ct)
     {
         List<ClassDefinition> parentClasses = new();

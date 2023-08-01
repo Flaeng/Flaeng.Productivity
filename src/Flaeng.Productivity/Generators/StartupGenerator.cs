@@ -176,25 +176,13 @@ public sealed class StartupGenerator : GeneratorBase
             {
                 foreach (var inter in dep.Interfaces)
                 {
-                    builder.Write("services.Add");
-                    switch (dep.InjectType)
-                    {
-                        case InjectType.Transient: builder.Write("Transient"); break;
-                        case InjectType.Scoped: builder.Write("Scoped"); break;
-                        case InjectType.Singleton: builder.Write("Singleton"); break;
-                    }
+                    WriteRegisterPrefix(builder, dep);
                     builder.WriteLine($"<{inter}, {dep.TypeName}>();");
                 }
             }
             else
             {
-                builder.Write("services.Add");
-                switch (dep.InjectType)
-                {
-                    case InjectType.Transient: builder.Write("Transient"); break;
-                    case InjectType.Scoped: builder.Write("Scoped"); break;
-                    case InjectType.Singleton: builder.Write("Singleton"); break;
-                }
+                WriteRegisterPrefix(builder, dep);
                 builder.WriteLine($"<{dep.TypeName}>();");
             }
         }
@@ -202,6 +190,17 @@ public sealed class StartupGenerator : GeneratorBase
 
         var content = builder.Build();
         context.AddSource("StartupExtensions.g.cs", content);
+    }
+
+    private static void WriteRegisterPrefix(CSharpBuilder builder, InjectData dep)
+    {
+        builder.Write("services.Add");
+        switch (dep.InjectType)
+        {
+            case InjectType.Transient: builder.Write("Transient"); break;
+            case InjectType.Scoped: builder.Write("Scoped"); break;
+            case InjectType.Singleton: builder.Write("Singleton"); break;
+        }
     }
 
     private static bool HasTriggerAttribute(ClassDeclarationSyntax syntax)
