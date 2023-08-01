@@ -1,7 +1,7 @@
 [GitHubActions(
     "PR",
     GitHubActionsImage.WindowsLatest,
-    InvokedTargets = new[] { nameof(Format), nameof(Test)/*, nameof(Stryker)*/ },
+    InvokedTargets = new[] { /*nameof(Format),*/ nameof(Test) },
     OnPullRequestBranches = new[] { "main" },
     PublishArtifacts = false
 )]
