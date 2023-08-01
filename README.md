@@ -7,7 +7,11 @@
 ![Nuget](https://img.shields.io/nuget/dt/Flaeng.Productivity)
 
 
-## What does it do?
+## Mission / What does it do
+
+Flaeng.Productivity aims to improve productivity and developer experience by generating code, that would often be boilerplate, using C# source generators
+
+## How does it that?
 
 GenerateInterfaceAttribute generates a interface with all the public properties, fields and methods in your class so you don't have to keep it up-to-date but only need to change your test code.
 
