@@ -141,16 +141,23 @@ public sealed class StartupGenerator : GeneratorBase
         builder.WriteLine();
 
         TryWriteNamespace(source.Namespace, builder);
+        WriteClass(source, builder);
 
+        var content = builder.Build();
+        context.AddSource("StartupExtensions.g.cs", content);
+    }
+
+    private static void WriteClass(Data source, CSharpBuilder builder)
+    {
         builder.WriteClass(new ClassDefinition(
-            Visibility.Public,
-            isStatic: true,
-            isPartial: true,
-            name: "StartupExtensions",
-            typeArguments: ImmutableArray<string>.Empty,
-            interfaces: ImmutableArray<InterfaceDefinition>.Empty,
-            constructors: ImmutableArray<MethodDefinition>.Empty
-        ));
+                    Visibility.Public,
+                    isStatic: true,
+                    isPartial: true,
+                    name: "StartupExtensions",
+                    typeArguments: ImmutableArray<string>.Empty,
+                    interfaces: ImmutableArray<InterfaceDefinition>.Empty,
+                    constructors: ImmutableArray<MethodDefinition>.Empty
+                ));
         builder.StartScope();
 
         builder.WriteLine(Constants.GeneratedCodeAttribute);
@@ -170,6 +177,11 @@ public sealed class StartupGenerator : GeneratorBase
         ));
         builder.StartScope();
 
+        WriteMethodBody(source, builder);
+    }
+
+    private static void WriteMethodBody(Data source, CSharpBuilder builder)
+    {
         foreach (var dep in source.Injectables)
         {
             if (dep.Interfaces != default && dep.Interfaces.Length != 0)
@@ -187,9 +199,6 @@ public sealed class StartupGenerator : GeneratorBase
             }
         }
         builder.WriteLine("return services;");
-
-        var content = builder.Build();
-        context.AddSource("StartupExtensions.g.cs", content);
     }
 
     private static void WriteRegisterPrefix(CSharpBuilder builder, InjectData dep)
