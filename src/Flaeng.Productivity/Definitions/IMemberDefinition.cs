@@ -6,13 +6,3 @@ internal interface IMemberDefinition
     bool IsStatic { get; }
     string? Name { get; }
 }
-
-internal interface IHasDefaultValue
-{
-    string? DefaultValue { get; }
-}
-
-internal interface IHasPrettyName
-{
-    string? GetPrettyName();
-}
