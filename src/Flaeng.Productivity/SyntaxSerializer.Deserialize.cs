@@ -51,9 +51,9 @@ internal sealed partial class SyntaxSerializer
             isStatic,
             isPartial,
             name,
-            ImmutableArray<string>.Empty, // TODO
-            ImmutableArray<InterfaceDefinition>.Empty, // TODO
-            ImmutableArray<MethodDefinition>.Empty // TODO
+            default,
+            default,
+            default
         );
     }
 
