@@ -104,5 +104,4 @@ public sealed partial class ConstructorGenerator : GeneratorBase
             builder.WriteLine();
         }
     }
-
 }

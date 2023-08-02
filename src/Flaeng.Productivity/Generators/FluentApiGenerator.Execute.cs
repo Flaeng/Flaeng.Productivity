@@ -2,7 +2,6 @@ namespace Flaeng.Productivity.Generators;
 
 public sealed partial class FluentApiGenerator
 {
-
     private static void Execute(SourceProductionContext context, Data source)
     {
         TryWriteDiagnostics(context, source.Diagnostics);
@@ -13,7 +12,6 @@ public sealed partial class FluentApiGenerator
 
         CSharpBuilder builder = new(DefaultCSharpOptions);
         List<string> filenameParts = new();
-
 
         if (TryWriteNamespace(source.Namespace, builder))
             filenameParts.Add(source.Namespace!);
@@ -62,5 +60,4 @@ public sealed partial class FluentApiGenerator
         var content = builder.Build();
         context.AddSource(filename, content);
     }
-
 }

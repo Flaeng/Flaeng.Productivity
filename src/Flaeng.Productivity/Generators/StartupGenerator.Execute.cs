@@ -89,5 +89,4 @@ public sealed partial class StartupGenerator
             case InjectType.Singleton: builder.Write("Singleton"); break;
         }
     }
-
 }
