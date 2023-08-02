@@ -137,7 +137,8 @@ internal sealed partial class SyntaxSerializer
             switch (nodeToken.RawKind)
             {
                 case (int)SyntaxKind.VariableDeclaration:
-                    GetTypeAndName(nodeToken.AsNode(), out type, out name, out _);
+                    if (nodeToken.AsNode() is SyntaxNode node)
+                        GetTypeAndName(node, out type, out name, out _);
                     break;
             }
         }
@@ -169,7 +170,8 @@ internal sealed partial class SyntaxSerializer
             switch (nodeToken.RawKind)
             {
                 case (int)SyntaxKind.VariableDeclaration:
-                    GetTypeAndName(nodeToken.AsNode(), out type, out name, out defaultValue);
+                    if (nodeToken.AsNode() is SyntaxNode node)
+                        GetTypeAndName(node, out type, out name, out defaultValue);
                     break;
                 case (int)SyntaxKind.StaticKeyword:
                     isStatic = true;

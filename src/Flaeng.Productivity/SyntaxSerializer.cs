@@ -3,7 +3,7 @@ namespace Flaeng.Productivity;
 internal sealed partial class SyntaxSerializer
 {
     private void GetTypeAndName(
-        SyntaxNode? syntaxNode,
+        SyntaxNode syntaxNode,
         out string? type,
         out string? name,
         out string? defaultValue
@@ -12,8 +12,6 @@ internal sealed partial class SyntaxSerializer
         type = null;
         name = null;
         defaultValue = null;
-        if (syntaxNode is null)
-            return;
 
         foreach (var child in syntaxNode.ChildNodes())
         {
