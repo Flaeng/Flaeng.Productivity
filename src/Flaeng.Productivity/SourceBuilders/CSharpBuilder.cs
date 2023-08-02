@@ -129,14 +129,10 @@ internal class CSharpBuilder : SourceBuilder
     private void WriteMethodSignature(MethodDefinition method, bool isStub)
     {
         if (isStub == false)
-        {
             WriteVisibility(method.Visibility);
-            WriteIf(method.IsStatic, "static ");
-        }
-        else
-        {
-            WriteIf(method.IsStatic, "static abstract ");
-        }
+
+        WriteIf(method.IsStatic, "static ");
+        WriteIf(method.IsStatic && isStub, "abstract ");
 
         if (method.Parameters == default || method.Parameters.Length == 0)
         {
@@ -145,6 +141,15 @@ internal class CSharpBuilder : SourceBuilder
         }
 
         base.WriteLine($"{method.Type} {method.Name}(", increaseIndentation: true);
+        WriteMethodParameters(method);
+        base.DecreaseIndentation();
+        base.Write(")");
+        WriteIf(isStub, ";");
+        base.WriteLine();
+    }
+
+    private void WriteMethodParameters(MethodDefinition method)
+    {
         for (int i = 0; i < method.Parameters.Length; i++)
         {
             var param = method.Parameters[i];
@@ -153,10 +158,6 @@ internal class CSharpBuilder : SourceBuilder
                 base.Write(",");
             base.WriteLine();
         }
-        base.DecreaseIndentation();
-        base.Write(")");
-        WriteIf(isStub, ";");
-        base.WriteLine();
     }
 
     public void WriteMethodStub(MethodDefinition method)

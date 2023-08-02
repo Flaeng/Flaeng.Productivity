@@ -65,8 +65,8 @@ public abstract class GeneratorBase : IIncrementalGenerator
     }
 
     internal static void WriteWrapperClasses(
-        ImmutableArray<ClassDefinition> parentClassList, 
-        CSharpBuilder builder, 
+        ImmutableArray<ClassDefinition> parentClassList,
+        CSharpBuilder builder,
         List<string> filenameParts
     )
     {

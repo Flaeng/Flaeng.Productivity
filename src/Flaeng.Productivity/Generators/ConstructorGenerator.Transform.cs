@@ -19,13 +19,11 @@ public sealed partial class ConstructorGenerator : GeneratorBase
         symbol = Unsafe.As<INamedTypeSymbol>(symbol);
 
         List<string> usings = GetUsings(syntaxes);
-        GetClassModifiers(context, out bool isPartial, out bool isStatic);
+        // GetClassModifiers(context, out bool isPartial, out bool isStatic);
 
-        if (isStatic)
-            return DataWithDiagnostic(context, symbol, Rules.ConstructorGenerator_ClassIsStatic);
-
-        if (isPartial == false)
-            return DataWithDiagnostic(context, symbol, Rules.ConstructorGenerator_ClassIsNotPartial);
+        var classDef = ClassDefinition.Parse(symbol, ct);
+        if (IsValid(classDef, out DiagnosticDescriptor? clsDiagnostics) == false && clsDiagnostics is not null)
+            return DataWithDiagnostic(context, symbol, clsDiagnostics);
 
         List<Diagnostic> diagnostics = new();
 
@@ -34,8 +32,41 @@ public sealed partial class ConstructorGenerator : GeneratorBase
             : symbol.ContainingNamespace.ToDisplayString();
 
         var serializer = new SyntaxSerializer();
+        ImmutableArray<IMemberDefinition> members = GetMembers(syntaxes, diagnostics, serializer);
 
-        var members = syntaxes
+        List<ClassDefinition> parentClasses = GetContainingTypeRecursively(symbol, ct);
+
+        return new Data(
+            Diagnostics: diagnostics.ToImmutableArray(),
+            Usings: usings.Where(x => x != "using Flaeng;").Distinct().ToImmutableArray(),
+            Namespace: namespaceName,
+            ContainingClasses: parentClasses.ToImmutableArray(),
+            ClassDefinition: classDef,
+            InjectableMembers: members
+        );
+    }
+
+    private static bool IsValid(ClassDefinition classDef, out DiagnosticDescriptor? diagnostics)
+    {
+        if (classDef.IsStatic)
+        {
+            diagnostics = Rules.ConstructorGenerator_ClassIsStatic;
+            return false;
+        }
+
+        if (classDef.IsPartial == false)
+        {
+            diagnostics = Rules.ConstructorGenerator_ClassIsNotPartial;
+            return false;
+        }
+
+        diagnostics = default;
+        return true;
+    }
+
+    private static ImmutableArray<IMemberDefinition> GetMembers(ImmutableArray<ClassDeclarationSyntax> syntaxes, List<Diagnostic> diagnostics, SyntaxSerializer serializer)
+    {
+        return syntaxes
             .SelectMany(x => x.DescendantNodes(x => x is ClassDeclarationSyntax))
             .OfType<MemberDeclarationSyntax>()
             .Where(HasTriggerAttribute)
@@ -45,17 +76,6 @@ public sealed partial class ConstructorGenerator : GeneratorBase
             .Select(x => AddDiagnosticsForEachStaticMember(x.Item1, x.Item2, diagnostics))
             .OfType<IMemberDefinition>()
             .ToImmutableArray();
-
-        List<ClassDefinition> parentClasses = GetContainingTypeRecursively(symbol, ct);
-
-        return new Data(
-            Diagnostics: diagnostics.ToImmutableArray(),
-            Usings: usings.Where(x => x != "using Flaeng;").Distinct().ToImmutableArray(),
-            Namespace: namespaceName,
-            ContainingClasses: parentClasses.ToImmutableArray(),
-            ClassDefinition: ClassDefinition.Parse(symbol, ct),
-            InjectableMembers: members
-        );
     }
 
     private static bool ShouldRunTransform(GeneratorSyntaxContext context, CancellationToken ct, out INamedTypeSymbol? symbol, out ImmutableArray<ClassDeclarationSyntax> syntaxes)

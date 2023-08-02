@@ -2,7 +2,7 @@ namespace Flaeng.Productivity;
 
 internal sealed partial class SyntaxSerializer
 {
-    public IMemberDefinition? Deserialize(MemberDeclarationSyntax syntax)
+    public IMemberDefinition Deserialize(MemberDeclarationSyntax syntax)
     {
         return syntax switch
         {
@@ -10,7 +10,7 @@ internal sealed partial class SyntaxSerializer
             PropertyDeclarationSyntax prop => Deserialize(prop),
             MethodDeclarationSyntax method => Deserialize(method),
             // IParameterSymbol parameter => MethodParameterDefinition.Parse(parameter),
-            _ => default
+            _ => throw new Exception("Invalid member declaration")
         };
     }
 
@@ -106,7 +106,7 @@ internal sealed partial class SyntaxSerializer
         return new MethodDefinition(visibility, isStatic, returnType, name, parameters);
     }
 
-    public MethodParameterDefinition? Deserialize(ParameterSyntax parameter)
+    public MethodParameterDefinition Deserialize(ParameterSyntax parameter)
     {
         string? parameterKind = null;
         string? type = null, name = null, defaultValue = null;
@@ -152,7 +152,7 @@ internal sealed partial class SyntaxSerializer
         );
     }
 
-    public FieldDefinition? Deserialize(FieldDeclarationSyntax field)
+    public FieldDefinition Deserialize(FieldDeclarationSyntax field)
     {
         Visibility visibility = Visibility.Default;
         bool isStatic = false;
@@ -188,7 +188,7 @@ internal sealed partial class SyntaxSerializer
         );
     }
 
-    public PropertyDefinition? Deserialize(PropertyDeclarationSyntax prop)
+    public PropertyDefinition Deserialize(PropertyDeclarationSyntax prop)
     {
         Visibility visibility = Visibility.Default;
         Visibility? getterVisibility = null, setterVisibility = null;

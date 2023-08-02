@@ -36,7 +36,7 @@ public sealed partial class InterfaceGenerator
 
         var classDef = new SyntaxSerializer().Deserialize(cds);
 
-        if (HasError(classDef, out var diagnostics) && diagnostics is not null)
+        if (IsValid(classDef, out var diagnostics) == false && diagnostics is not null)
             return DataWithDiagnostic(context, symbol, diagnostics);
 
         var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
@@ -44,19 +44,7 @@ public sealed partial class InterfaceGenerator
             : symbol.ContainingNamespace.ToDisplayString();
 
         var baseTypes = GetBaseTypeRecursively(symbol);
-        var members = baseTypes.SelectMany(x => x.GetMembers())
-            .Where(x =>
-                (x is IFieldSymbol && x.IsImplicitlyDeclared == false) // IsImplicitlyDeclared == Property's backingfield
-                || x is IPropertySymbol
-                || (
-                    x is IMethodSymbol method
-                    && method.IsOverride == false
-                    && METHOD_KINDS_TO_IGNORE.Contains(method.MethodKind) == false
-                )
-            )
-            .Select(x => MemberDefinitions.Parse(x, ct))
-            .OfType<IMemberDefinition>()
-            .ToImmutableArray();
+        ImmutableArray<IMemberDefinition> members = GetMembers(baseTypes, ct);
 
         List<ClassDefinition> parentClasses = GetContainingTypeRecursively(symbol, ct);
 
@@ -72,22 +60,40 @@ public sealed partial class InterfaceGenerator
         return data;
     }
 
-    private static bool HasError(ClassDefinition classDef, out DiagnosticDescriptor? diagnostics)
+    private static ImmutableArray<IMemberDefinition> GetMembers(IEnumerable<INamedTypeSymbol> baseTypes, CancellationToken ct)
+    {
+        var members = baseTypes.SelectMany(x => x.GetMembers())
+            .Where(x =>
+                (x is IFieldSymbol && x.IsImplicitlyDeclared == false) // IsImplicitlyDeclared == Property's backingfield
+                || x is IPropertySymbol
+                || (
+                    x is IMethodSymbol method
+                    && method.IsOverride == false
+                    && METHOD_KINDS_TO_IGNORE.Contains(method.MethodKind) == false
+                )
+            )
+            .Select(x => MemberDefinitions.Parse(x, ct))
+            .OfType<IMemberDefinition>()
+            .ToImmutableArray();
+        return members;
+    }
+
+    private static bool IsValid(ClassDefinition classDef, out DiagnosticDescriptor? diagnostics)
     {
         if (classDef.IsStatic)
         {
             diagnostics = Rules.InterfaceGenerator_ClassIsStatic;
-            return true;
+            return false;
         }
 
         if (classDef.IsPartial == false)
         {
             diagnostics = Rules.InterfaceGenerator_ClassIsNotPartial;
-            return true;
+            return false;
         }
 
         diagnostics = default;
-        return false;
+        return true;
     }
 
     private static void GetAttributeParameters(

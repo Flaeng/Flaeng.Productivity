@@ -2,7 +2,7 @@ namespace Flaeng.Productivity.Generators;
 
 public sealed partial class StartupGenerator
 {
-    private static readonly ClassDefinition CLASS_DEFINITION = 
+    private static readonly ClassDefinition CLASS_DEFINITION =
         new ClassDefinition(
             Visibility.Public,
             isStatic: true,
@@ -22,7 +22,7 @@ public sealed partial class StartupGenerator
             parameters: new[] { METHOD_PARAMETER_DEFINITION }.ToImmutableArray()
         );
 
-    private static readonly MethodParameterDefinition METHOD_PARAMETER_DEFINITION = 
+    private static readonly MethodParameterDefinition METHOD_PARAMETER_DEFINITION =
         new MethodParameterDefinition(
             parameterKind: "this",
             type: ServiceCollectionQualifiedName,
@@ -44,7 +44,7 @@ public sealed partial class StartupGenerator
         builder.WriteLine();
 
         TryWriteNamespace(source.Namespace, builder);
-        
+
         builder.WriteClass(CLASS_DEFINITION);
         builder.StartScope();
 

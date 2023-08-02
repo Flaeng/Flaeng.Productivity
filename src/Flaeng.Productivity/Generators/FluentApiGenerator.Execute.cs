@@ -19,17 +19,32 @@ public sealed partial class FluentApiGenerator
         // Write class and wrapper classes
         WriteWrapperClasses(source.ParentClasses, builder, filenameParts);
 
-        builder.WriteClass(new ClassDefinition(
-            visibility: source.ClassDefinition.Visibility,
-            isStatic: true,
-            isPartial: true,
-            name: $"{source.ClassDefinition.Name}Extensions",
-            typeArguments: ImmutableArray<string>.Empty,
-            interfaces: ImmutableArray<InterfaceDefinition>.Empty,
-            constructors: ImmutableArray<MethodDefinition>.Empty
-        ));
+        builder.WriteClass(MakeClassFromSourceClassDefinition(source.ClassDefinition));
         builder.StartScope();
+        WriteMembers(source, clsName, builder);
 
+        string filename = filenameParts.Select(x => $"{x}.").Join() + $"{source.ClassDefinition.Name}.g.cs";
+        var content = builder.Build();
+        context.AddSource(filename, content);
+    }
+
+    private static ClassDefinition MakeClassFromSourceClassDefinition(
+        ClassDefinition cls
+    )
+    {
+        return new ClassDefinition(
+                    visibility: cls.Visibility,
+                    isStatic: true,
+                    isPartial: true,
+                    name: $"{cls.Name}Extensions",
+                    typeArguments: ImmutableArray<string>.Empty,
+                    interfaces: ImmutableArray<InterfaceDefinition>.Empty,
+                    constructors: ImmutableArray<MethodDefinition>.Empty
+                );
+    }
+
+    private static void WriteMembers(Data source, string clsName, CSharpBuilder builder)
+    {
         foreach (var member in source.Members)
         {
             if (member.Name is null)
@@ -55,9 +70,5 @@ public sealed partial class FluentApiGenerator
             builder.WriteLine("return _this;");
             builder.EndScope();
         }
-
-        string filename = filenameParts.Select(x => $"{x}.").Join() + $"{source.ClassDefinition.Name}.g.cs";
-        var content = builder.Build();
-        context.AddSource(filename, content);
     }
 }
