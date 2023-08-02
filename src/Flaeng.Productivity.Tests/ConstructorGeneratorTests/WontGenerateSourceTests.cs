@@ -61,7 +61,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.ConstructorGenerator_ClassIsNotPartial.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
-        Assert.Equal("Design", error.Descriptor.Category);
+        Assert.Equal("Constructor", error.Descriptor.Category);
         Assert.Equal("Classes with Inject attribute on members should be partial", error.Descriptor.Title);
         Assert.Contains("Class Dummy should be partial for the source generator to extend it", error.ToString());
     }
@@ -93,7 +93,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.ConstructorGenerator_ClassIsStatic.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
-        Assert.Equal("Design", error.Descriptor.Category);
+        Assert.Equal("Constructor", error.Descriptor.Category);
         Assert.Equal("Classes with Inject attribute on members cannot be static", error.Descriptor.Title);
         Assert.Contains("Class Dummy cannot be static for the source generator to extend it", error.ToString());
     }
