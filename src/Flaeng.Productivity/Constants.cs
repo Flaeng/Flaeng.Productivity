@@ -1,5 +1,4 @@
 namespace Flaeng.Productivity;
-
 public static class Constants
 {
     public static readonly string GeneratedCodeAttribute =
