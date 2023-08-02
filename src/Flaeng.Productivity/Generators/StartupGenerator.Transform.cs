@@ -18,7 +18,33 @@ public sealed partial class StartupGenerator
 
         var namespaceName = context.SemanticModel.Compilation.GlobalNamespace.Name;
 
-        var classDeclarations = context.SemanticModel.Compilation.SyntaxTrees
+        ImmutableArray<ClassDeclarationSyntax> classDeclarations = GetClassDeclarations(context, ct);
+
+        if (classDeclarations.First() != context.Node)
+            return new Data();
+
+        ImmutableArray<InjectData> injectables = GetInjectables(context, classDeclarations, ct);
+
+        return new Data(
+            Diagnostics: ImmutableArray<Diagnostic>.Empty,
+            Namespace: namespaceName,
+            Injectables: injectables
+        );
+    }
+
+    private static ImmutableArray<InjectData> GetInjectables(GeneratorSyntaxContext context, ImmutableArray<ClassDeclarationSyntax> classDeclarations, CancellationToken ct)
+    {
+        return classDeclarations
+            .Select(x => TryGetDeclaredSymbol(context, x, ct))
+            .Distinct(SymbolEqualityComparer.Default)
+            .OfType<INamedTypeSymbol>()
+            .Select(x => ToInjectData(x, ct))
+            .ToImmutableArray();
+    }
+
+    private static ImmutableArray<ClassDeclarationSyntax> GetClassDeclarations(GeneratorSyntaxContext context, CancellationToken ct)
+    {
+        return context.SemanticModel.Compilation.SyntaxTrees
             .Select(x => x.GetRoot(ct))
             .SelectMany(x => x.DescendantNodesAndSelf(x =>
                 x is ClassDeclarationSyntax
@@ -29,22 +55,6 @@ public sealed partial class StartupGenerator
             .OfType<ClassDeclarationSyntax>()
             .Where(HasTriggerAttribute)
             .ToImmutableArray();
-
-        if (classDeclarations.First() != context.Node)
-            return new Data();
-
-        var injectables = classDeclarations
-            .Select(x => TryGetDeclaredSymbol(context, x, ct))
-            .Distinct(SymbolEqualityComparer.Default)
-            .OfType<INamedTypeSymbol>()
-            .Select(x => ToInjectData(x, ct))
-            .ToImmutableArray();
-
-        return new Data(
-            Diagnostics: ImmutableArray<Diagnostic>.Empty,
-            Namespace: namespaceName,
-            Injectables: injectables
-        );
     }
 
     // Has poor performance due to try-catch and looping through all syntax trees

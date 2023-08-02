@@ -17,7 +17,7 @@ public sealed partial class FluentApiGenerator
 
         classSymbol = Unsafe.As<INamedTypeSymbol>(classSymbol);
 
-        var namespaceName = classSymbol.ContainingNamespace.IsGlobalNamespace ? null : classSymbol.ContainingNamespace.ToDisplayString();
+        var namespaceName = GetNamespace(classSymbol);
 
         var classDefinition = ClassDefinition.Parse(classSymbol, ct);
         var members = classSymbol

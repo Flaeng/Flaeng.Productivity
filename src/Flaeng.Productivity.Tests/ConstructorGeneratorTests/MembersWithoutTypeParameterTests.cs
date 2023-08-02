@@ -159,7 +159,7 @@ public class MembersWithoutTypeParameterTests : IClassFixture<CSharpCompiler>
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.ConstructorGenerator_MemberIsStatic.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
-        Assert.Equal("Design", error.Descriptor.Category);
+        Assert.Equal("Constructor", error.Descriptor.Category);
         Assert.Equal("Members with Inject attribute cannot be static", error.Descriptor.Title);
         Assert.Contains("Member _logger cannot be static for the source generator to set it in the constructor", error.ToString());
 

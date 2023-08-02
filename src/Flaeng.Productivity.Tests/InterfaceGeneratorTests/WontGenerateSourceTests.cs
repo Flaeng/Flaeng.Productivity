@@ -167,7 +167,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.InterfaceGenerator_ClassIsNotPartial.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
-        Assert.Equal("Design", error.Descriptor.Category);
+        Assert.Equal("Interface", error.Descriptor.Category);
         Assert.Equal("Classes with GenerateInterface attribute should be partial", error.Descriptor.Title);
         Assert.Contains("Class Dummy should be partial for the source generator to extend it", error.ToString());
     }
@@ -200,7 +200,7 @@ public class WontGenerateSourceTests : IClassFixture<CSharpCompiler>
         var error = output.Diagnostic.FirstOrDefault(x => x.Id == Rules.InterfaceGenerator_ClassIsStatic.Id);
         Assert.NotNull(error);
         Assert.Equal(DiagnosticSeverity.Error, error.Severity);
-        Assert.Equal("Design", error.Descriptor.Category);
+        Assert.Equal("Interface", error.Descriptor.Category);
         Assert.Equal("Classes with GenerateInterface attribute cannot be static", error.Descriptor.Title);
         Assert.Contains("Class Dummy cannot be static for the source generator to extend it", error.ToString());
     }

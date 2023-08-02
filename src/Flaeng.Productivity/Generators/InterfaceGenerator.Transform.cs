@@ -20,9 +20,7 @@ public sealed partial class InterfaceGenerator
         if (symbol is null)
             return default;
 
-        var syntaxes = symbol.DeclaringSyntaxReferences.Length == 1
-            ? new[] { cds }.ToImmutableArray()
-            : GetAllDeclarations(symbol);
+        var syntaxes = GetSyntaxes(symbol, cds);
 
         // Make sure we only generate one new source file for partial classes in multiple files
         var triggerSyntax = syntaxes.Where(HasTriggerAttribute).First();
@@ -38,9 +36,7 @@ public sealed partial class InterfaceGenerator
         if (IsValid(classDef, out var diagnostics) == false && diagnostics is not null)
             return DataWithDiagnostic(context, symbol, diagnostics);
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
-            : symbol.ContainingNamespace.ToDisplayString();
+        var namespaceName = GetNamespace(symbol);
 
         var baseTypes = GetBaseTypeRecursively(symbol);
         ImmutableArray<IMemberDefinition> members = GetMembers(baseTypes, ct);

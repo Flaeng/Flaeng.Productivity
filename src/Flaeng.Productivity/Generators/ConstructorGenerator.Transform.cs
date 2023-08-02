@@ -26,9 +26,7 @@ public sealed partial class ConstructorGenerator : GeneratorBase
 
         List<Diagnostic> diagnostics = new();
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
-            : symbol.ContainingNamespace.ToDisplayString();
+        var namespaceName = GetNamespace(symbol);
 
         var serializer = new SyntaxSerializer();
         ImmutableArray<IMemberDefinition> members = GetMembers(syntaxes, diagnostics, serializer);
@@ -84,10 +82,7 @@ public sealed partial class ConstructorGenerator : GeneratorBase
         symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
         if (symbol is null)
             return false;
-
-        syntaxes = symbol.DeclaringSyntaxReferences.Length == 1
-            ? new[] { cds }.ToImmutableArray()
-            : GetAllDeclarations(symbol);
+        syntaxes = GetSyntaxes(symbol, cds);
 
         // Make sure we only generate one new source file for partial classes in multiple files
         if (symbol.DeclaringSyntaxReferences[0].GetSyntax() != context.Node)
