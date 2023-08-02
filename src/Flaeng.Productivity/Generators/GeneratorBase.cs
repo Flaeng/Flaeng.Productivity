@@ -127,6 +127,13 @@ public abstract class GeneratorBase : IIncrementalGenerator
             .ToDictionary(x => x[0].Trim(), x => x[1].Trim());
     }
 
+    protected static string? GetNamespace(INamedTypeSymbol symbol)
+    {
+        return symbol.ContainingNamespace.IsGlobalNamespace
+            ? null
+            : symbol.ContainingNamespace.ToDisplayString();
+    }
+
     protected static bool HasAttribute(MemberDeclarationSyntax syntax, string attrName)
     {
         return syntax.AttributeLists

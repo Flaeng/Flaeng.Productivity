@@ -21,6 +21,22 @@ public sealed partial class InterfaceGenerator
         builder.WriteLine(Constants.GeneratedCodeAttribute);
         WriteInterface(builder, source, out var interfaceDef);
         builder.StartScope();
+        WriteMembers(source, builder, interfaceDef);
+        builder.DecreaseIndentation();
+        builder.WriteLine("}");
+
+        // Write class
+        builder.WriteClass(source.ClassDefinition, source.ClassDefinition.WithName(interfaceDef.Name));
+        builder.WriteLine("{");
+        builder.WriteLine("}");
+
+        string filename = filenameParts.Select(x => $"{x}.").Join() + $"I{source.ClassDefinition.Name}.g.cs";
+        var content = builder.Build();
+        context.AddSource(filename, content);
+    }
+
+    private static void WriteMembers(Data source, CSharpBuilder builder, InterfaceDefinition interfaceDef)
+    {
         foreach (var member in source.Members)
         {
             if (interfaceDef.Members.Contains(member, IMemberDefinitionEqualityComparer.Instance))
@@ -33,17 +49,6 @@ public sealed partial class InterfaceGenerator
             else if (member is MethodDefinition method && method.Visibility == Visibility.Public)
                 builder.WriteMethodStub(method);
         }
-        builder.DecreaseIndentation();
-        builder.WriteLine("}");
-
-        // Write class
-        builder.WriteClass(source.ClassDefinition, source.ClassDefinition.WithName(interfaceDef.Name));
-        builder.WriteLine("{");
-        builder.WriteLine("}");
-
-        string filename = filenameParts.Select(x => $"{x}.").Join() + $"I{source.ClassDefinition.Name}.g.cs";
-        var content = builder.Build();
-        context.AddSource(filename, content);
     }
 
     private void WriteInterface(

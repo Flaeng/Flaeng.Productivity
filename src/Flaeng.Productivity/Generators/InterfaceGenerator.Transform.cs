@@ -38,9 +38,7 @@ public sealed partial class InterfaceGenerator
         if (IsValid(classDef, out var diagnostics) == false && diagnostics is not null)
             return DataWithDiagnostic(context, symbol, diagnostics);
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
-            : symbol.ContainingNamespace.ToDisplayString();
+        var namespaceName = GetNamespace(symbol);
 
         var baseTypes = GetBaseTypeRecursively(symbol);
         ImmutableArray<IMemberDefinition> members = GetMembers(baseTypes, ct);

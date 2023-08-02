@@ -26,9 +26,7 @@ public sealed partial class ConstructorGenerator : GeneratorBase
 
         List<Diagnostic> diagnostics = new();
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
-            : symbol.ContainingNamespace.ToDisplayString();
+        var namespaceName = GetNamespace(symbol);
 
         var serializer = new SyntaxSerializer();
         ImmutableArray<IMemberDefinition> members = GetMembers(syntaxes, diagnostics, serializer);
