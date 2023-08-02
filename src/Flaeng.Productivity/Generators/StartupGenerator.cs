@@ -153,7 +153,7 @@ public sealed class StartupGenerator : GeneratorBase
             constructors: ImmutableArray<MethodDefinition>.Empty
         );
 
-    private static readonly MethodDefinition METHOD_DEFINITION =
+    private static MethodDefinition METHOD_DEFINITION =>
         new MethodDefinition(
             Visibility.Public,
             isStatic: true,
