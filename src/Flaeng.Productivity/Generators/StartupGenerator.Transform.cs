@@ -57,28 +57,20 @@ public sealed partial class StartupGenerator
             .ToImmutableArray();
     }
 
-    // Has poor performance due to try-catch and looping through all syntax trees
-    // TODO: Optimize this method
     private static INamedTypeSymbol? TryGetDeclaredSymbol(GeneratorSyntaxContext context, ClassDeclarationSyntax syntax, CancellationToken ct)
     {
-        try
-        {
+        var root = context.SemanticModel.SyntaxTree.GetRoot(ct);
+        if (root.Contains(syntax))
             return context.SemanticModel.GetDeclaredSymbol(syntax, ct);
-        }
-        catch
-        {
-            foreach (var tree in context.SemanticModel.Compilation.SyntaxTrees)
-            {
-                var treeModel = context.SemanticModel.Compilation.GetSemanticModel(tree);
-                try
-                {
-                    return treeModel.GetDeclaredSymbol(syntax, ct); ;
-                }
-                catch
-                { }
-            }
-            return null;
-        }
+
+        var compilcation = context.SemanticModel.Compilation;
+        var semanticModels = compilcation.SyntaxTrees
+            .Where(x => x.GetRoot(ct).Contains(syntax))
+            .Select(x => compilcation.GetSemanticModel(x));
+
+        return semanticModels
+            .Select(x => x.GetDeclaredSymbol(syntax, ct))
+            .FirstOrDefault();
     }
 
     private static InjectType GetInjectType(ISymbol symbol, CancellationToken ct)

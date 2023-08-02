@@ -17,7 +17,7 @@ public class CompleteUseCaseTests : IClassFixture<CSharpCompiler>
     };
 
     [Fact(Timeout = 1000)]
-    public void InterfaceGenerator_and_ConstructorGenerator_together()
+    public void Source_generators_together()
     {
         // Given
         var modelSource = new SourceFile("Models/WeatherForecast.cs", """
@@ -148,7 +148,7 @@ public class CompleteUseCaseTests : IClassFixture<CSharpCompiler>
     }
 
     [Fact(Timeout = 1000)]
-    public void InterfaceGenerator_and_ConstructorGenerator_together_alternate()
+    public void Source_generators_together_alternate()
     {
         // Given
         var modelSource = new SourceFile("Models/WeatherForecast.cs", """
