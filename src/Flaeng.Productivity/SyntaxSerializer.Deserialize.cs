@@ -14,7 +14,7 @@ internal sealed partial class SyntaxSerializer
         };
     }
 
-    public ClassDefinition? Deserialize(ClassDeclarationSyntax syntax)
+    public ClassDefinition Deserialize(ClassDeclarationSyntax syntax)
     {
         Visibility visibility = Visibility.Default;
         bool isStatic = false, isPartial = false;
@@ -44,7 +44,7 @@ internal sealed partial class SyntaxSerializer
             }
         }
         if (name is null)
-            return default;
+            throw new Exception("Failed to deserialize class definition");
 
         return new ClassDefinition(
             visibility,
@@ -57,7 +57,7 @@ internal sealed partial class SyntaxSerializer
         );
     }
 
-    public MethodDefinition? Deserialize(MethodDeclarationSyntax method)
+    public MethodDefinition Deserialize(MethodDeclarationSyntax method)
     {
         Visibility visibility = Visibility.Default;
         bool isStatic = false;
@@ -101,7 +101,7 @@ internal sealed partial class SyntaxSerializer
             }
         }
         if (returnType is null || name is null)
-            return default;
+            throw new Exception("Failed to deserialize method definition");
 
         return new MethodDefinition(visibility, isStatic, returnType, name, parameters);
     }
@@ -142,7 +142,7 @@ internal sealed partial class SyntaxSerializer
             }
         }
         if (type is null || name is null)
-            return default;
+            throw new Exception("Failed to deserialize parameter definition");
 
         return new MethodParameterDefinition(
             parameterKind,
@@ -177,7 +177,7 @@ internal sealed partial class SyntaxSerializer
             }
         }
         if (type is null || name is null)
-            return default;
+            throw new Exception("Failed to deserialize field definition");
 
         return new FieldDefinition(
             visibility,
@@ -225,6 +225,9 @@ internal sealed partial class SyntaxSerializer
                     break;
             }
         }
+        if (name is null || type is null)
+            throw new Exception("Failed to deserialize property definition");
+
         return new PropertyDefinition(
                 visibility,
                 isStatic,
