@@ -134,6 +134,13 @@ public abstract class GeneratorBase : IIncrementalGenerator
             : symbol.ContainingNamespace.ToDisplayString();
     }
 
+    protected static ImmutableArray<ClassDeclarationSyntax> GetSyntaxes(INamedTypeSymbol symbol, ClassDeclarationSyntax cds)
+    {
+        return symbol.DeclaringSyntaxReferences.Length == 1
+            ? new[] { cds }.ToImmutableArray()
+            : GetAllDeclarations(symbol);
+    }
+
     protected static bool HasAttribute(MemberDeclarationSyntax syntax, string attrName)
     {
         return syntax.AttributeLists
