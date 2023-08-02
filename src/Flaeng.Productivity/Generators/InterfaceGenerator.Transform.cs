@@ -32,7 +32,6 @@ public sealed partial class InterfaceGenerator
         GetAttributeParameters(triggerSyntax, out string? interfaceName, out Visibility visibility);
 
         List<string> usings = GetUsings(syntaxes);
-        GetClassModifiers(context, out bool isPartial, out bool isStatic);
 
         var classDef = new SyntaxSerializer().Deserialize(cds);
 

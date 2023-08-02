@@ -44,7 +44,6 @@ public sealed partial class StartupGenerator
         builder.WriteLine();
 
         TryWriteNamespace(source.Namespace, builder);
-
         builder.WriteClass(CLASS_DEFINITION);
         builder.StartScope();
 

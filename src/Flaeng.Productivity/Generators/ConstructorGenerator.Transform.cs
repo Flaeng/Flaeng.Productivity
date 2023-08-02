@@ -19,7 +19,6 @@ public sealed partial class ConstructorGenerator : GeneratorBase
         symbol = Unsafe.As<INamedTypeSymbol>(symbol);
 
         List<string> usings = GetUsings(syntaxes);
-        // GetClassModifiers(context, out bool isPartial, out bool isStatic);
 
         var classDef = ClassDefinition.Parse(symbol, ct);
         if (IsValid(classDef, out DiagnosticDescriptor? clsDiagnostics) == false && clsDiagnostics is not null)

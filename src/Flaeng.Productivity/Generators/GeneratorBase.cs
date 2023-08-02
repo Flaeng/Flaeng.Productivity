@@ -127,25 +127,6 @@ public abstract class GeneratorBase : IIncrementalGenerator
             .ToDictionary(x => x[0].Trim(), x => x[1].Trim());
     }
 
-    protected static void GetClassModifiers(GeneratorSyntaxContext context, out bool isPartial, out bool isStatic)
-    {
-        isPartial = false;
-        isStatic = false;
-        foreach (var child in context.Node.ChildNodesAndTokens())
-        {
-            switch (child.RawKind)
-            {
-                case (int)SyntaxKind.StaticKeyword:
-                    isStatic = true;
-                    break;
-
-                case (int)SyntaxKind.PartialKeyword:
-                    isPartial = true;
-                    break;
-            }
-        }
-    }
-
     protected static bool HasAttribute(MemberDeclarationSyntax syntax, string attrName)
     {
         return syntax.AttributeLists
