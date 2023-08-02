@@ -5,8 +5,8 @@ partial class Build
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
     readonly AbsolutePath ReadmeSourceFile = RootDirectory / "README.md";
     readonly AbsolutePath LicenseSourceFile = RootDirectory / "LICENSE";
-    readonly AbsolutePath ReadmeTargetFile = RootDirectory / "Flaeng.Productivity" / "README.md";
-    readonly AbsolutePath LicenseTargetFile = RootDirectory / "Flaeng.Productivity" / "LICENSE";
+    readonly AbsolutePath ReadmeTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "README.md";
+    readonly AbsolutePath LicenseTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "LICENSE";
 
     Target Pack => _ => _
         .Requires(() => VersionParameter)

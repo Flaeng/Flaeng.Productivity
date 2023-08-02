@@ -23,6 +23,8 @@ RegisterServiceAttribute - Makes an RegisterServices-extensions-method on the IS
 
 ## Examples
 
+[More examples in the docs](https://github.com/Flaeng/Flaeng.Productivity/blob/main/docs/README.md)
+
 ### GenerateInterface Example 1: Input
 ```csharp
 using System;
@@ -215,3 +217,5 @@ public static partial class StartupExtensions
     }
 }
 ```
+
+[More examples in the docs](https://github.com/Flaeng/Flaeng.Productivity/blob/main/docs/README.md)
