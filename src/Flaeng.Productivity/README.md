@@ -1,10 +1,17 @@
 # Flaeng.Productivity
 
+[![CodeFactor](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/badge/main)](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/overview/main)
 [![Maintainability](https://api.codeclimate.com/v1/badges/59770f285df113dc53c7/maintainability)](https://codeclimate.com/github/Flaeng/Flaeng.Productivity/maintainability)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/badge/main)](https://www.codefactor.io/repository/github/flaeng/flaeng.productivity/overview/main)
+![Nuget](https://img.shields.io/nuget/v/Flaeng.Productivity)
+![Nuget](https://img.shields.io/nuget/dt/Flaeng.Productivity)
 
-## What does it do?
+
+## Mission / What does it do
+
+Flaeng.Productivity aims to improve productivity and developer experience by generating code, that would often be boilerplate, using C# source generators
+
+## How does it that?
 
 GenerateInterfaceAttribute generates a interface with all the public properties, fields and methods in your class so you don't have to keep it up-to-date but only need to change your test code.
 
@@ -15,6 +22,8 @@ MakeFluentAttribute - Makes methods for each property or field marked with the a
 RegisterServiceAttribute - Makes an RegisterServices-extensions-method on the IServiceCollection-interface so that you don't have to remmeber to add your services to you dependency injection container
 
 ## Examples
+
+[More examples in the docs](https://github.com/Flaeng/Flaeng.Productivity/blob/main/docs/README.md)
 
 ### GenerateInterface Example 1: Input
 ```csharp
@@ -208,3 +217,5 @@ public static partial class StartupExtensions
     }
 }
 ```
+
+[More examples in the docs](https://github.com/Flaeng/Flaeng.Productivity/blob/main/docs/README.md)
