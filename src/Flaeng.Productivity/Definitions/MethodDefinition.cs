@@ -17,6 +17,11 @@ internal record struct MethodDefinition : IMemberDefinition
         this.Parameters = parameters;
     }
 
+    public MethodDefinition WithName(string methodName)
+    {
+        return new MethodDefinition(Visibility, IsStatic, Type, methodName, Parameters);
+    }
+
     public static MethodDefinition Parse(IMethodSymbol symbol)
     {
         return new MethodDefinition(

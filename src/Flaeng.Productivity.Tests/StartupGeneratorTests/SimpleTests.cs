@@ -51,6 +51,50 @@ public class SimpleTests : IClassFixture<CSharpCompiler>
     }
 
     [Fact(Timeout = 1000)]
+    public void Can_make_startup_extension_with_different_name()
+    {
+        // Given
+        string source = """
+        [assembly: Flaeng.StartupExtension(MethodName = "ThisIsATest")]
+
+        public interface IBlah { }
+        [Flaeng.RegisterService]
+        public class Blah : IBlah { }
+        """;
+
+        // When
+        var output = compiler.GetGeneratedOutput<StartupGenerator>(
+            new SourceFile("dummy.cs", source)
+        );
+
+        // Then
+        string expected_output = $$"""
+        {{Constants.GeneratedContentPrefix}}
+        
+        using Microsoft.Extensions.DependencyInjection;
+
+        public static partial class StartupExtensions
+        {
+            {{Constants.GeneratedCodeAttribute}}
+            public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection ThisIsATest(
+                this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services
+            )
+            {
+                services.AddScoped<global::IBlah, global::Blah>();
+                return services;
+            }
+        }
+        
+        """;
+        var files = output.GeneratedFiles.ExcludeTriggerAttribute();
+        Assert.Single(files);
+        var file = files.Single();
+        Assert.Equal(Constants.StartupGeneratorGeneratedContentPathPrefix + "StartupExtensions.g.cs", file.Filename);
+        Assert.Equal(expected_output, file.Content);
+        Assert.Empty(output.Diagnostic);
+    }
+
+    [Fact(Timeout = 1000)]
     public void Can_make_startup_extension_with_two_class()
     {
         // Given
