@@ -81,4 +81,4 @@ public static partial class StartupExtensions
 
 ## Known issues
 
-The generator will always a public method called RegisterServices. This can give conflict if used with multiple projects or cross-projects.
+No known issues
