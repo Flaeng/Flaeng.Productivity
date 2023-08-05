@@ -9,6 +9,7 @@ public sealed partial class StartupGenerator
     public record struct Data(
         ImmutableArray<Diagnostic> Diagnostics,
         string? Namespace,
+        string? MethodName,
         ImmutableArray<InjectData> Injectables
     );
 
@@ -25,11 +26,29 @@ public sealed partial class StartupGenerator
 
         ImmutableArray<InjectData> injectables = GetInjectables(context, classDeclarations, ct);
 
+        var settingsAttr = context.SemanticModel.Compilation.Assembly
+            .GetAttributes()
+            .Where(IsStartupExtensionAttribute)
+            .FirstOrDefault();
+        Dictionary<string, string> settings = settingsAttr == null ? new() : GetAttributeParameters(settingsAttr);
+
+        string? methodName;
+        if (settings.TryGetValue("MethodName", out methodName))
+            methodName = methodName.Substring(1, methodName.Length - 2); // Remove quotes
+
         return new Data(
             Diagnostics: ImmutableArray<Diagnostic>.Empty,
             Namespace: namespaceName,
+            MethodName: methodName,
             Injectables: injectables
         );
+    }
+
+    private static bool IsStartupExtensionAttribute(AttributeData data)
+    {
+        return data.AttributeClass is not null
+            && data.AttributeClass.ContainingNamespace.Name == "Flaeng"
+            && data.AttributeClass.Name == "StartupExtensionAttribute";
     }
 
     private static ImmutableArray<InjectData> GetInjectables(GeneratorSyntaxContext context, ImmutableArray<ClassDeclarationSyntax> classDeclarations, CancellationToken ct)

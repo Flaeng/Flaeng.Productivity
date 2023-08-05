@@ -48,7 +48,10 @@ public sealed partial class StartupGenerator
         builder.StartScope();
 
         builder.WriteLine(Constants.GeneratedCodeAttribute);
-        builder.WriteMethod(METHOD_DEFINITION);
+        var method = METHOD_DEFINITION;
+        if (String.IsNullOrWhiteSpace(source.MethodName) == false)
+            method = method.WithName(source.MethodName!);
+        builder.WriteMethod(method);
         builder.StartScope();
 
         WriteMethodBody(source, builder);

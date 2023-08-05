@@ -93,6 +93,11 @@ public abstract class GeneratorBase : IIncrementalGenerator
         return parentClasses;
     }
 
+    protected static Dictionary<string, string> GetAttributeParameters(AttributeData data)
+    {
+        return data.NamedArguments.ToDictionary(x => x.Key, x => x.Value.ToCSharpString());
+    }
+
     protected static Dictionary<string, string> GetAttributeParameters(
         ClassDeclarationSyntax syntax,
         string attributeName
