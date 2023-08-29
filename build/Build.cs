@@ -38,4 +38,24 @@ partial class Build : NukeBuild
                     ));
         });
 
+    Target Format => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetFormat(opts => opts
+                .SetProcessWorkingDirectory("src")
+                .SetVerifyNoChanges(IsLocalBuild == false));
+        });
+
+    Target Test => _ => _
+        .DependsOn(Format)
+        .Executes(() =>
+        {
+            Projects
+                .Where(proj => proj.IsTestProject())
+                .ForEach(proj =>
+                    DotNetTasks.DotNetTest(opts => opts
+                        .SetProjectFile(proj)));
+        });
+
 }

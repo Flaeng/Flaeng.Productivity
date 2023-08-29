@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class ConstructorGenerator : GeneratorBase
+internal sealed partial class ConstructorGenerator : GeneratorBase
 {
     internal record struct Data(
         ImmutableArray<Diagnostic> Diagnostics,

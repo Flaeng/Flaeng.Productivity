@@ -1,7 +1,7 @@
 namespace Flaeng.Productivity.Generators;
 
 [Generator(LanguageNames.CSharp)]
-public sealed partial class InterfaceGenerator : GeneratorBase
+internal sealed partial class InterfaceGenerator : GeneratorBase
 {
     public override void Initialize(IncrementalGeneratorInitializationContext context)
     {

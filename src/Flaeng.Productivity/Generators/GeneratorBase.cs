@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public abstract class GeneratorBase : IIncrementalGenerator
+internal abstract class GeneratorBase : IIncrementalGenerator
 {
     internal static readonly CSharpOptions DefaultCSharpOptions = new(IgnoreUnnecessaryUsingDirectives: true);
     public abstract void Initialize(IncrementalGeneratorInitializationContext context);

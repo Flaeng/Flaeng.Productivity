@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class ConstructorGenerator : GeneratorBase
+internal sealed partial class ConstructorGenerator : GeneratorBase
 {
     private void Execute(SourceProductionContext context, Data source)
     {

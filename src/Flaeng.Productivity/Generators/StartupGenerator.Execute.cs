@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class StartupGenerator
+internal sealed partial class StartupGenerator
 {
     private static readonly ClassDefinition CLASS_DEFINITION =
         new ClassDefinition(

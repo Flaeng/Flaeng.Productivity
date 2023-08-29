@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class FluentApiGenerator
+internal sealed partial class FluentApiGenerator
 {
     private static void Execute(SourceProductionContext context, Data source)
     {

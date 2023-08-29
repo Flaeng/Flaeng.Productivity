@@ -7,7 +7,7 @@ public partial class WeatherForecastService
 {
     [Flaeng.Inject] protected readonly ISummaryProvider _summaryProvider;
 
-    public IEnumerable<WeatherForecast> GetWeatherForecast()
+    public IEnumerable<WeatherForecast> GetWeatherForecast(bool includeCity)
     {
         var Summaries = _summaryProvider.GetSummaries();
         var now = DateTime.Now;
@@ -15,9 +15,20 @@ public partial class WeatherForecastService
         {
             Date = DateOnly.FromDateTime(DateTime.Now),
             TemperatureC = Random.Shared.Next(-20, 55),
+            City = "Silkeborg",
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
+        .If(includeCity == false, RemoveCity)
         .ToArray();
+    }
+
+    private IEnumerable<WeatherForecast> RemoveCity(IEnumerable<WeatherForecast> enumerable)
+    {
+        foreach (var item in enumerable)
+        {
+            item.City = null;
+            yield return item;
+        }
     }
 
     protected void Test() { }

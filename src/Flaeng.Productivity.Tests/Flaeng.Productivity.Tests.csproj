@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Flaeng.Productivity\Flaeng.Productivity.csproj" />
+    <ProjectReference Include="..\Flaeng.Extensions\Flaeng.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 partial class Build
 {
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]

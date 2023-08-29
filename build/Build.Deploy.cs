@@ -1,14 +1,16 @@
 partial class Build
 {
-    [Parameter("NuGet API Key"), Secret] readonly string NuGetApiKey;
     const string DefaultNuGetSource = "https://api.nuget.org/v3/index.json";
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "artifacts";
     readonly AbsolutePath ReadmeSourceFile = RootDirectory / "README.md";
     readonly AbsolutePath LicenseSourceFile = RootDirectory / "LICENSE";
-    readonly AbsolutePath ReadmeTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "README.md";
-    readonly AbsolutePath LicenseTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "LICENSE";
+    readonly AbsolutePath ReadmeTargetExtensionsFile = RootDirectory / "src" / "Flaeng.Extensions" / "README.md";
+    readonly AbsolutePath LicenseTargetExtensionsFile = RootDirectory / "src" / "Flaeng.Extensions" / "LICENSE";
+    readonly AbsolutePath ReadmeTargetProductivityFile = RootDirectory / "src" / "Flaeng.Productivity" / "README.md";
+    readonly AbsolutePath LicenseTargetProductivityFile = RootDirectory / "src" / "Flaeng.Productivity" / "LICENSE";
 
     Target Pack => _ => _
+        .OnlyWhenStatic(() => IsTaggedBuild || IsLocalBuild)
         .Requires(() => VersionParameter)
         .DependsOn(Test)
         .Produces(ArtifactsDirectory)
@@ -17,10 +19,12 @@ partial class Build
             var version = VersionParameter;
             var fileversion = version.Split('-').First();
 
-            new Dictionary<AbsolutePath, AbsolutePath>
+            new List<KeyValuePair<AbsolutePath, AbsolutePath>>
             {
-                { ReadmeSourceFile, ReadmeTargetFile },
-                { LicenseSourceFile, LicenseTargetFile }
+                KeyValuePair.Create(ReadmeSourceFile, ReadmeTargetProductivityFile),
+                KeyValuePair.Create(LicenseSourceFile, LicenseTargetProductivityFile),
+                KeyValuePair.Create(ReadmeSourceFile, ReadmeTargetExtensionsFile),
+                KeyValuePair.Create(LicenseSourceFile, LicenseTargetExtensionsFile)
             }.ForEach(x =>
             {
                 x.Value.DeleteFile();

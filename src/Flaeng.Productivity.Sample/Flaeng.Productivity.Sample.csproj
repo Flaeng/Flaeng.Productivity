@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Flaeng.Extensions\Flaeng.Extensions.csproj" />
     <ProjectReference Include="..\Flaeng.Productivity\Flaeng.Productivity.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <!-- <ProjectReference Include="..\Flaeng.Productivity\Flaeng.Productivity.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" /> -->
   </ItemGroup>

@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity;
 
-public static class IEnumerableExtensions
+internal static class IEnumerableExtensions
 {
     public static string Join(this IEnumerable<string> coll)
         => coll.Join(String.Empty);

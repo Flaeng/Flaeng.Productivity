@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class InterfaceGenerator
+internal sealed partial class InterfaceGenerator
 {
     private void Execute(SourceProductionContext context, Data source)
     {

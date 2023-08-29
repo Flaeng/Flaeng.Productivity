@@ -14,13 +14,12 @@ public partial class WeatherForecastController : ControllerBase
     [Flaeng.Inject] readonly ILogger<WeatherForecastController> _logger5;
     [Flaeng.Inject] readonly ILogger<WeatherForecastController> _logger6;
     [Flaeng.Inject] ILogger<WeatherForecastController> _logger7 { get; }
-
     [Flaeng.Inject] IWeatherForecastService _weatherForecastService { get; }
 
     [HttpGet(Name = "GetWeatherForecast")]
     public ActionResult<List<WeatherForecast>> Get(CancellationToken token)
     {
-        var list = _weatherForecastService.GetWeatherForecast();
+        var list = _weatherForecastService.GetWeatherForecast(includeCity: true);
         return list.ToList();
     }
 }

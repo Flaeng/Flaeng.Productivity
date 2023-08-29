@@ -1,7 +1,7 @@
 namespace Flaeng.Productivity.Generators;
 
 [Generator(LanguageNames.CSharp)]
-public sealed partial class FluentApiGenerator : GeneratorBase
+internal sealed partial class FluentApiGenerator : GeneratorBase
 {
     public override void Initialize(IncrementalGeneratorInitializationContext context)
     {

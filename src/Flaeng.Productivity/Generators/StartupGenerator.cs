@@ -1,7 +1,7 @@
 namespace Flaeng.Productivity.Generators;
 
 [Generator(LanguageNames.CSharp)]
-public sealed partial class StartupGenerator : GeneratorBase
+internal sealed partial class StartupGenerator : GeneratorBase
 {
     private const string ServiceCollectionQualifiedName = "global::Microsoft.Extensions.DependencyInjection.IServiceCollection";
 

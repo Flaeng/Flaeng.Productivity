@@ -1,6 +1,6 @@
 namespace Flaeng.Productivity.Generators;
 
-public sealed partial class StartupGenerator
+internal sealed partial class StartupGenerator
 {
     public enum InjectType { Transient, Scoped, Singleton }
 
