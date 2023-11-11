@@ -8,7 +8,7 @@ partial class Build
         {
             DotNetTasks.DotNetFormat(opts => opts
                 .SetProcessWorkingDirectory("src")
-                .SetVerifyNoChanges(true));
+                .SetVerifyNoChanges(IsServerBuild));
         });
 
     Target Test => _ => _
