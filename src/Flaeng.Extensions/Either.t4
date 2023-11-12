@@ -1,0 +1,151 @@
+<#@ template hostspecific="false" language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ output extension="generated.cs" #>
+namespace Flaeng.Extensions;
+
+#pragma warning disable CS8669
+<# 
+    for (int i = 2; i < 11; i++) 
+    { 
+        var range = Enumerable.Range(1, i).ToArray();
+        string genericTypes = String.Join(", ", range.Select(x => $"T{x}"));
+#>
+
+public class Either<<#=genericTypes#>>
+<# 
+    for (int x = 1; x <= i; x++)
+    {
+#>
+    where T<#=x#> : notnull
+<# 
+    }
+#>
+{
+    public object Value
+        => ValueIsOfTIndex switch
+        {
+<# 
+    for (int x = 1; x <= i; x++)
+    {
+#>
+            <#=(x - 1)#> => Value<#=x#>,
+<# 
+    }
+#>
+            _ => throw new Exception()
+        };
+
+    private int ValueIsOfTIndex { get; set; }
+
+<# 
+    foreach (int x in range)
+    {
+#>
+    protected T<#=x#>? Value<#=x#> { get; }
+
+    public Either(T<#=x#> value)
+    {
+        Value<#=x#> = value;
+        this.ValueIsOfTIndex = <#=(x - 1)#>;
+    }
+
+    public T<#=x#>? AsT<#=x#>() => Value<#=x#>;
+
+    public bool Is([NotNullWhen(true)] out T<#=x#>? value)
+    {
+        value = Value<#=x#>;
+        return ValueIsOfTIndex == <#=(x - 1)#>;
+    }
+    <# 
+        }
+    #>
+
+    public void Case(<#=String.Join(", ", range.Select(x => $"Action<T{x}> action{x}")) #>)
+    {
+        Case<object?>(
+            <#=String.Join(",\n\t\t\t", range.Select(x => $"v => {{ action{x}(v); return null; }}")) #>
+            );
+    }
+
+<#
+    foreach (int x in range)
+    {
+#>
+    public void Case(Action<T<#=x#>> action)
+    {
+        Case<object?>(
+            <#=String.Join(",\n\t\t\t", range.Select(z => x == z ? $"v => {{ action(v); return null; }}" : $"v => null")) #>
+            );
+    }
+
+<#
+    }
+#>
+    public TResult Case<TResult>(<#=String.Join(", ", range.Select(x => $"Func<T{x}, TResult> action{x}")) #>)
+    {
+        return 
+            <#=String.Join("\n\t\t\t: ", range.Select(x => $"Value{x} is not null ? action{x}(Value{x})")) #>
+            : throw new Exception();
+    }
+
+<#
+    foreach (int x in range)
+    {
+#>
+    public TResult Case<TResult>(Func<T<#=x#>, TResult> action)
+    {
+        return Case<TResult>(
+            <#=String.Join(",\n\t\t\t", range.Select(z => x == z ? $"v => action(v)" : $"v => default(TResult)")) #>
+            );
+    }
+
+<#
+    }
+    foreach (int x in range)
+    {
+        var newGenericTypes = String.Join(", ", range.Select(v => v == x ? "TResult" : $"T{v}"));
+#>
+    public Either<<#=newGenericTypes#>> Map<TResult>(Func<T<#=x#>, TResult> mapper)
+    where TResult : notnull
+    {
+        return 
+<#
+    foreach (var y in range)
+    {
+        if (y != 1)
+        {
+#>
+            :
+<#
+        }
+        if (x == y)
+        {
+#>
+            Value<#=y#> is not null ? new Either<<#=newGenericTypes#>>(mapper(Value<#=y#>))
+<#
+        }
+        else 
+        {
+#>
+            Value<#=y#> is not null ? new Either<<#=newGenericTypes#>>(Value<#=y#>)
+<#
+        }
+    }
+#>
+            : throw new Exception();
+    }
+<#
+    }
+#>
+
+<#
+    foreach (int x in range)
+    {
+#>
+    public static implicit operator Either<<#=genericTypes#>>(T<#=x#> value)
+        => new Either<<#=genericTypes#>>(value);
+<#
+    }
+#>
+}
+<# } #>

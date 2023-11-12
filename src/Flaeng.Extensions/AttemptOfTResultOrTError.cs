@@ -23,6 +23,28 @@ public class Attempt<TResult, TError> : IAttempt
         this.Error = error;
     }
 
+    public Attempt<TNewResult, TError> Then<TNewResult>(Func<TResult, TNewResult> doThis)
+    {
+        if (Error is not null)
+            return Attempt<TNewResult, TError>.Failed(Error);
+
+        if (Result is not null)
+            return doThis(Result);
+
+        throw new InvalidOperationException();
+    }
+
+    public IAttempt Then<TNewResult>(Func<TResult, IAttempt> doThis)
+    {
+        if (Error is not null)
+            return this;
+
+        if (Result is not null)
+            return doThis(Result);
+
+        throw new InvalidOperationException();
+    }
+
     public static implicit operator Attempt<TResult, TError>(TResult result)
         => Success(result);
 
