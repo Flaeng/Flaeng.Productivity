@@ -27,7 +27,7 @@ partial class Build
                 x.Value.WriteAllBytes(x.Key.ReadAllBytes());
             });
 
-            Projects
+            Solution.Projects
                 .Where(x => x.IsTestProject() == false)
                 .Where(x => x.IsSampleProject() == false)
                 .ForEach(proj =>

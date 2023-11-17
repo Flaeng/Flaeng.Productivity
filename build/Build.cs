@@ -1,3 +1,9 @@
+using GlobExpressions;
+
+using NuGet.Common;
+
+using Serilog;
+
 /// Support plugins are available for:
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
@@ -11,31 +17,34 @@ partial class Build : NukeBuild
         .Before(Restore)
         .Executes(() =>
         {
-            Projects
-                .ForEach(proj =>
-                    DotNetTasks.DotNetClean(opts => opts
-                    .SetProject(proj)));
+            DotNetTasks.DotNetClean(opts => opts
+                .SetProcessWorkingDirectory(Solution.Directory)
+            );
+
+            var folders = Glob.Directories(Solution.Directory, "**/obj")
+                .Concat(Glob.Directories(Solution.Directory, "**/bin"))
+                .Select(path => Solution.Directory / path);
+            Log.Information($"Deleting folders:{Environment.NewLine}{String.Join(Environment.NewLine, folders)}");
+            folders.DeleteDirectories();
         });
 
     Target Restore => _ => _
         .Executes(() =>
         {
-            Projects
-                .ForEach(proj =>
-                    DotNetTasks.DotNetRestore(opts => opts
-                    .SetProjectFile(proj)));
+            DotNetTasks.DotNetRestore(opts => opts
+                .SetProcessWorkingDirectory(Solution.Directory)
+            );
         });
 
     Target Compile => _ => _
         .DependsOn(Restore)
         .Executes(() =>
         {
-            Projects
-                .ForEach(proj =>
-                    DotNetTasks.DotNetBuild(opts => opts
-                    .SetProjectFile(proj)
-                    .SetTreatWarningsAsErrors(true)
-                    ));
+            DotNetTasks.DotNetBuild(opts => opts
+                .SetProcessWorkingDirectory(Solution.Directory)
+                .SetTreatWarningsAsErrors(true)
+                .SetNoRestore(true)
+            );
         });
 
 }

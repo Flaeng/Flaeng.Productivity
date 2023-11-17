@@ -16,6 +16,6 @@ partial class Build
         )]
     readonly string VersionParameter;
 
-    IEnumerable<Project> Projects => Solution
-        .Projects.Where(x => x.Name != "_build");
+    // IEnumerable<Project> Projects => Solution
+    //     .Projects.Where(x => x.Name != "_build");
 }
