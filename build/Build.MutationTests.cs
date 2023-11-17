@@ -1,6 +1,3 @@
-
-using Serilog;
-
 partial class Build
 {
     readonly AbsolutePath StrykerOutput = RootDirectory / "src" / "StrykerOutput" / "**" / "mutation-report.html";
@@ -10,14 +7,12 @@ partial class Build
         .Produces(StrykerOutput)
         .Executes(() =>
         {
-            if (IsServerBuild)
-            {
-                DotNetTasks.DotNetToolInstall(opts => opts
-                    .SetPackageName("dotnet-stryker")
-                    .SetGlobal(true)
-                    .SetProcessExitHandler(process => { })
-                );
-            }
+            DotNetTasks.DotNetToolInstall(opts => opts
+                .SetPackageName("dotnet-stryker")
+                .SetGlobal(true)
+                .SetProcessExitHandler(process => { })
+            );
+
             DotNetTasks.DotNet(
                 arguments: "stryker -l Advanced",
                 workingDirectory: Solution.Directory,

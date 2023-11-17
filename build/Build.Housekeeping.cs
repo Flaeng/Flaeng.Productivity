@@ -23,18 +23,8 @@ partial class Build
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var testProjects = Solution.Projects
-                .Where(proj => proj.IsTestProject())
-                .ToArray();
-
             DotNetTasks.DotNetTest(opts => opts
-                .CombineWith(testProjects
-                    .Select<Project, Configure<DotNetTestSettings>>(proj => opts => opts
-                        .SetProjectFile(proj.Path)
-                    )
-                    .ToArray()
-                ),
-                degreeOfParallelism: testProjects.Length
+                .SetProjectFile(Solution.Flaeng_Productivity_Tests)
             );
         });
 

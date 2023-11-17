@@ -2,14 +2,15 @@
     "PR",
     GitHubActionsImage.UbuntuLatest,
     InvokedTargets = new[] { /*nameof(Format),*/ nameof(Test) },
-    OnPullRequestBranches = new[] { "main" },
+    OnPullRequestBranches = new[] { "main", "dev" },
+    OnPushIncludePaths = new[] { "src/**" },
     PublishArtifacts = false
 )]
 [GitHubActions(
-    "Build",
+    "Publish",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Stryker) },
-    OnPushBranches = new[] { "main" },
+    InvokedTargets = new[] { nameof(Publish) },
+    OnPushBranches = new[] { "main", "dev" },
     OnPushIncludePaths = new[] { "src/**" },
     PublishArtifacts = true
 )]

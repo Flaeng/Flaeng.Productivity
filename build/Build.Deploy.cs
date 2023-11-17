@@ -7,9 +7,22 @@ partial class Build
     readonly AbsolutePath LicenseSourceFile = RootDirectory / "LICENSE";
     readonly AbsolutePath ReadmeTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "README.md";
     readonly AbsolutePath LicenseTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "LICENSE";
+    readonly AbsolutePath VersionJson = RootDirectory / "version.json";
+
+    string VersionParameter 
+    {
+        get
+        {
+            var jobject = VersionJson.ReadJson();
+            var mainVersion = jobject.Value<string>("version");
+
+            return GitRepository.IsOnMainOrMasterBranch()
+                ? mainVersion
+                : $"{mainVersion}-beta{jobject.Value<int>("rc")}";
+        }
+    }
 
     Target Pack => _ => _
-        .Requires(() => VersionParameter)
         .DependsOn(Test)
         .Produces(ArtifactsDirectory)
         .Executes(() =>
@@ -27,32 +40,27 @@ partial class Build
                 x.Value.WriteAllBytes(x.Key.ReadAllBytes());
             });
 
-            Solution.Projects
-                .Where(x => x.IsTestProject() == false)
-                .Where(x => x.IsSampleProject() == false)
-                .ForEach(proj =>
-                {
-                    DotNetTasks.DotNetPack(opts => opts
-                        .SetProcessWorkingDirectory("src")
-                        .SetProject(proj)
-                        .SetVersion(version)
-                        .SetFileVersion(version)
-                        .SetAssemblyVersion(fileversion)
-                        .SetInformationalVersion(version)
-                        .SetIncludeSymbols(true)
-                        .SetIncludeSource(true)
-                        .SetConfiguration(Configuration.Release)
-                        );
-                });
+            DotNetTasks.DotNetPack(opts => opts
+                .SetProcessWorkingDirectory("src")
+                .SetProject(Solution.Flaeng_Productivity)
+                .SetConfiguration(Configuration.Release)
+                .SetVersion(version)
+                .SetFileVersion(version)
+                .SetAssemblyVersion(fileversion)
+                .SetInformationalVersion(version)
+                .SetIncludeSymbols(true)
+                .SetIncludeSource(true)
+                .SetConfiguration(Configuration.Release)
+            );
 
-            ArtifactsDirectory.DeleteDirectory();
-            ArtifactsDirectory.CreateDirectory();
+            ArtifactsDirectory.CreateOrCleanDirectory();
+
             RootDirectory.GlobFiles($"**/*.{version}.nupkg")
                 .ForEach(file => file.MoveToDirectory(ArtifactsDirectory));
         });
 
     Target Publish => _ => _
-        .OnlyWhenDynamic(() => IsLocalBuild && GitRepository.IsOnMainBranch())
+        .OnlyWhenDynamic(() => IsLocalBuild && (GitRepository.IsOnMainBranch() || GitRepository.IsOnDevelopBranch()))
         .DependsOn(Pack)
         .Requires(() => NuGetApiKey)
         .Executes(() =>
@@ -63,7 +71,7 @@ partial class Build
                         .SetSource(DefaultNuGetSource)
                         .SetApiKey(NuGetApiKey)
                         .SetTargetPath(file)
-                        )
                     )
+                )
             );
 }
