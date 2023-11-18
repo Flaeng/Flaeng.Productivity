@@ -42,12 +42,12 @@ partial class Build
             (Solution.Directory / "dotcover").CreateOrCleanDirectory();
             DotNetTasks.DotNet("dotcover test --dcFilters=+:Flaeng.Productivity --dcOutput=./dotcover/coverage-report.dcvr", workingDirectory: Solution.Directory);
             DotNetTasks.DotNet("dotcover report --source=./dotcover/coverage-report.dcvr --output=./dotcover/coverage.html --reportType=HTML", workingDirectory: Solution.Directory);
-            var path = Solution.Directory / "dotcover" / "coverage.html";
             if (IsLocalBuild)
             {
+                var htmlfile = Solution.Directory / "dotcover" / "coverage.html";
                 new Process
                 {
-                    StartInfo = new ProcessStartInfo(path)
+                    StartInfo = new ProcessStartInfo(htmlfile)
                     {
                         UseShellExecute = true
                     }
@@ -55,8 +55,9 @@ partial class Build
             }
             else
             {
+                var output = Solution.Directory / "dotcover";
                 ArtifactsDirectory.CreateDirectory();
-                path.MoveToDirectory(ArtifactsDirectory);
+                output.MoveToDirectory(ArtifactsDirectory);
             }
         });
 }
