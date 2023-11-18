@@ -55,6 +55,7 @@ partial class Build
             }
             else
             {
+                ArtifactsDirectory.CreateDirectory();
                 path.MoveToDirectory(ArtifactsDirectory);
             }
         });
