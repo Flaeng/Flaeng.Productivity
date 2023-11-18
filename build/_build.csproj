@@ -8,7 +8,6 @@
     <NukeRootDirectory>..</NukeRootDirectory>
     <NukeScriptDirectory>..</NukeScriptDirectory>
     <NukeTelemetryVersion>1</NukeTelemetryVersion>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

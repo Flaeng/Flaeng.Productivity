@@ -1,25 +1,25 @@
 [GitHubActions(
-    "PR",
+    "Format and test",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = [nameof(Format), nameof(Test), nameof(TestCoverage)],
-    OnPullRequestBranches = ["main", "dev"],
-    OnPushExcludePaths = ["docs/**"],
+    InvokedTargets = new string[] { nameof(Format), nameof(Test), nameof(TestCoverage) },
+    OnPullRequestBranches = new string[] { "main", "dev" },
+    OnPushExcludePaths = new string [] { "docs/**" },
     PublishArtifacts = true
 )]
 [GitHubActions(
     "Publish",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = [nameof(Publish)],
-    OnPushBranches = ["main", "dev"],
-    OnPushExcludePaths = ["docs/**"],
+    InvokedTargets = new string[] { nameof(Publish) },
+    OnPushBranches = new string[] { "main", "dev" },
+    OnPushExcludePaths = new string [] { "docs/**" },
     PublishArtifacts = true
 )]
 [GitHubActions(
-    "Stryker",
+    "Stryker test",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = [nameof(Stryker)],
-    OnPushBranches = ["dev"],
-    OnPushExcludePaths = ["docs/**"],
+    InvokedTargets = new string[] { nameof(Stryker) },
+    OnPushBranches = new string[] { "dev" },
+    OnPushExcludePaths = new string [] { "docs/**" },
     PublishArtifacts = true
 )]
 partial class Build
