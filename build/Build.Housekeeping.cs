@@ -59,5 +59,4 @@ partial class Build
                 path.MoveToDirectory(ArtifactsDirectory);
             }
         });
-
 }
