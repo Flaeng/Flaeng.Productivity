@@ -1,6 +1,6 @@
 [GitHubActions(
     "Format and test",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.WindowsLatest,
     InvokedTargets = new string[] { nameof(Format), nameof(Test), nameof(TestCoverage) },
     OnPullRequestBranches = new string[] { "main", "dev" },
     OnPushExcludePaths = new string [] { "docs/**" },
@@ -8,7 +8,7 @@
 )]
 [GitHubActions(
     "Publish",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.WindowsLatest,
     InvokedTargets = new string[] { nameof(Publish) },
     OnPushBranches = new string[] { "main", "dev" },
     OnPushExcludePaths = new string [] { "docs/**" },
@@ -16,7 +16,7 @@
 )]
 [GitHubActions(
     "Stryker test",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.WindowsLatest,
     InvokedTargets = new string[] { nameof(Stryker) },
     OnPushBranches = new string[] { "dev" },
     OnPushExcludePaths = new string [] { "docs/**" },
