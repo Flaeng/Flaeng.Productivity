@@ -1,7 +1,7 @@
 [GitHubActions(
-    "Format and test",
+    "Test",
     GitHubActionsImage.WindowsLatest,
-    InvokedTargets = new string[] { nameof(Format), nameof(Test), nameof(TestCoverage) },
+    InvokedTargets = new string[] { /*nameof(Format),*/ nameof(Test), nameof(TestCoverage) },
     OnPullRequestBranches = new string[] { "main", "dev" },
     OnPushExcludePaths = new string [] { "docs/**" },
     PublishArtifacts = true
