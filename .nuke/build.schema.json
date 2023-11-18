@@ -85,7 +85,8 @@
               "Publish",
               "Restore",
               "Stryker",
-              "Test"
+              "Test",
+              "TestCoverage"
             ]
           }
         },
@@ -107,7 +108,8 @@
               "Publish",
               "Restore",
               "Stryker",
-              "Test"
+              "Test",
+              "TestCoverage"
             ]
           }
         },
@@ -120,10 +122,6 @@
             "Quiet",
             "Verbose"
           ]
-        },
-        "Version": {
-          "type": "string",
-          "description": "Version of the package being built for NuGets (i.e. \"0.3.0-rc.2\")"
         }
       }
     }
