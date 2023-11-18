@@ -140,6 +140,7 @@ _TeamCity*
 
 # DotCover is a Code Coverage Tool
 *.dotCover
+dotcover
 
 # AxoCover is a Code Coverage Tool
 .axoCover/*

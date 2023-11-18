@@ -1,17 +1,17 @@
 [GitHubActions(
     "PR",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { /*nameof(Format),*/ nameof(Test) },
-    OnPullRequestBranches = new[] { "main", "dev" },
-    OnPushIncludePaths = new[] { "src/**" },
-    PublishArtifacts = false
+    InvokedTargets = [/*nameof(Format),*/ nameof(Test), nameof(TestCoverage)],
+    OnPullRequestBranches = ["main", "dev"],
+    OnPushIncludePaths = ["src/**"],
+    PublishArtifacts = true
 )]
 [GitHubActions(
     "Publish",
     GitHubActionsImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Publish) },
-    OnPushBranches = new[] { "main", "dev" },
-    OnPushIncludePaths = new[] { "src/**" },
+    InvokedTargets = [nameof(Publish)],
+    OnPushBranches = ["main", "dev"],
+    OnPushIncludePaths = ["src/**"],
     PublishArtifacts = true
 )]
 partial class Build

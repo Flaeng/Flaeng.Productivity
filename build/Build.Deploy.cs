@@ -9,7 +9,7 @@ partial class Build
     readonly AbsolutePath LicenseTargetFile = RootDirectory / "src" / "Flaeng.Productivity" / "LICENSE";
     readonly AbsolutePath VersionJson = RootDirectory / "version.json";
 
-    string VersionParameter 
+    string VersionParameter
     {
         get
         {

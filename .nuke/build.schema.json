@@ -85,7 +85,8 @@
               "Publish",
               "Restore",
               "Stryker",
-              "Test"
+              "Test",
+              "TestCoverage"
             ]
           }
         },
@@ -107,7 +108,8 @@
               "Publish",
               "Restore",
               "Stryker",
-              "Test"
+              "Test",
+              "TestCoverage"
             ]
           }
         },

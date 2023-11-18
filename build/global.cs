@@ -1,12 +1,11 @@
 global using System;
-global using System.ComponentModel;
 global using System.Collections.Generic;
-global using System.Linq;
+global using System.ComponentModel;
+global using System.Diagnostics;
 global using System.IO;
+global using System.Linq;
 
 global using GlobExpressions;
-
-global using Serilog;
 
 global using Nuke.Common;
 global using Nuke.Common.CI.GitHubActions;
@@ -18,3 +17,5 @@ global using Nuke.Common.Tools.DotNet;
 global using Nuke.Common.Tools.NuGet;
 global using Nuke.Common.Utilities;
 global using Nuke.Common.Utilities.Collections;
+
+global using Serilog;
