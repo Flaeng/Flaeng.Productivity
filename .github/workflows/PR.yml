@@ -19,7 +19,7 @@ name: PR
 on:
   push:
     paths:
-      - 'src/**'
+      - '!docs/**'
   pull_request:
     branches:
       - main
@@ -38,8 +38,8 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Test, TestCoverage'
-        run: ./build.cmd Test TestCoverage
+      - name: 'Run: Format, Test, TestCoverage'
+        run: ./build.cmd Format Test TestCoverage
       - name: 'Publish: artifacts'
         uses: actions/upload-artifact@v3
         with:
